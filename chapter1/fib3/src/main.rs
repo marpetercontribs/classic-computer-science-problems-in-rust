@@ -17,6 +17,9 @@
 
 use std::collections::HashMap;
 
+// self-constructed memoisation
+// note that there is a crate memoize which could simplify this (similar to Python)
+
 struct Fib3 {
     memo: HashMap::<u32,u32>
 }
@@ -34,7 +37,6 @@ impl Fib3 {
             let prev = self.get(n-1);
             self.memo.insert(n,prev + prev_prev);
         }
- //       self.memo.entry(n).or_insert(self.fib(n-1)+self.fib(n-2));
         *self.memo.get(&n).unwrap()
     }
 }
