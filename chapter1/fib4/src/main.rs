@@ -1,5 +1,6 @@
 // fib4.rs
-// Adapted From Classic Computer Science Problems in Python/Java Chapter 1
+// Adapted From Classic Computer Science Problems in Python Chapter 1
+// Classic Computer Science Problems in Java does not include an equivalent version 
 // Copyright 2023 Markus Peter
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
