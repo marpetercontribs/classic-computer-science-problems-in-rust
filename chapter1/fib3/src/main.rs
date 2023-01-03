@@ -17,21 +17,18 @@
 
 use std::collections::HashMap;
 
-// self-constructed memoisation
-// note that there is a crate memoize which could simplify this (similar to Python)
-
 struct Fib3 {
-    memo: HashMap::<u32,u32>
+    memo: HashMap::<usize,usize>
 }
 
 impl Fib3 {
     fn new() -> Self {
-        let mut memo = HashMap::<u32,u32>::new() ;
+        let mut memo = HashMap::<usize,usize>::new() ;
         memo.insert(0,0); // Part 1 of the recursion's stop condition
         memo.insert(1,1); // Part 2 of the recursion's stop condition       
         Fib3 { memo: memo }
     }
-    fn get(&mut self, n: u32) -> u32 {
+    fn get(&mut self, n: usize) -> usize {
         if !self.memo.contains_key(&n) {
             let prev_prev = self.get(n-2);
             let prev = self.get(n-1);
@@ -44,5 +41,5 @@ impl Fib3 {
 fn main() {
     let mut fib = Fib3::new(); // How to adjust code to avoid `mut` here?
     println!("{}",fib.get(5));
-    println!("{}",fib.get(40));
+    println!("{}",fib.get(50));
 }

@@ -1,5 +1,4 @@
-
-// fib1.rs
+// fib4.rs
 // Adapted From Classic Computer Science Problems in Python/Java Chapter 1
 // Copyright 2023 Markus Peter
 //
@@ -15,12 +14,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-fn fib1(n: usize) -> usize {
-    fib1(n-1) + fib1(n-2)
+use memoize::memoize;
+
+#[memoize]
+
+fn fib4(n: usize) -> usize {
+    if n<2 {
+        n
+    } else {
+        fib4(n-1) + fib4(n-2)        
+    }
 }
 
 fn main() {
-    println!("{}",fib1(5));
+    println!("{}",fib4(5));
+    println!("{}",fib4(50));
 }
-
-
