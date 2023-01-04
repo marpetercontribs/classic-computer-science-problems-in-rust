@@ -1,4 +1,3 @@
-
 // fib3.rs
 // Adapted From Classic Computer Science Problems in Python/Java Chapter 1
 // Copyright 2023 Markus Peter

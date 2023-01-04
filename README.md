@@ -12,3 +12,7 @@ This has the benefit that each program can be created easily and independently f
 Drawbacks are the large number of additional *src* folders, *Cargo.toml* files and that the real source code files have the name *main.rs*, not expressing the real name of the program.
 
 Consider switching to a single package per chapter, with different "binaries" listed in the *Cargo.toml* file and stored subfolder in *src/bin*. They would have to be built using `cargo build --bin <name>` / `cargo run --bin <name>`.
+
+Missing ports:
+
+- Chapter 1.1: Generator version (equivalent of fib6 in Python / fib5 in Java book)
