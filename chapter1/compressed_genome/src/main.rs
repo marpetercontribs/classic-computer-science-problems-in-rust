@@ -49,7 +49,7 @@ impl CompressedGenome {
     }
     fn decompress(&self) -> String {
         let mut genome = String::new();
-        for index in 0..(&self.bits.len()/2) {
+        for index in 0..(self.bits.len()/2) {
             let nucleotide: u8 = (if self.bits[2*index] {1} else {0}) *2 + (if self.bits[2*index+1] {1} else {0});
             if nucleotide == 0b00 {
                 genome.push('A');
