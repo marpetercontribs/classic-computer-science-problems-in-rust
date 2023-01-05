@@ -23,16 +23,16 @@ fn calculate_pi(n_terms: usize) -> f64 {
     let mut pi = 0.0;
     for _ in 0..n_terms {
         pi += sign*(numerator/denominator);
-        sign *= -1.0;
+        sign = -sign;
         denominator += 2.0
     }
     pi
 }
 
 fn main() {
-    // let start = Instant::now();                       // remove comment to measure runtime
-    // let pi = calculate_pi(10000000);                  // remove comment to measure runtime
-    // let duration = start.elapsed().as_millis();       // remove comment to measure runtime
-    // println!("Calculating {} took {}ms",pi,duration); // remove comment to measure runtime
+    // let start = Instant::now();                        // remove comment to measure runtime
+    // let pi = calculate_pi(1000000);                    // remove comment to measure runtime
+    // let duration = start.elapsed().as_millis();        // remove comment to measure runtime
+    // println!("Calculating {} took {}ms.",pi,duration); // remove comment to measure runtime
     println!("{}",calculate_pi(10000000))
 }
