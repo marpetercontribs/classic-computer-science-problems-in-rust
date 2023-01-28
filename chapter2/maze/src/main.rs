@@ -16,7 +16,7 @@
 use std::fmt;
 use rand::{thread_rng, Rng};
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq)]
 enum Cell { Empty, Blocked, Start, Goal, Path }
 impl fmt::Display for Cell {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -30,7 +30,7 @@ impl fmt::Display for Cell {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug,PartialEq)]
 struct MazeLocation {
     row: usize,
     column: usize,
@@ -51,7 +51,7 @@ struct Maze {
 }
 
 impl Maze {
-    fn new(rows: usize, columns: usize, sparseness: f32, start: MazeLocation, goal: MazeLocation) -> Self {
+    fn new(rows: usize, columns: usize, start: MazeLocation, goal: MazeLocation, sparseness: f32) -> Self {
         let mut grid = Maze::randomly_fill(rows, columns, sparseness);
         grid[start.row][start.column] = Cell::Start;
         grid[goal.row][goal.column] = Cell::Goal;
@@ -63,13 +63,17 @@ impl Maze {
             grid,
         }
      }
+     fn default_new() -> Self {
+        Maze::new(10, 10, MazeLocation {row: 0, column: 0}, MazeLocation {row: 9, column: 9}, 0.2)
+     }
+
      fn randomly_fill(rows: usize, columns: usize, sparseness: f32) -> Vec<Vec<Cell>> {
         let mut grid = Vec::new();
         let mut rng = thread_rng();
         for row in 0..rows {
             let mut row = Vec::<Cell>::new();
             for column in 0..columns {
-                if rng.gen_range(0.0..1.0) < sparseness {
+                if rng.gen_range(0.0 .. 1.0) < sparseness {
                     row.push(Cell::Blocked);
                 } else {
                     row.push(Cell::Empty);
@@ -78,6 +82,25 @@ impl Maze {
             grid.push(row);
         }
         grid
+     }
+     fn goalTest(&self, ml: &MazeLocation) -> bool {
+        self.goal == *ml
+     }
+     fn successors(&self, ml: &MazeLocation) -> Vec<MazeLocation> {
+        let mut locations = Vec::new();
+        if (ml.row + 1 < self.rows) && (self.grid[ml.row + 1][ml.column] != Cell::Blocked) {
+            locations.push(MazeLocation { row: ml.row + 1, column: ml.column });
+        }
+        if (ml.row > 0) && (self.grid[ml.row - 1][ml.column] != Cell::Blocked) {
+            locations.push(MazeLocation { row: ml.row - 1, column: ml.column });
+        }
+        if (ml.column + 1 < self.columns) && (self.grid[ml.row][ml.column + 1] != Cell::Blocked) {
+            locations.push(MazeLocation { row: ml.row + 1, column: ml.column });
+        }
+        if (ml.column > 0) && (self.grid[ml.row][ml.column -  1] != Cell::Blocked) {
+            locations.push(MazeLocation { row: ml.row + 1, column: ml.column });
+        }               
+        locations
      }
 }
 impl fmt::Display for Maze {
@@ -93,6 +116,10 @@ impl fmt::Display for Maze {
 }
 
 fn main() {
-    let maze = Maze::new(10, 10, 0.2, MazeLocation {row: 0, column: 0}, MazeLocation {row: 9, column: 9});
+    let maze = Maze::default_new();
     println!("{}", maze);
+    let trueGoal = MazeLocation { row: maze.goal.row, column: maze.goal.column };
+    let wrongGoal = MazeLocation { row: 5, column: 5};
+    println!("{}", maze.goalTest(&wrongGoal));
+    println!("{}", maze.goalTest(&trueGoal));
 }
