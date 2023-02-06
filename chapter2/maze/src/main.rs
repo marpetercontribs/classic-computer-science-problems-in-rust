@@ -83,7 +83,7 @@ impl Maze {
         }
         grid
      }
-     fn goalTest(&self, ml: &MazeLocation) -> bool {
+     fn goal_test(&self, ml: &MazeLocation) -> bool {
         self.goal == *ml
      }
      fn successors(&self, ml: &MazeLocation) -> Vec<MazeLocation> {
@@ -118,8 +118,8 @@ impl fmt::Display for Maze {
 fn main() {
     let maze = Maze::default_new();
     println!("{}", maze);
-    let trueGoal = MazeLocation { row: maze.goal.row, column: maze.goal.column };
-    let wrongGoal = MazeLocation { row: 5, column: 5};
-    println!("{}", maze.goalTest(&wrongGoal));
-    println!("{}", maze.goalTest(&trueGoal));
+    let true_goal = MazeLocation { row: maze.goal.row, column: maze.goal.column };
+    let wrong_goal = MazeLocation { row: 5, column: 5};
+    println!("{}", maze.goal_test(&wrong_goal));
+    println!("{}", maze.goal_test(&true_goal));
 }

@@ -16,4 +16,3 @@ Consider switching to a single package per chapter, with different "binaries" li
 Missing ports:
 
 - Chapter 1.1: Generator version (equivalent of fib6 in Python / fib5 in Java book)
-- Cahpter 2.1: generic search, because it's not clear yet how to best deal with library-like in this context
