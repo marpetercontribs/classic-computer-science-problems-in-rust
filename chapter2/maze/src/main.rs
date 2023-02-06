@@ -16,7 +16,7 @@
 use std::fmt;
 use rand::{thread_rng, Rng};
 
-#[derive(Debug,PartialEq)]
+#[derive(PartialEq)]
 enum Cell { Empty, Blocked, Start, Goal, Path }
 impl fmt::Display for Cell {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -30,7 +30,7 @@ impl fmt::Display for Cell {
     }
 }
 
-#[derive(Debug,PartialEq)]
+#[derive(PartialEq)]
 struct MazeLocation {
     row: usize,
     column: usize,
@@ -41,7 +41,6 @@ impl fmt::Display for MazeLocation {
     }
 }
 
-#[derive(Debug)]
 struct Maze {
     rows: usize,
     columns: usize,
