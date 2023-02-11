@@ -123,9 +123,9 @@ impl fmt::Display for Maze {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         for row in &self.grid {
             for cell in row {
-                write!(formatter, "{}", cell);
+                write!(formatter, "{}", cell).expect("Error writing maze cell");
             }
-            write!(formatter,"\n");
+            write!(formatter,"\n").expect("Error writing maze row");
         }
         write!(formatter,"")
     }    
