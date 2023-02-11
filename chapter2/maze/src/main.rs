@@ -15,6 +15,7 @@
 // limitations under the License.
 use std::fmt;
 use rand::{thread_rng, Rng};
+use generic_search;
 
 #[derive(PartialEq)]
 enum Cell { Empty, Blocked, Start, Goal, Path }
@@ -30,7 +31,7 @@ impl fmt::Display for Cell {
     }
 }
 
-#[derive(PartialEq)]
+#[derive(PartialEq, PartialOrd, Clone, Eq, Hash, Copy)]
 struct MazeLocation {
     row: usize,
     column: usize,
@@ -69,9 +70,9 @@ impl Maze {
      fn randomly_fill(rows: usize, columns: usize, sparseness: f32) -> Vec<Vec<Cell>> {
         let mut grid = Vec::new();
         let mut rng = thread_rng();
-        for row in 0..rows {
+        for _ in 0..rows {
             let mut row = Vec::<Cell>::new();
-            for column in 0..columns {
+            for _ in 0..columns {
                 if rng.gen_range(0.0 .. 1.0) < sparseness {
                     row.push(Cell::Blocked);
                 } else {
@@ -82,9 +83,11 @@ impl Maze {
         }
         grid
      }
+
      fn goal_test(&self, ml: &MazeLocation) -> bool {
         self.goal == *ml
      }
+     
      fn successors(&self, ml: &MazeLocation) -> Vec<MazeLocation> {
         let mut locations = Vec::new();
         if (ml.row + 1 < self.rows) && (self.grid[ml.row + 1][ml.column] != Cell::Blocked) {
@@ -94,12 +97,26 @@ impl Maze {
             locations.push(MazeLocation { row: ml.row - 1, column: ml.column });
         }
         if (ml.column + 1 < self.columns) && (self.grid[ml.row][ml.column + 1] != Cell::Blocked) {
-            locations.push(MazeLocation { row: ml.row + 1, column: ml.column });
+            locations.push(MazeLocation { row: ml.row, column: ml.column + 1});
         }
         if (ml.column > 0) && (self.grid[ml.row][ml.column -  1] != Cell::Blocked) {
-            locations.push(MazeLocation { row: ml.row + 1, column: ml.column });
+            locations.push(MazeLocation { row: ml.row, column: ml.column - 1});
         }               
         locations
+     }
+     fn mark(&mut self, path: &Vec<MazeLocation>) {
+        for ml in path {
+            self.grid[ml.row][ml.column] = Cell::Path;
+        }
+        self.grid[self.start.row][self.start.column] = Cell::Start;
+        self.grid[self.goal.row][self.goal.column] = Cell::Goal;
+     }
+     fn clear(&mut self, path: &Vec<MazeLocation>) {
+        for ml in path {
+            self.grid[ml.row][ml.column] = Cell::Empty;
+        }
+        self.grid[self.start.row][self.start.column] = Cell::Start;
+        self.grid[self.goal.row][self.goal.column] = Cell::Goal;        
      }
 }
 impl fmt::Display for Maze {
@@ -115,10 +132,17 @@ impl fmt::Display for Maze {
 }
 
 fn main() {
-    let maze = Maze::default_new();
+    let mut maze = Maze::default_new();
     println!("{}", maze);
-    let true_goal = MazeLocation { row: maze.goal.row, column: maze.goal.column };
-    let wrong_goal = MazeLocation { row: 5, column: 5};
-    println!("{}", maze.goal_test(&wrong_goal));
-    println!("{}", maze.goal_test(&true_goal));
+    println!("----------");
+    let solution1 = generic_search::dfs(maze.start, |ml: &MazeLocation| maze.goal_test(&ml) , |ml: &MazeLocation| maze.successors(&ml));
+    match solution1 {
+        None => println!("{}", "No solution found"),
+        Some(node) => {
+            let path = generic_search::node_to_path(&node);
+            maze.mark(&path);
+            println!("{}", maze);
+            maze.clear(&path)
+        }
+    }
 }
