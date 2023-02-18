@@ -13,20 +13,19 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use std::fmt;
 use rand::{thread_rng, Rng};
 use generic_search;
 
 #[derive(PartialEq)]
 enum Cell { Empty, Blocked, Start, Goal, Path }
-impl fmt::Display for Cell {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl ToString for Cell {
+    fn to_string(&self) -> String {
         match self {
-            Cell::Empty => write!(formatter, " "),
-            Cell::Blocked => write!(formatter, "X"),
-            Cell::Start => write!(formatter, "S"),
-            Cell::Goal => write!(formatter, "G"),
-            Cell::Path => write!(formatter, "*")
+            Cell::Empty   => ' '.to_string(),
+            Cell::Blocked => 'X'.to_string(),
+            Cell::Start   => 'S'.to_string(),
+            Cell::Goal    => 'G'.to_string(),
+            Cell::Path    => '*'.to_string()
         }
     }
 }
@@ -36,9 +35,14 @@ struct MazeLocation {
     row: usize,
     column: usize,
 }
-impl fmt::Display for MazeLocation {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "({},{})",self.row,self.column)
+impl ToString for MazeLocation {
+    fn to_string(&self) -> String {
+        let mut result = String::from("(");
+        result.push_str(&self.row.to_string());
+        result.push(',');
+        result.push_str(&self.column.to_string());
+        result.push(')');
+        result
     }
 }
 
@@ -49,7 +53,6 @@ struct Maze {
     goal: MazeLocation,
     grid: Vec<Vec<Cell>>,
 }
-
 impl Maze {
     fn new(rows: usize, columns: usize, start: MazeLocation, goal: MazeLocation, sparseness: f32) -> Self {
         let mut grid = Maze::randomly_fill(rows, columns, sparseness);
@@ -104,6 +107,7 @@ impl Maze {
         }               
         locations
      }
+
      fn mark(&mut self, path: &Vec<MazeLocation>) {
         for ml in path {
             self.grid[ml.row][ml.column] = Cell::Path;
@@ -111,6 +115,7 @@ impl Maze {
         self.grid[self.start.row][self.start.column] = Cell::Start;
         self.grid[self.goal.row][self.goal.column] = Cell::Goal;
      }
+
      fn clear(&mut self, path: &Vec<MazeLocation>) {
         for ml in path {
             self.grid[ml.row][ml.column] = Cell::Empty;
@@ -119,21 +124,22 @@ impl Maze {
         self.grid[self.goal.row][self.goal.column] = Cell::Goal;        
      }
 }
-impl fmt::Display for Maze {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl ToString for Maze {
+    fn to_string(&self) -> String {
+        let mut result = String::new();
         for row in &self.grid {
             for cell in row {
-                write!(formatter, "{}", cell).expect("Error writing maze cell");
+                result.push_str(&cell.to_string());
             }
-            write!(formatter,"\n").expect("Error writing maze row");
+            result.push('\n');
         }
-        write!(formatter,"")
+        result
     }    
 }
 
 fn main() {
     let mut maze = Maze::default_new();
-    println!("{}", maze);
+    println!("{}", &maze.to_string());
     println!("----------");
     let solution1 = generic_search::dfs(maze.start, |ml: &MazeLocation| maze.goal_test(&ml) , |ml: &MazeLocation| maze.successors(&ml));
     match solution1 {
@@ -141,7 +147,7 @@ fn main() {
         Some(node) => {
             let path = generic_search::node_to_path(&node);
             maze.mark(&path);
-            println!("{}", maze);
+            println!("{}", &maze.to_string());
             maze.clear(&path)
         }
     }
