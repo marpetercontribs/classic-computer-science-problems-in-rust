@@ -15,6 +15,7 @@
 // limitations under the License.
 use std::cmp::Ordering;
 use std::collections::HashSet;
+use std::collections::VecDeque;
 use std::hash::Hash;
 use std::rc::Rc;
 
@@ -98,6 +99,29 @@ pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
             if !explored.contains(&child) {
                 explored.insert(child);
                 frontier.push(Rc::new(Node::<T>::new(child,Some(Rc::clone(&current_node)))));
+            }
+        }
+    }
+    None // went through everything and never found goal
+}
+
+pub fn bfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
+    // frontier is where we've yet to go
+    let mut frontier = VecDeque::<Rc<Node<T>>>::new();
+    let mut explored = HashSet::<T>::new();
+    frontier.push_back(Rc::new(Node::<T>::new(initial,None)));
+    explored.insert(initial);
+    while let Some(current_node) = frontier.pop_front() {
+        let current_state = current_node.state;
+        // if we found the goal, we're done
+        if goal_test(&current_state) {
+            return Some(current_node);
+        }
+        // check where we can go next and haven't explored
+        for child in successors(&current_state) {
+            if !explored.contains(&child) {
+                explored.insert(child);
+                frontier.push_back(Rc::new(Node::<T>::new(child,Some(Rc::clone(&current_node)))));
             }
         }
     }

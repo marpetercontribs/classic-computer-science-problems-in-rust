@@ -151,4 +151,15 @@ fn main() {
             maze.clear(&path)
         }
     }
+    println!("----------");
+    let solution2 = generic_search::bfs(maze.start, |ml: &MazeLocation| maze.goal_test(&ml) , |ml: &MazeLocation| maze.successors(&ml));
+    match solution2 {
+        None => println!("{}", "No solution found"),
+        Some(node) => {
+            let path = generic_search::node_to_path(&node);
+            maze.mark(&path);
+            println!("{}", &maze.to_string());
+            maze.clear(&path)
+        }
+    }
 }
