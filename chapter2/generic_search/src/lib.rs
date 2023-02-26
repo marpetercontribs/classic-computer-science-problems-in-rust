@@ -76,9 +76,10 @@ impl<T: PartialEq + Eq + Clone> Node<T> {
 
 impl<'a, T: PartialEq + Eq + Clone> Ord for Node<T> {
     fn cmp(&self, other: &Self) -> Ordering {
-        if (self.cost + self.heuristic) < (&other.cost + &other.heuristic) {
+        let difference = (self.cost + self.heuristic) - (&other.cost + &other.heuristic);
+        if difference < -0.000001_f64 {
             Ordering::Greater // Note the reversed order, because Rust's BinaryHeap pops highest priority element first!
-        } else if (self.cost + self.heuristic) > (&other.cost + &other.heuristic) {
+        } else if difference > 0.000001_f64  {
             Ordering::Less    // Note the reversed order, because Rust's BinaryHeap pops highest priority element first!
         } else {
             Ordering::Equal
