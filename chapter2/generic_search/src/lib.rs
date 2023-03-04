@@ -101,7 +101,8 @@ pub fn node_to_path<T: PartialOrd + Eq + Copy>(node: &Node<T>) -> Vec<T> {
         current_node = &parent;
         path.push(current_node.state);
     }
-    path
+    println!("Path is {} steps long.",path.len());
+    path.into_iter().rev().collect()
 }
 
 pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
