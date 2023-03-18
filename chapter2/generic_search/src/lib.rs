@@ -1,4 +1,4 @@
-//generic_search.rs
+// generic_search/src/lib.rs
 // Adapted From Classic Computer Science Problems in Python/Java Chapter 2
 // Copyright 2023 Markus Peter
 //
