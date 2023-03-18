@@ -18,20 +18,26 @@ use std::collections::HashMap;
 use std::hash::Hash;
 
 // Rust doesn't have abstract classes or method overloading like usual OO languages
-// But structures and traits --> Holding a constraint's data must be in in struct
-// and the "abstract" method defined as a trait
-trait Satisfied {
+// But structures and traits, where traits cannot hold any data
+// --> Holding a constraint's data must be in in struct and the "abstract" methods
+// defined as a trait
+// Logically, "Contraint" seems to be the trait because that's what we want to "subclass"
+// Issue: as soon as type parameters are introduced in the trait's method(s),
+//   CSP cannot hold a HashMap of Contraints any longer: the compiler fails with 
+//   "this trait cannot be made into an object..."
+//   "...because method `satisfied` has generic type parameters"
+
+trait ConstraintTrait {
     fn satisfied<V,D>(&self, assignment: &HashMap<V,D>) -> bool;
 }
 
 pub struct Constraint<V: Eq + Hash> {
     variables: Vec<V>,
-//    satisfied: Box<dyn Fn(&HashMap<V,D>)-> bool>,
 }
 
 impl<V: Eq + Hash> Constraint<V> {
     pub fn new(variables: Vec<V> ) -> Self {
-        Constraint { variables}
+        Constraint { variables }
     }
 }
 
@@ -57,7 +63,7 @@ impl<V: Eq + Hash + Copy,D> CSP<V,D> {
         }
     }
 
-    pub fn add_constraint(&self, constraint: Constraint<V>) {
+    pub fn add_constraint(&self, constraint: Constraint<V> ) {
         for variable in &constraint.variables {
             if !self.variables.contains(&variable) {
                 panic!("Variable in constraint not in CSP");
