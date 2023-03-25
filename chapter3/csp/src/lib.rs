@@ -48,13 +48,13 @@ impl<V: Eq + Hash, S: Satisfied + Sized> Constraint<V,S> {
     }
 }
 
-pub struct CSP<V: Eq + Hash,D, S: Satisfied + Sized> {
+pub struct CSP<V: Eq + Hash,D: Copy, S: Satisfied + Sized> {
     variables: Vec<V>,
     domains:   HashMap<V,Vec<D>>,
     constraints: HashMap<V,Vec<Rc<Constraint<V,S>>>>
 }
 
-impl<V: Eq + Hash + Copy,D, S: Satisfied + Sized> CSP<V,D,S> {
+impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
     pub fn new(variables: Vec<V>, domains: HashMap<V,Vec<D>>) -> Self {
         let mut constraints = HashMap::<V,Vec<Rc<Constraint<V,S>>>>::new();
         for variable in &variables {
@@ -83,14 +83,40 @@ impl<V: Eq + Hash + Copy,D, S: Satisfied + Sized> CSP<V,D,S> {
 
     // Check if the value assignment is consistent by checking all constraints
     // for the given variable against it
-    pub fn is_consistent(&self, variable: V, assignment: HashMap<V, D> ) -> bool {
-        while let Some(constraint_vec) = self.constraints.get(&variable) {
+    pub fn is_consistent(&self, variable: &V, assignment: &HashMap<V, D> ) -> bool {
+        while let Some(constraint_vec) = self.constraints.get(variable) {
             for constraint in constraint_vec {
-                if !constraint.satisfied.satisfied(&assignment) {
+                if !constraint.satisfied.satisfied(assignment) {
                     return false;
                 }
             }
         }
         true
     }
+
+    pub fn backtracking_search(&self, assignment: HashMap<V, D> ) -> Option<HashMap<V, D>> {
+        // assignment is complete if every variable is assigned (our base case)
+        if assignment.len() == self.variables.len() {
+            return Some(assignment);
+        }
+        // get all variables in the CSP but not in the assignment
+        let unassigned_vars: Vec<&V> = self.variables.iter().filter( |var| !assignment.contains_key(&var) ).collect();
+        // get every possible domain value of the first unassigned variable
+        let first = unassigned_vars[0];
+        if let Some(values) = self.domains.get(first) {
+            for value in values {
+                let mut local_assignment = assignment.clone();
+                local_assignment.insert(*first,*value);
+                // if we're still consistent, we recurse (continue)
+                if self.is_consistent(first, &local_assignment) {
+                    let result = self.backtracking_search(local_assignment);
+                    if result.is_some() {
+                        return result;
+                    }
+                }
+            }
+        }
+        None
+    }
+
 }
