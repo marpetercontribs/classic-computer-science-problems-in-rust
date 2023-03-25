@@ -31,34 +31,34 @@ use std::rc::Rc;
 // At least for the examples in the book, it seems to be sufficient if all
 // Constraints held by the CSP are of the same "subtype" --> try to parameterize the struct
  
-pub trait Satisfied {
-    fn satisfied<V,D>(&self, assignment: &HashMap<V, D>) -> bool;
+pub trait Constraint<V,D> {
+    fn satisfied(&self, assignment: &HashMap<V, D>) -> bool;
+    fn variables(&self) -> Vec<V>;
 }
 
-pub struct Constraint<V: Eq + Hash, S: Satisfied + Sized> {
-    variables: Vec<V>,
-    is: S // naming to make method call read "is.satisfied"
-}
+// pub struct ConstraintHelper<V: Eq + Hash> {
+//     variables: Vec<V>,
+// }
+//
+// impl<V: Eq + Hash> ConstraintHelper<V> {
+//     pub fn new(variables: Vec<V>) -> Self {
+//         ConstraintHelper {
+//             variables,
+//          }
+//     }
+// }
 
-impl<V: Eq + Hash, S: Satisfied + Sized> Constraint<V,S> {
-    pub fn new(variables: Vec<V>, satisfied: S) -> Self {
-        Constraint {
-            variables,
-            is: satisfied }
-    }
-}
-
-pub struct CSP<V: Eq + Hash,D: Copy, S: Satisfied + Sized> {
+pub struct CSP<V: Eq + Hash,D: Copy, C: Constraint<V,D> + Sized> {
     variables: Vec<V>,
     domains:   HashMap<V,Vec<D>>,
-    constraints: HashMap<V,Vec<Rc<Constraint<V,S>>>>
+    constraints: HashMap<V,Vec<Rc<C>>>
 }
 
-impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
+impl<V: Eq + Hash + Copy, D: Copy, C: Constraint<V,D> + Sized> CSP<V,D,C> {
     pub fn new(variables: Vec<V>, domains: HashMap<V,Vec<D>>) -> Self {
-        let mut constraints = HashMap::<V,Vec<Rc<Constraint<V,S>>>>::new();
+        let mut constraints = HashMap::<V,Vec<Rc<C>>>::new();
         for variable in &variables {
-            constraints.insert(*variable,Vec::<Rc<Constraint<V,S>>>::new());
+            constraints.insert(*variable,Vec::<Rc<C>>::new());
             if !domains.contains_key(variable) {
                 panic!("Every variable should have a domain assigned to it.");
             }
@@ -70,8 +70,8 @@ impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
         }
     }
 
-    pub fn add_constraint(&mut self, constraint: Rc<Constraint<V,S>> ) {
-        for variable in &constraint.variables {
+    pub fn add_constraint(&mut self, constraint: Rc<C> ) {
+        for variable in &constraint.variables() {
             if !self.variables.contains(&variable) {
                 panic!("Variable in constraint not in CSP");
             } else {
@@ -84,9 +84,9 @@ impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
     // Check if the value assignment is consistent by checking all constraints
     // for the given variable against it
     pub fn is_consistent(&self, variable: &V, assignment: &HashMap<V, D> ) -> bool {
-        while let Some(constraint_vec) = self.constraints.get(variable) {
+        if let Some(constraint_vec) = self.constraints.get(variable) {
             for constraint in constraint_vec {
-                if !constraint.is.satisfied(assignment) {
+                if !constraint.satisfied(assignment) {
                     return false;
                 }
             }
@@ -94,7 +94,10 @@ impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
         true
     }
 
-    pub fn backtracking_search(&self, assignment: HashMap<V, D> ) -> Option<HashMap<V, D>> {
+    pub fn backtracking_search(&self) -> Option<HashMap<V, D>> {
+        self.internal_backtracking_search(HashMap::<V,D>::new())
+    }
+    fn internal_backtracking_search(&self, assignment: HashMap<V, D> ) -> Option<HashMap<V, D>> {
         // assignment is complete if every variable is assigned (our base case)
         if assignment.len() == self.variables.len() {
             return Some(assignment);
@@ -109,7 +112,7 @@ impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
                 local_assignment.insert(*first,*value);
                 // if we're still consistent, we recurse (continue)
                 if self.is_consistent(first, &local_assignment) {
-                    let result = self.backtracking_search(local_assignment);
+                    let result = self.internal_backtracking_search(local_assignment);
                     if result.is_some() {
                         return result;
                     }
