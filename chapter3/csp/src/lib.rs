@@ -37,14 +37,14 @@ pub trait Satisfied {
 
 pub struct Constraint<V: Eq + Hash, S: Satisfied + Sized> {
     variables: Vec<V>,
-    satisfied: S
+    is: S // naming to make method call read "is.satisfied"
 }
 
 impl<V: Eq + Hash, S: Satisfied + Sized> Constraint<V,S> {
     pub fn new(variables: Vec<V>, satisfied: S) -> Self {
         Constraint {
             variables,
-            satisfied }
+            is: satisfied }
     }
 }
 
@@ -86,7 +86,7 @@ impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
     pub fn is_consistent(&self, variable: &V, assignment: &HashMap<V, D> ) -> bool {
         while let Some(constraint_vec) = self.constraints.get(variable) {
             for constraint in constraint_vec {
-                if !constraint.satisfied.satisfied(assignment) {
+                if !constraint.is.satisfied(assignment) {
                     return false;
                 }
             }
@@ -118,5 +118,4 @@ impl<V: Eq + Hash + Copy,D: Copy, S: Satisfied + Sized> CSP<V,D,S> {
         }
         None
     }
-
 }
