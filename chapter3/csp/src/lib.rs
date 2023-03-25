@@ -16,6 +16,7 @@
 
 use std::collections::HashMap;
 use std::hash::Hash;
+use std::rc::Rc;
 
 // Rust doesn't have abstract classes or method overloading like usual OO languages
 // But structures and traits, where traits cannot hold any data
@@ -26,32 +27,38 @@ use std::hash::Hash;
 //   CSP cannot hold a HashMap of Contraints any longer: the compiler fails with 
 //   "this trait cannot be made into an object..."
 //   "...because method `satisfied` has generic type parameters"
-
-trait ConstraintTrait {
-    fn satisfied<V,D>(&self, assignment: &HashMap<V,D>) -> bool;
+//
+// At least for the examples in the book, it seems to be sufficient if all
+// Constraints held by the CSP are of the same "subtype" --> try to parameterize the struct
+ 
+pub trait Satisfied {
+    fn satisfied<V,D>(&self, assignment: &HashMap<V, D>) -> bool;
 }
 
-pub struct Constraint<V: Eq + Hash> {
+pub struct Constraint<V: Eq + Hash, S: Satisfied + Sized> {
     variables: Vec<V>,
+    satisfied: S
 }
 
-impl<V: Eq + Hash> Constraint<V> {
-    pub fn new(variables: Vec<V> ) -> Self {
-        Constraint { variables }
+impl<V: Eq + Hash, S: Satisfied + Sized> Constraint<V,S> {
+    pub fn new(variables: Vec<V>, satisfied: S) -> Self {
+        Constraint {
+            variables,
+            satisfied }
     }
 }
 
-pub struct CSP<V: Eq + Hash,D> {
+pub struct CSP<V: Eq + Hash,D, S: Satisfied + Sized> {
     variables: Vec<V>,
     domains:   HashMap<V,Vec<D>>,
-    constraints: HashMap<V,Vec<Constraint<V>>>
+    constraints: HashMap<V,Vec<Rc<Constraint<V,S>>>>
 }
 
-impl<V: Eq + Hash + Copy,D> CSP<V,D> {
+impl<V: Eq + Hash + Copy,D, S: Satisfied + Sized> CSP<V,D,S> {
     pub fn new(variables: Vec<V>, domains: HashMap<V,Vec<D>>) -> Self {
-        let mut constraints = HashMap::<V,Vec<Constraint<V>>>::new();
+        let mut constraints = HashMap::<V,Vec<Rc<Constraint<V,S>>>>::new();
         for variable in &variables {
-            constraints.insert(*variable,Vec::<Constraint<V>>::new());
+            constraints.insert(*variable,Vec::<Rc<Constraint<V,S>>>::new());
             if !domains.contains_key(variable) {
                 panic!("Every variable should have a domain assigned to it.");
             }
@@ -63,12 +70,13 @@ impl<V: Eq + Hash + Copy,D> CSP<V,D> {
         }
     }
 
-    pub fn add_constraint(&self, constraint: Constraint<V> ) {
+    pub fn add_constraint(&mut self, constraint: Rc<Constraint<V,S>> ) {
         for variable in &constraint.variables {
             if !self.variables.contains(&variable) {
                 panic!("Variable in constraint not in CSP");
             } else {
-                self.constraints.get(&variable).expect("Variable in constraint not in CSP").push(constraint);
+                let constraints_for_var = self.constraints.get_mut(&variable).expect("Variable in constraint not in CSP");
+                constraints_for_var.push(Rc::clone(&constraint));
             }
         }
     }
@@ -76,9 +84,11 @@ impl<V: Eq + Hash + Copy,D> CSP<V,D> {
     // Check if the value assignment is consistent by checking all constraints
     // for the given variable against it
     pub fn is_consistent(&self, variable: V, assignment: HashMap<V, D> ) -> bool {
-        while let Some(constraint) = self.constraints.get(&variable) {
-            if !constraint.satisfied(assignment) {
-                return false;
+        while let Some(constraint_vec) = self.constraints.get(&variable) {
+            for constraint in constraint_vec {
+                if !constraint.satisfied.satisfied(&assignment) {
+                    return false;
+                }
             }
         }
         true
