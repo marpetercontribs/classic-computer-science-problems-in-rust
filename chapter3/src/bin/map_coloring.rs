@@ -94,16 +94,16 @@ fn main() {
         domains.insert(*variable,vec![Color::Red, Color::Green, Color::Blue]);
     }
     let mut csp = csp::CSP::<Variable,Color,MapColoringConstraint>::new(variables, domains);
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::WesternAustralia,Variable::NorthernTerritory)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::WesternAustralia,Variable::SouthAustralia)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::SouthAustralia,Variable::NorthernTerritory)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::Queensland,Variable::NorthernTerritory)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::Queensland,Variable::SouthAustralia)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::Queensland,Variable::NewSouthWales)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::NewSouthWales,Variable::SouthAustralia)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::Victoria,Variable::SouthAustralia)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::Victoria,Variable::NewSouthWales)));
-    csp.add_constraint(Rc::<_>::new(MapColoringConstraint::new(Variable::Victoria,Variable::Tasmania)));
+    csp.add_constraint(MapColoringConstraint::new(Variable::WesternAustralia,Variable::NorthernTerritory).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::WesternAustralia,Variable::SouthAustralia).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::SouthAustralia,Variable::NorthernTerritory).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::Queensland,Variable::NorthernTerritory).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::Queensland,Variable::SouthAustralia).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::Queensland,Variable::NewSouthWales).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::NewSouthWales,Variable::SouthAustralia).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::Victoria,Variable::SouthAustralia).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::Victoria,Variable::NewSouthWales).into());
+    csp.add_constraint(MapColoringConstraint::new(Variable::Victoria,Variable::Tasmania).into());
 
     let solution = csp.backtracking_search();
     match solution{

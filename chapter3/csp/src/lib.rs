@@ -48,17 +48,19 @@ pub trait Constraint<V,D> {
 //     }
 // }
 
-pub struct CSP<V: Eq + Hash,D: Copy, C: Constraint<V,D> + Sized> {
+// TODO: most likely, reference (counters) should be used for variable (names) everywhere ...
+
+pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized> {
     variables: Vec<V>,
     domains:   HashMap<V,Vec<D>>,
     constraints: HashMap<V,Vec<Rc<C>>>
 }
 
-impl<V: Eq + Hash + Copy, D: Copy, C: Constraint<V,D> + Sized> CSP<V,D,C> {
+impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized> CSP<V,D,C> {
     pub fn new(variables: Vec<V>, domains: HashMap<V,Vec<D>>) -> Self {
         let mut constraints = HashMap::<V,Vec<Rc<C>>>::new();
         for variable in &variables {
-            constraints.insert(*variable,Vec::<Rc<C>>::new());
+            constraints.insert((*variable).clone(),Vec::<Rc<C>>::new());
             if !domains.contains_key(variable) {
                 panic!("Every variable should have a domain assigned to it.");
             }
@@ -109,7 +111,7 @@ impl<V: Eq + Hash + Copy, D: Copy, C: Constraint<V,D> + Sized> CSP<V,D,C> {
         if let Some(values) = self.domains.get(first) {
             for value in values {
                 let mut local_assignment = assignment.clone();
-                local_assignment.insert(*first,*value);
+                local_assignment.insert((*first).clone(),(*value).clone());
                 // if we're still consistent, we recurse (continue)
                 if self.is_consistent(first, &local_assignment) {
                     let result = self.internal_backtracking_search(local_assignment);
