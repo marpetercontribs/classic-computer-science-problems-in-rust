@@ -36,18 +36,6 @@ pub trait Constraint<V,D> {
     fn variables(&self) -> Vec<V>;
 }
 
-// pub struct ConstraintHelper<V: Eq + Hash> {
-//     variables: Vec<V>,
-// }
-//
-// impl<V: Eq + Hash> ConstraintHelper<V> {
-//     pub fn new(variables: Vec<V>) -> Self {
-//         ConstraintHelper {
-//             variables,
-//          }
-//     }
-// }
-
 // TODO: most likely, reference (counters) should be used for variable (names) everywhere ...
 
 pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized> {
