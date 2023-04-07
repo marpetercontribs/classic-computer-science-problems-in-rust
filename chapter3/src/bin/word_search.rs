@@ -16,7 +16,6 @@
 use csp;
 use std::collections::HashMap;
 use std::collections::HashSet;
-use std::rc::Rc;
 use rand::{thread_rng, Rng};
 
 type Grid = Vec<Vec<char>>;

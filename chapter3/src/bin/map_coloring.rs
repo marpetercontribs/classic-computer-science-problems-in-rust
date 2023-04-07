@@ -15,7 +15,6 @@
 // limitations under the License.
 use csp;
 use std::collections::HashMap;
-use std::rc::Rc;
 use std::fmt;
 
 // The original book uses simple strings for the domain values, but using an enum
