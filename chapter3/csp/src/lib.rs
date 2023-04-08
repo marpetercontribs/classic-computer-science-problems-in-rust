@@ -16,7 +16,6 @@
 
 use std::collections::HashMap;
 use std::hash::Hash;
-use std::rc::Rc;
 
 // Rust doesn't have abstract classes or method overloading like usual OO languages
 // But structures and traits, where traits cannot hold any data
@@ -38,17 +37,17 @@ pub trait Constraint<V,D> {
 
 // TODO: most likely, reference (counters) should be used for variable (names) everywhere ...
 
-pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized> {
+pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized + Clone> {
     variables: Vec<V>,
     domains:   HashMap<V,Vec<D>>,
-    constraints: HashMap<V,Vec<Rc<C>>>
+    constraints: HashMap<V,Vec<C>>
 }
 
-impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized> CSP<V,D,C> {
+impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D,C> {
     pub fn new(variables: Vec<V>, domains: HashMap<V,Vec<D>>) -> Self {
-        let mut constraints = HashMap::<V,Vec<Rc<C>>>::new();
+        let mut constraints = HashMap::<V,Vec<C>>::new();
         for variable in &variables {
-            constraints.insert((*variable).clone(),Vec::<Rc<C>>::new());
+            constraints.insert((*variable).clone(),Vec::<C>::new());
             if !domains.contains_key(variable) {
                 panic!("Every variable should have a domain assigned to it.");
             }
@@ -60,13 +59,13 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized> CSP<V,D,C> {
         }
     }
 
-    pub fn add_constraint(&mut self, constraint: Rc<C> ) {
+    pub fn add_constraint(&mut self, constraint: C ) {
         for variable in &constraint.variables() {
             if !self.variables.contains(&variable) {
                 panic!("Variable in constraint not in CSP");
             } else {
                 let constraints_for_var = self.constraints.get_mut(&variable).expect("Variable in constraint not in CSP");
-                constraints_for_var.push(Rc::clone(&constraint));
+                constraints_for_var.push(constraint.clone());
             }
         }
     }

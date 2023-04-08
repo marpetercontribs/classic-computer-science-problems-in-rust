@@ -72,6 +72,7 @@ fn display_grid(grid: &Grid) {
     }
 }
 
+#[derive(Clone)]
 struct WordSearchConstraint {
     words: Vec<String>,
 }
@@ -104,7 +105,7 @@ fn main() {
     }
     
     let mut csp = csp::CSP::<String,Vec<GridLocation>,WordSearchConstraint>::new(words.clone(), locations);
-    csp.add_constraint(WordSearchConstraint::new(words).into());
+    csp.add_constraint(WordSearchConstraint::new(words));
     let solution = csp.backtracking_search();
     match solution{
         None =>  println!("No solution found!"),

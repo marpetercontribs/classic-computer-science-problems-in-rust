@@ -16,8 +16,8 @@
 
 use csp;
 use std::collections::HashMap;
-use std::rc::Rc;
 
+#[derive(Clone)]
 struct QueensConstraint {
     columns: Vec<u8>,
 }
@@ -59,7 +59,7 @@ fn main() {
     }
 
     let mut csp = csp::CSP::<u8,u8,QueensConstraint>::new(columns.clone(),rows);
-    csp.add_constraint(Rc::<_>::new(QueensConstraint::new(columns)));
+    csp.add_constraint(QueensConstraint::new(columns));
     let solution = csp.backtracking_search();
     match solution{
         None =>  println!("No solution found!"),

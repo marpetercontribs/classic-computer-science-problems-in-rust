@@ -16,6 +16,7 @@
 use csp;
 use std::collections::{HashMap,HashSet};
 
+#[derive(Clone)]
 struct SendMoreMoneyConstraint {
     letters: Vec<char>,
 }
@@ -65,7 +66,7 @@ fn main() {
     *m_digits = vec![1]; // so we don't get answers starting with a 0
 
     let mut csp = csp::CSP::<char,u16,SendMoreMoneyConstraint>::new(letters.clone(), possible_digits);
-    csp.add_constraint(SendMoreMoneyConstraint::new(letters).into());
+    csp.add_constraint(SendMoreMoneyConstraint::new(letters));
     let solution = csp.backtracking_search();
     match solution {
         None => println!("No solution found!"),
