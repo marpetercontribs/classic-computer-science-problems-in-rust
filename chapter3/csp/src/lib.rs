@@ -28,14 +28,12 @@ use std::hash::Hash;
 //   "...because method `satisfied` has generic type parameters"
 //
 // At least for the examples in the book, it seems to be sufficient if all
-// Constraints held by the CSP are of the same "subtype" --> try to parameterize the struct
+// Constraints held by the CSP are of the same "subtype" --> parameterize the trait
  
 pub trait Constraint<V,D> {
     fn satisfied(&self, assignment: &HashMap<V, D>) -> bool;
     fn variables(&self) -> Vec<V>;
 }
-
-// TODO: most likely, reference (counters) should be used for variable (names) everywhere ...
 
 pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized + Clone> {
     variables: Vec<V>,
