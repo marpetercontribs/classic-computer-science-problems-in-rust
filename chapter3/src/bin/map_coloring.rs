@@ -17,23 +17,9 @@ use csp;
 use std::collections::HashMap;
 use std::fmt;
 
-// The original book uses simple strings for the domain values, but using an enum
-// seems the better pattern and easier in Rust as String does not implement Copy
-#[derive(Clone,Copy, PartialEq)]
-enum Color { Red, Green, Blue }
-impl fmt::Debug for Color {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            Color::Red   => write!(formatter, "red"),
-            Color::Green => write!(formatter, "green"),
-            Color::Blue  => write!(formatter, "blue")
-        }
-    }
-}
-
 // The original book uses simple strings for the variables (names), but using an enum
 // seems the better pattern and easier in Rust as String does not implement Copy
-#[derive(Clone,Copy, PartialEq, Eq, Hash)]
+#[derive(Clone,PartialEq, Eq, Hash)]
 enum Variable {
     WesternAustralia,
     NorthernTerritory,
@@ -71,8 +57,8 @@ impl MapColoringConstraint {
     }
 }
 
-impl csp::Constraint<Variable,Color> for MapColoringConstraint {
-    fn satisfied(&self, assignment: &HashMap<Variable,Color>) -> bool {
+impl csp::Constraint<Variable,String> for MapColoringConstraint {
+    fn satisfied(&self, assignment: &HashMap<Variable,String>) -> bool {
         // If either region is not in the assignment then it is not
         // yet possible for their colors to be conflicting
         if !assignment.contains_key(&self.region1) || !assignment.contains_key(&self.region2) {
@@ -81,18 +67,19 @@ impl csp::Constraint<Variable,Color> for MapColoringConstraint {
         assignment.get(&self.region1).unwrap() != assignment.get(&self.region2).unwrap()
     }
     fn variables(&self) -> Vec<Variable> {
-        vec![self.region1, self.region2]
+        vec![self.region1.clone(), self.region2.clone()]
     }
 }
 
 fn main() {
-    let variables = vec![Variable::WesternAustralia, Variable::NorthernTerritory, Variable::SouthAustralia,
-    Variable::Queensland, Variable::NewSouthWales, Variable::Victoria, Variable::Tasmania];
-    let mut domains = HashMap::<Variable,Vec<Color>>::new();
+    let variables = vec![Variable::WesternAustralia, Variable::NorthernTerritory,
+        Variable::SouthAustralia, Variable::Queensland, Variable::NewSouthWales,
+        Variable::Victoria, Variable::Tasmania];
+    let mut domains = HashMap::<Variable,Vec<String>>::new();
     for variable in &variables {
-        domains.insert(*variable,vec![Color::Red, Color::Green, Color::Blue]);
+        domains.insert((*variable).clone(),vec![String::from("red"), String::from("green"), String::from("blue")]);
     }
-    let mut csp = csp::CSP::<Variable,Color,MapColoringConstraint>::new(variables, domains);
+    let mut csp = csp::CSP::<Variable,String,MapColoringConstraint>::new(variables, domains);
     csp.add_constraint(MapColoringConstraint::new(Variable::WesternAustralia,Variable::NorthernTerritory).into());
     csp.add_constraint(MapColoringConstraint::new(Variable::WesternAustralia,Variable::SouthAustralia).into());
     csp.add_constraint(MapColoringConstraint::new(Variable::SouthAustralia,Variable::NorthernTerritory).into());
