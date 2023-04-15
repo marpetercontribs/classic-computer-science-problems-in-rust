@@ -12,3 +12,19 @@ The alternative approach would be to treat each executable program/problem as a 
 Missing ports:
 
 - Chapter 1.1: Generator version (equivalent of fib6 in Python / fib5 in Java book)
+
+Exercises competed:
+
+- Chapter 1
+  - [ ] 1. Own Fibonacci algorithm with unit tests and performance comparison
+  - [ ] 2. Specific to the programming language
+  - [ ] 3. Generlize hanoi to arbitrary number of towers
+  - [ ] 4. One-time-pad to encrypt images
+- Chapter 2
+  - [ ] 1. Demonstrate performance advantage of binary over linear search
+  - [ ] 2. Count the number of states covered in `bfs`, `dfs` and `astar` searches
+  - [ ] 3. Solve missionaries problem if the number of missionaries differs from the number of cannibals
+- Chapter 3
+   - [ ] 1. Extend `word_search` to allow for words to cross
+   - [ ] 2. Write a solver for problem 3.6
+   - [X] 3. Write Sudoku solver
