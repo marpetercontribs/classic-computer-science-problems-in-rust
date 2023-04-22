@@ -11,7 +11,7 @@ The alternative approach would be to treat each executable program/problem as a 
 
 Missing ports:
 
-- Chapter 1.1: Generator version (equivalent of fib6 in Python / fib5 in Java book)
+- Everything in Chapter 4ff
 
 Exercises competed:
 
@@ -28,3 +28,4 @@ Exercises competed:
    - [ ] 1. Extend `word_search` to allow for words to cross
    - [ ] 2. Write a solver for problem 3.6
    - [X] 3. Write Sudoku solver
+
