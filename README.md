@@ -18,7 +18,7 @@ Exercises competed:
 - Chapter 1
   - [ ] 1. Own Fibonacci algorithm with unit tests and performance comparison
   - [ ] 2. Specific to the programming language
-  - [ ] 3. Generlize hanoi to arbitrary number of towers
+  - [X] 3. Generlize hanoi to arbitrary number of towers
   - [ ] 4. One-time-pad to encrypt images
 - Chapter 2
   - [ ] 1. Demonstrate performance advantage of binary over linear search
