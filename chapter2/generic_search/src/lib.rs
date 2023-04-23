@@ -30,14 +30,14 @@ pub fn linear_contains<'a, T: 'a + PartialEq>( iterable: impl IntoIterator<Item 
     false
 }
 
-pub fn binary_contains<'a, T: 'a + PartialOrd + ?Sized>( list: &Vec<&'a T>, key: &T) -> bool {
+pub fn binary_contains<'a, T: 'a + PartialOrd>( list: &Vec<T>, key: &T) -> bool {
     let mut low: usize = 0;
     let mut high: usize = list.len() - 1;
     while low <= high {
-        let middle = (low + high)/2;
-        if list[middle] < key {
+        let middle = (low + high) / 2;
+        if list[middle] < *key {
             low = middle+1;
-        } else if list[middle] > key {
+        } else if list[middle] > *key {
             high = middle-1;
         } else {
             return true;
@@ -188,7 +188,9 @@ mod tests {
 
     #[test]
     fn binary_contains_works() {
-        assert_eq!( binary_contains(&vec!("a", "d", "e", "f", "z"),"f"), true);
-        assert_eq!( binary_contains(&vec!("john", "mark", "ronald", "sarah"),"sheila"), false);
+        assert_eq!( binary_contains(&vec!(1, 5, 15, 15, 15, 15, 20),&15), true );
+        assert_eq!( binary_contains(&vec!(1, 5, 15, 15, 15, 15, 20),&6), false );
+        assert_eq!( binary_contains(&vec!("a".to_string(), "d".to_string(), "e".to_string(), "f".to_string(), "z".to_string()),&"f".to_string()), true);
+        assert_eq!( binary_contains(&vec!("john".to_string(), "mark".to_string(), "ronald".to_string(), "sarah".to_string()),&"sheila".to_string()), false);
     }
 }
