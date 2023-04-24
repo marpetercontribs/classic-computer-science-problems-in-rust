@@ -38,7 +38,11 @@ pub fn binary_contains<'a, T: 'a + PartialOrd>( list: &Vec<T>, key: &T) -> bool 
         if list[middle] < *key {
             low = middle+1;
         } else if list[middle] > *key {
-            high = middle-1;
+            if middle > 0 {
+                high = middle-1;
+            } else {
+                return false;
+            }
         } else {
             return true;
         }
@@ -68,9 +72,9 @@ impl<T: PartialEq + Eq + Clone> Node<T> {
     fn new_with_cost(state: T, parent_node: Option<Rc<Node<T>>>, cost: f64, heuristic: f64) -> Self {
         match parent_node {
             None => Node { state, parent: None, cost, heuristic},
-            Some(parent) => Node { state, parent: Some(Rc::clone(&parent)), cost, heuristic} 
+            Some(parent) => Node { state, parent: Some(Rc::clone(&parent)), cost, heuristic}
         }
-              
+
     }
 }
 
