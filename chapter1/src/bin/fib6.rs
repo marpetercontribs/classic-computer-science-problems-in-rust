@@ -15,7 +15,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-struct FibonacciGenerator {
+pub struct FibonacciGenerator {
     last: usize,
     next: usize,
     max: usize,
@@ -42,7 +42,7 @@ impl Iterator for FibonacciGenerator {
     }
 }
 
-fn fib6(n: usize) -> FibonacciGenerator {
+pub fn fib6(n: usize) -> FibonacciGenerator {
     FibonacciGenerator::new(n)
 }
 
