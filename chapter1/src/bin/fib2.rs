@@ -14,8 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-fn fib2(n: usize) -> usize {
-    if n < 2 {
+pub fn fib2(n: usize) -> usize {
+    if n<2 {
         // println!("fib({}) -> {}",n,n);
         n
     } else {

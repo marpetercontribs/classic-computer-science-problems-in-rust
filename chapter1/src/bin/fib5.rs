@@ -14,8 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-fn fib5(n: usize) -> usize {
-    if n == 0 {
+pub fn fib5(n: usize) -> usize {
+    if n==0 {
         n
     } else {
         let (mut last, mut next) = (0, 1);
