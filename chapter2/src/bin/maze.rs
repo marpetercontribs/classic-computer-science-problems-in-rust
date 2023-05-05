@@ -38,12 +38,7 @@ struct MazeLocation {
 
 impl ToString for MazeLocation {
     fn to_string(&self) -> String {
-        let mut result = String::from("(");
-        result.push_str(&self.row.to_string());
-        result.push(',');
-        result.push_str(&self.column.to_string());
-        result.push(')');
-        result
+        format!("({},{})",self.row.to_string(),self.column.to_string())
     }
 }
 
