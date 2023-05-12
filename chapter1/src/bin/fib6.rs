@@ -40,9 +40,9 @@ impl Iterator for FibonacciGenerator {
             self.done += 1;
             let result = Some(self.last);
             (self.last, self.next) = (self.next, self.last + self.next);
-            return result;
+            result
         } else {
-            return None;
+            None
         }
     }
 }

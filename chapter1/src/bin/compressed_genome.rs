@@ -20,12 +20,12 @@ struct CompressedGenome {
 }
 
 impl CompressedGenome {
-    fn new(genome: &String) -> Self {
+    fn new(genome: &str) -> Self {
         CompressedGenome {
             bits: Self::compress(genome),
         }
     }
-    fn compress(genome: &String) -> Vec<bool> {
+    fn compress(genome: &str) -> Vec<bool> {
         let mut result = Vec::new();
         let upper_genome = genome.to_ascii_uppercase();
         for nucleotide in upper_genome.chars() {

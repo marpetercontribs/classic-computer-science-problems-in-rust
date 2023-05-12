@@ -25,7 +25,7 @@ impl Fib3 {
         let mut memo = HashMap::<usize, usize>::new();
         memo.insert(0, 0); // Part 1 of the recursion's stop condition
         memo.insert(1, 1); // Part 2 of the recursion's stop condition
-        Fib3 { memo: memo }
+        Fib3 { memo }
     }
     pub fn get(&mut self, n: usize) -> usize {
         if !self.memo.contains_key(&n) {

@@ -33,7 +33,7 @@ fn encrypt(original: &str) -> (Vec<u8>, Vec<u8>) {
     (encrypted, key)
 }
 
-fn decrypt(key1: &Vec<u8>, key2: &Vec<u8>) -> String {
+fn decrypt(key1: &Vec<u8>, key2: &[u8]) -> String {
     let mut decrypted = Vec::<u8>::new();
     for index in 0..key1.len() {
         decrypted.push(key1[index] ^ key2[index]);
