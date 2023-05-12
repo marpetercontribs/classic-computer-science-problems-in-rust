@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 use csp;
-use std::collections::{HashMap,HashSet};
+use std::collections::{HashMap, HashSet};
 
 #[derive(Clone)]
 struct SendMoreMoneyConstraint {
@@ -27,8 +27,8 @@ impl SendMoreMoneyConstraint {
     }
 }
 
-impl csp::Constraint<char,u16> for SendMoreMoneyConstraint {
-    fn satisfied(&self, assignment: &HashMap<char,u16>) -> bool {
+impl csp::Constraint<char, u16> for SendMoreMoneyConstraint {
+    fn satisfied(&self, assignment: &HashMap<char, u16>) -> bool {
         let assignment_values: HashSet<&u16> = HashSet::from_iter(assignment.values());
         if assignment_values.len() < assignment.len() {
             // if there are duplicate values then it's not a solution
@@ -43,9 +43,9 @@ impl csp::Constraint<char,u16> for SendMoreMoneyConstraint {
             let o: u16 = *assignment.get(&'O').expect("O assignment missing");
             let r: u16 = *assignment.get(&'R').expect("R assignment missing");
             let y: u16 = *assignment.get(&'Y').expect("Y assignment missing");
-            let send: u16 = 1000*s + 100*e + 10*n + d;
-            let more: u16 = 1000*m + 100*o + 10*r + e;
-            let money: u16 = 10000*m + 1000*o + 100*n + 10*e + y;
+            let send: u16 = 1000 * s + 100 * e + 10 * n + d;
+            let more: u16 = 1000 * m + 100 * o + 10 * r + e;
+            let money: u16 = 10000 * m + 1000 * o + 100 * n + 10 * e + y;
             return send + more == money;
         }
         true // no conflict
@@ -58,19 +58,19 @@ impl csp::Constraint<char,u16> for SendMoreMoneyConstraint {
 
 fn main() {
     let letters = vec!['S', 'E', 'N', 'D', 'M', 'O', 'R', 'Y'];
-    let mut possible_digits: HashMap<char,Vec<u16>> = HashMap::new();
+    let mut possible_digits: HashMap<char, Vec<u16>> = HashMap::new();
     for letter in &letters {
-        possible_digits.insert(*letter,vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
+        possible_digits.insert(*letter, vec![0, 1, 2, 3, 4, 5, 6, 7, 8, 9]);
     }
     let m_digits = possible_digits.get_mut(&'M').unwrap();
     *m_digits = vec![1]; // so we don't get answers starting with a 0
 
-    let mut csp = csp::CSP::<char,u16,SendMoreMoneyConstraint>::new(letters.clone(), possible_digits);
+    let mut csp =
+        csp::CSP::<char, u16, SendMoreMoneyConstraint>::new(letters.clone(), possible_digits);
     csp.add_constraint(SendMoreMoneyConstraint::new(letters));
     let solution = csp.backtracking_search();
     match solution {
         None => println!("No solution found!"),
-        Some(solution) => println!("{:#?}", solution)
-    }   
-    
+        Some(solution) => println!("{:#?}", solution),
+    }
 }
