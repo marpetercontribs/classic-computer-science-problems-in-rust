@@ -39,9 +39,9 @@ impl FibEx {
         if n == self.memo.len() {
             let result = self.memo[n - 1] + self.memo[n - 2];
             self.memo.push(result);
-            return result;
+            result
         } else {
-            return self.get(n - 1) + self.get(n - 2);
+            self.get(n - 1) + self.get(n - 2)
         }
     }
 }
