@@ -22,7 +22,7 @@ fn calculate_pi(n_terms: usize) -> f64 {
     let mut sign = 1.0;
     let mut pi = 0.0;
     for _ in 0..n_terms {
-        pi += sign*(numerator/denominator);
+        pi += sign * (numerator / denominator);
         sign = -sign;
         denominator += 2.0
     }
@@ -34,5 +34,5 @@ fn main() {
     // let pi = calculate_pi(1000000);                    // remove comment to measure runtime
     // let duration = start.elapsed().as_millis();        // remove comment to measure runtime
     // println!("Calculating {} took {}ms.",pi,duration); // remove comment to measure runtime
-    println!("{}",calculate_pi(10000000))
+    println!("{}", calculate_pi(10000000))
 }

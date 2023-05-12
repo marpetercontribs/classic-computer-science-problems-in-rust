@@ -14,9 +14,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 use csp;
+use rand::{thread_rng, Rng};
 use std::collections::HashMap;
 use std::collections::HashSet;
-use rand::{thread_rng, Rng};
 
 type Grid = Vec<Vec<char>>;
 
@@ -33,7 +33,7 @@ fn generate_grid(rows: usize, columns: usize) -> Grid {
     grid
 }
 
-#[derive(Hash,PartialEq,Eq,Clone,Copy)]
+#[derive(Hash, PartialEq, Eq, Clone, Copy)]
 struct GridLocation {
     row: usize,
     column: usize,
@@ -47,15 +47,43 @@ fn generate_domain(word: &str, grid: &Grid) -> Vec<Vec<GridLocation>> {
     for row in 0..height {
         for column in 0..width {
             if column + length <= width {
-                domain.push((0..length).map(|o| GridLocation { row: row, column: column + o} ).collect::<Vec<GridLocation>>());
+                domain.push(
+                    (0..length)
+                        .map(|o| GridLocation {
+                            row: row,
+                            column: column + o,
+                        })
+                        .collect::<Vec<GridLocation>>(),
+                );
                 if row + length <= height {
-                    domain.push((0..length).map(|o| GridLocation { row: row + o, column: column + o} ).collect::<Vec<GridLocation>>());
+                    domain.push(
+                        (0..length)
+                            .map(|o| GridLocation {
+                                row: row + o,
+                                column: column + o,
+                            })
+                            .collect::<Vec<GridLocation>>(),
+                    );
                 }
             }
             if row + length <= height {
-                domain.push((0..length).map(|o| GridLocation { row: row + o, column: column} ).collect::<Vec<GridLocation>>());
+                domain.push(
+                    (0..length)
+                        .map(|o| GridLocation {
+                            row: row + o,
+                            column: column,
+                        })
+                        .collect::<Vec<GridLocation>>(),
+                );
                 if column >= length {
-                    domain.push((0..length).map(|o| GridLocation { row: row + o, column: column - o} ).collect::<Vec<GridLocation>>());
+                    domain.push(
+                        (0..length)
+                            .map(|o| GridLocation {
+                                row: row + o,
+                                column: column - o,
+                            })
+                            .collect::<Vec<GridLocation>>(),
+                    );
                 }
             }
         }
@@ -83,10 +111,11 @@ impl WordSearchConstraint {
     }
 }
 
-impl csp::Constraint<String,Vec<GridLocation>> for WordSearchConstraint {
-    fn satisfied(&self, assignment: &HashMap<String,Vec<GridLocation>>) -> bool {
+impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
+    fn satisfied(&self, assignment: &HashMap<String, Vec<GridLocation>>) -> bool {
         let all_locations: Vec<&GridLocation> = assignment.values().flatten().collect();
-        let deduplicated_locations: HashSet<&GridLocation> = HashSet::from_iter(all_locations.iter().cloned());
+        let deduplicated_locations: HashSet<&GridLocation> =
+            HashSet::from_iter(all_locations.iter().cloned());
         all_locations.len() == deduplicated_locations.len()
     }
     fn variables(&self) -> Vec<String> {
@@ -95,23 +124,30 @@ impl csp::Constraint<String,Vec<GridLocation>> for WordSearchConstraint {
 }
 
 fn main() {
-    let words: Vec<String> = ["MATTHEW".to_string(), "JOE".to_string(),
-        "MARY".to_string(), "SARAH".to_string(), "SALLY".to_string()].to_vec();
-    let mut locations = HashMap::<String,Vec<Vec<GridLocation>>>::new();
-    let mut grid: Grid = generate_grid(9,9);
+    let words: Vec<String> = [
+        "MATTHEW".to_string(),
+        "JOE".to_string(),
+        "MARY".to_string(),
+        "SARAH".to_string(),
+        "SALLY".to_string(),
+    ]
+    .to_vec();
+    let mut locations = HashMap::<String, Vec<Vec<GridLocation>>>::new();
+    let mut grid: Grid = generate_grid(9, 9);
 
     for word in &words {
-        locations.insert(word.clone(),generate_domain(&word,&grid));
+        locations.insert(word.clone(), generate_domain(&word, &grid));
     }
-    
-    let mut csp = csp::CSP::<String,Vec<GridLocation>,WordSearchConstraint>::new(words.clone(), locations);
+
+    let mut csp =
+        csp::CSP::<String, Vec<GridLocation>, WordSearchConstraint>::new(words.clone(), locations);
     csp.add_constraint(WordSearchConstraint::new(words));
     let solution = csp.backtracking_search();
-    match solution{
-        None =>  println!("No solution found!"),
+    match solution {
+        None => println!("No solution found!"),
         Some(solution) => {
             let mut rng = thread_rng();
-            for (word,grid_locations) in solution.iter() {
+            for (word, grid_locations) in solution.iter() {
                 let mut locs = grid_locations.clone();
                 if rng.gen_bool(0.5) {
                     locs.reverse();
@@ -121,8 +157,7 @@ fn main() {
                     grid[row][column] = letter;
                 }
             }
-            display_grid(&grid);      
-        }   
+            display_grid(&grid);
+        }
     }
-
 }

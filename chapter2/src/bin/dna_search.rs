@@ -14,7 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 #[derive(PartialEq, PartialOrd, Eq, Ord)]
-enum Nucleotide { A, C, G, T }
+enum Nucleotide {
+    A,
+    C,
+    G,
+    T,
+}
 
 type Codon = (Nucleotide, Nucleotide, Nucleotide);
 type Gene = Vec<Codon>;
@@ -26,27 +31,29 @@ fn byte_to_nucleotide(byte: u8) -> Nucleotide {
         b'C' => Nucleotide::C,
         b'G' => Nucleotide::G,
         b'T' => Nucleotide::T,
-        _ => panic!("Unknown nucleotide!") 
+        _ => panic!("Unknown nucleotide!"),
     }
 }
 
 fn string_to_gene(gene_string: &str) -> Gene {
-  let mut gene = Gene::new();
-  let gene_bytes = gene_string.as_bytes();
-  for index in (0..gene_bytes.len()).step_by(3) {
-    if index+2<gene_string.len() {
-        let codon = (byte_to_nucleotide(gene_bytes[index]),
-                     byte_to_nucleotide(gene_bytes[index+1]),
-                     byte_to_nucleotide(gene_bytes[index+2]));
-        gene.push(codon);
+    let mut gene = Gene::new();
+    let gene_bytes = gene_string.as_bytes();
+    for index in (0..gene_bytes.len()).step_by(3) {
+        if index + 2 < gene_string.len() {
+            let codon = (
+                byte_to_nucleotide(gene_bytes[index]),
+                byte_to_nucleotide(gene_bytes[index + 1]),
+                byte_to_nucleotide(gene_bytes[index + 2]),
+            );
+            gene.push(codon);
+        }
     }
-  }
-  gene
+    gene
 }
 
 fn linear_contains(gene: &Gene, key_codon: &Codon) -> bool {
     for codon in gene {
-        if codon==key_codon {
+        if codon == key_codon {
             return true;
         }
     }
@@ -55,9 +62,9 @@ fn linear_contains(gene: &Gene, key_codon: &Codon) -> bool {
 
 fn binary_contains(gene: &Gene, key_codon: &Codon) -> bool {
     let mut low: usize = 0;
-    let mut high: usize = gene.len()-1;
+    let mut high: usize = gene.len() - 1;
     while low <= high {
-        let mid = (low+high)/2;
+        let mid = (low + high) / 2;
         if gene[mid] < *key_codon {
             low = mid + 1;
         } else if gene[mid] > *key_codon {
@@ -67,7 +74,7 @@ fn binary_contains(gene: &Gene, key_codon: &Codon) -> bool {
         }
     }
     false
-    // The following using the built-in vec method binary_search would work as well, of course:    
+    // The following using the built-in vec method binary_search would work as well, of course:
     // match gene.binary_search(key_codon) {
     //     Ok(_) => true,
     //     Err(_) => false
@@ -77,15 +84,15 @@ fn binary_contains(gene: &Gene, key_codon: &Codon) -> bool {
 fn main() {
     let gene_str = "ACGTGGCTCTCTAACGTACGTACGTACGGGGTTTATATATACCCTAGGACTCCCTTT";
     let mut gene = string_to_gene(&gene_str);
-    let acg = (Nucleotide::A,Nucleotide::C,Nucleotide::G);
-    let gat = (Nucleotide::G,Nucleotide::A,Nucleotide::T);
-    println!("{}", linear_contains(&gene,&acg));
-    println!("{}", linear_contains(&gene,&gat));
+    let acg = (Nucleotide::A, Nucleotide::C, Nucleotide::G);
+    let gat = (Nucleotide::G, Nucleotide::A, Nucleotide::T);
+    println!("{}", linear_contains(&gene, &acg));
+    println!("{}", linear_contains(&gene, &gat));
     // The following using the built-in vec method contains would work as well, of course:
     // println!("{}", gene.contains(&acg));
     // println!("{}", gene.contains(&gat));
 
     gene.sort();
-    println!("{}", binary_contains(&gene,&acg));
-    println!("{}", binary_contains(&gene,&gat));
+    println!("{}", binary_contains(&gene, &acg));
+    println!("{}", binary_contains(&gene, &gat));
 }

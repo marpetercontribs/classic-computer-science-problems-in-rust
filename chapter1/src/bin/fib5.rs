@@ -14,19 +14,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-pub fn fib5(n: usize) -> usize {
-    if n==0 {
+fn fib5(n: usize) -> usize {
+    if n == 0 {
         n
     } else {
-        let (mut last, mut next) = (0,1);
+        let (mut last, mut next) = (0, 1);
         for _ in 1..n {
-            (last,next) = (next, last+next );
+            (last, next) = (next, last + next);
         }
         next
     }
 }
 
 fn main() {
-    println!("{}",fib5(5));
-    println!("{}",fib5(50));
+    println!("{}", fib5(5));
+    println!("{}", fib5(50));
 }

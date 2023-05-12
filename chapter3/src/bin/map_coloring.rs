@@ -19,7 +19,7 @@ use std::fmt;
 
 // The original book uses simple strings for the variables (names), but using an enum
 // seems the better pattern and easier in Rust as String does not implement Copy
-#[derive(Clone,PartialEq, Eq, Hash)]
+#[derive(Clone, PartialEq, Eq, Hash)]
 enum Variable {
     WesternAustralia,
     NorthernTerritory,
@@ -27,7 +27,7 @@ enum Variable {
     Queensland,
     NewSouthWales,
     Victoria,
-    Tasmania
+    Tasmania,
 }
 impl fmt::Debug for Variable {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
@@ -38,7 +38,7 @@ impl fmt::Debug for Variable {
             Variable::Queensland => write!(formatter, "Queensland"),
             Variable::NewSouthWales => write!(formatter, "New South Wales"),
             Variable::Victoria => write!(formatter, "Victoria"),
-            Variable::Tasmania => write!(formatter, "Tasmania")
+            Variable::Tasmania => write!(formatter, "Tasmania"),
         }
     }
 }
@@ -51,15 +51,12 @@ struct MapColoringConstraint {
 
 impl MapColoringConstraint {
     fn new(region1: Variable, region2: Variable) -> Self {
-        MapColoringConstraint {
-            region1,
-            region2,
-        }
+        MapColoringConstraint { region1, region2 }
     }
 }
 
-impl csp::Constraint<Variable,String> for MapColoringConstraint {
-    fn satisfied(&self, assignment: &HashMap<Variable,String>) -> bool {
+impl csp::Constraint<Variable, String> for MapColoringConstraint {
+    fn satisfied(&self, assignment: &HashMap<Variable, String>) -> bool {
         // If either region is not in the assignment then it is not
         // yet possible for their colors to be conflicting
         if !assignment.contains_key(&self.region1) || !assignment.contains_key(&self.region2) {
@@ -73,29 +70,71 @@ impl csp::Constraint<Variable,String> for MapColoringConstraint {
 }
 
 fn main() {
-    let variables = vec![Variable::WesternAustralia, Variable::NorthernTerritory,
-        Variable::SouthAustralia, Variable::Queensland, Variable::NewSouthWales,
-        Variable::Victoria, Variable::Tasmania];
-    let mut domains = HashMap::<Variable,Vec<String>>::new();
+    let variables = vec![
+        Variable::WesternAustralia,
+        Variable::NorthernTerritory,
+        Variable::SouthAustralia,
+        Variable::Queensland,
+        Variable::NewSouthWales,
+        Variable::Victoria,
+        Variable::Tasmania,
+    ];
+    let mut domains = HashMap::<Variable, Vec<String>>::new();
     for variable in &variables {
-        domains.insert((*variable).clone(),vec![String::from("red"), String::from("green"), String::from("blue")]);
+        domains.insert(
+            (*variable).clone(),
+            vec![
+                String::from("red"),
+                String::from("green"),
+                String::from("blue"),
+            ],
+        );
     }
-    let mut csp = csp::CSP::<Variable,String,MapColoringConstraint>::new(variables, domains);
-    csp.add_constraint(MapColoringConstraint::new(Variable::WesternAustralia,Variable::NorthernTerritory));
-    csp.add_constraint(MapColoringConstraint::new(Variable::WesternAustralia,Variable::SouthAustralia));
-    csp.add_constraint(MapColoringConstraint::new(Variable::SouthAustralia,Variable::NorthernTerritory));
-    csp.add_constraint(MapColoringConstraint::new(Variable::Queensland,Variable::NorthernTerritory));
-    csp.add_constraint(MapColoringConstraint::new(Variable::Queensland,Variable::SouthAustralia));
-    csp.add_constraint(MapColoringConstraint::new(Variable::Queensland,Variable::NewSouthWales));
-    csp.add_constraint(MapColoringConstraint::new(Variable::NewSouthWales,Variable::SouthAustralia));
-    csp.add_constraint(MapColoringConstraint::new(Variable::Victoria,Variable::SouthAustralia));
-    csp.add_constraint(MapColoringConstraint::new(Variable::Victoria,Variable::NewSouthWales));
-    csp.add_constraint(MapColoringConstraint::new(Variable::Victoria,Variable::Tasmania));
+    let mut csp = csp::CSP::<Variable, String, MapColoringConstraint>::new(variables, domains);
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::WesternAustralia,
+        Variable::NorthernTerritory,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::WesternAustralia,
+        Variable::SouthAustralia,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::SouthAustralia,
+        Variable::NorthernTerritory,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::Queensland,
+        Variable::NorthernTerritory,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::Queensland,
+        Variable::SouthAustralia,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::Queensland,
+        Variable::NewSouthWales,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::NewSouthWales,
+        Variable::SouthAustralia,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::Victoria,
+        Variable::SouthAustralia,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::Victoria,
+        Variable::NewSouthWales,
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        Variable::Victoria,
+        Variable::Tasmania,
+    ));
 
     let solution = csp.backtracking_search();
-    match solution{
-        None =>  println!("No solution found!"),
-        Some(solution) => println!("{:#?}", solution)   
+    match solution {
+        None => println!("No solution found!"),
+        Some(solution) => println!("{:#?}", solution),
     }
- 
 }

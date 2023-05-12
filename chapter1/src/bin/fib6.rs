@@ -19,12 +19,17 @@ pub struct FibonacciGenerator {
     last: usize,
     next: usize,
     max: usize,
-    done: usize
+    done: usize,
 }
 
 impl FibonacciGenerator {
     fn new(n: usize) -> Self {
-        FibonacciGenerator { last: 0, next: 1, max: n, done: 0 }
+        FibonacciGenerator {
+            last: 0,
+            next: 1,
+            max: n,
+            done: 0,
+        }
     }
 }
 
@@ -48,6 +53,6 @@ pub fn fib6(n: usize) -> FibonacciGenerator {
 
 fn main() {
     for i in fib6(50) {
-        println!("{}",i);
+        println!("{}", i);
     }
 }

@@ -1,6 +1,6 @@
 // fib4.rs
 // Adapted From Classic Computer Science Problems in Python Chapter 1
-// Classic Computer Science Problems in Java does not include an equivalent version 
+// Classic Computer Science Problems in Java does not include an equivalent version
 // Copyright 2023 Markus Peter
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -19,15 +19,15 @@ use memoize::memoize;
 
 #[memoize]
 
-pub fn fib4(n: usize) -> usize {
-    if n<2 {
+fn fib4(n: usize) -> usize {
+    if n < 2 {
         n
     } else {
-        fib4(n-1) + fib4(n-2)        
+        fib4(n - 1) + fib4(n - 2)
     }
 }
 
 fn main() {
-    println!("{}",fib4(5));
-    println!("{}",fib4(50));
+    println!("{}", fib4(5));
+    println!("{}", fib4(50));
 }

@@ -16,22 +16,22 @@
 
 use std::collections::HashMap;
 
-pub struct Fib3 {
-    memo: HashMap::<usize,usize>
+struct Fib3 {
+    memo: HashMap<usize, usize>,
 }
 
 impl Fib3 {
-    pub fn new() -> Self {
-        let mut memo = HashMap::<usize,usize>::new() ;
-        memo.insert(0,0); // Part 1 of the recursion's stop condition
-        memo.insert(1,1); // Part 2 of the recursion's stop condition       
+    fn new() -> Self {
+        let mut memo = HashMap::<usize, usize>::new();
+        memo.insert(0, 0); // Part 1 of the recursion's stop condition
+        memo.insert(1, 1); // Part 2 of the recursion's stop condition
         Fib3 { memo: memo }
     }
     pub fn get(&mut self, n: usize) -> usize {
         if !self.memo.contains_key(&n) {
-            let prev_prev = self.get(n-2);
-            let prev = self.get(n-1);
-            self.memo.insert(n,prev + prev_prev);
+            let prev_prev = self.get(n - 2);
+            let prev = self.get(n - 1);
+            self.memo.insert(n, prev + prev_prev);
         }
         *self.memo.get(&n).unwrap()
     }
@@ -39,6 +39,6 @@ impl Fib3 {
 
 fn main() {
     let mut fib = Fib3::new(); // How to adjust code to avoid `mut` here?
-    println!("{}",fib.get(5));
-    println!("{}",fib.get(50));
+    println!("{}", fib.get(5));
+    println!("{}", fib.get(50));
 }
