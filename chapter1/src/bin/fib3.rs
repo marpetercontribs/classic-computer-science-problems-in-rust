@@ -28,7 +28,7 @@ impl Fib3 {
         Fib3 { memo }
     }
     fn get(&mut self, n: usize) -> usize {
-        if self.memo.contains_key(&n) {
+        if !self.memo.contains_key(&n) {
             let prev_prev = self.get(n - 2);
             let prev = self.get(n - 1);
             self.memo.insert(n, prev + prev_prev);
