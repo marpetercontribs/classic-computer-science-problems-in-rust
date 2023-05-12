@@ -39,7 +39,7 @@ impl<T> Stack<T> {
 impl fmt::Display for Stack<u8> {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "[").expect("Cannot write to formatter!?");
-        if self.stack.len() > 0 {
+        if !self.stack.is_empty() {
             for index in 0..self.stack.len() - 1 {
                 write!(formatter, "{}, ", self.stack[index]).expect("Cannot write to formatter!?");
             }
