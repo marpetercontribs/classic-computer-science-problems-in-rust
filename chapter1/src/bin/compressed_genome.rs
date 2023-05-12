@@ -16,13 +16,13 @@
 use std::mem;
 
 struct CompressedGenome {
-    bits: Vec<bool>
+    bits: Vec<bool>,
 }
 
 impl CompressedGenome {
     fn new(genome: &String) -> Self {
         CompressedGenome {
-            bits: Self::compress(genome)
+            bits: Self::compress(genome),
         }
     }
     fn compress(genome: &String) -> Vec<bool> {
@@ -42,15 +42,16 @@ impl CompressedGenome {
                 result.push(true);
                 result.push(true);
             } else {
-                panic!("Invalid nucleotide:{}",nucleotide);
+                panic!("Invalid nucleotide:{}", nucleotide);
             }
         }
         result
     }
     fn decompress(&self) -> String {
         let mut genome = String::new();
-        for index in 0..(self.bits.len()/2) {
-            let nucleotide: u8 = (if self.bits[2*index] {1} else {0}) *2 + (if self.bits[2*index+1] {1} else {0});
+        for index in 0..(self.bits.len() / 2) {
+            let nucleotide: u8 = (if self.bits[2 * index] { 1 } else { 0 }) * 2
+                + (if self.bits[2 * index + 1] { 1 } else { 0 });
             if nucleotide == 0b00 {
                 genome.push('A');
             } else if nucleotide == 0b01 {
@@ -60,7 +61,7 @@ impl CompressedGenome {
             } else if nucleotide == 0b11 {
                 genome.push('T');
             } else {
-                panic!("Invalid nucleotide:{}",nucleotide);
+                panic!("Invalid nucleotide:{}", nucleotide);
             }
         }
         genome
@@ -68,10 +69,18 @@ impl CompressedGenome {
 }
 
 fn main() {
-    let original = String::from("TAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATATAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATA");
-    println!("original is {} bytes", mem::size_of_val(&'A')*original.len());
+    let original = String::from(
+        "TAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATATAGGGATTAACCGTTATATATATATAGCCATGGATCGATTATA",
+    );
+    println!(
+        "original is {} bytes",
+        mem::size_of_val(&'A') * original.len()
+    );
     let compressed = CompressedGenome::new(&original);
-    println!("compressed is {} bytes",mem::size_of_val(&compressed.bits));
-    println!("{}",compressed.decompress());
-    println!("original and decompressed are the same: {}",original.eq(&compressed.decompress()));
+    println!("compressed is {} bytes", mem::size_of_val(&compressed.bits));
+    println!("{}", compressed.decompress());
+    println!(
+        "original and decompressed are the same: {}",
+        original.eq(&compressed.decompress())
+    );
 }

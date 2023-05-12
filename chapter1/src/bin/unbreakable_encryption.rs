@@ -14,29 +14,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::str;
 use rand::RngCore;
+use std::str;
 
 fn random_key(length: usize) -> Vec<u8> {
-    let mut dummy = vec![0;length];
+    let mut dummy = vec![0; length];
     rand::thread_rng().fill_bytes(&mut dummy);
     dummy
 }
 
-fn encrypt(original: &str) -> (Vec<u8>,Vec<u8>) {
+fn encrypt(original: &str) -> (Vec<u8>, Vec<u8>) {
     let original_bytes = original.as_bytes().to_vec();
     let key = random_key(original_bytes.len());
     let mut encrypted = Vec::<u8>::new();
     for index in 0..original_bytes.len() {
-        encrypted.push( key[index] ^ original_bytes[index] );
+        encrypted.push(key[index] ^ original_bytes[index]);
     }
-    (encrypted,key)
+    (encrypted, key)
 }
 
 fn decrypt(key1: &Vec<u8>, key2: &Vec<u8>) -> String {
     let mut decrypted = Vec::<u8>::new();
     for index in 0..key1.len() {
-        decrypted.push( key1[index] ^ key2[index] );
+        decrypted.push(key1[index] ^ key2[index]);
     }
     let temp = str::from_utf8(&decrypted).unwrap();
     String::from(temp)
@@ -44,6 +44,6 @@ fn decrypt(key1: &Vec<u8>, key2: &Vec<u8>) -> String {
 
 fn main() {
     let (key1, key2) = encrypt(&String::from("One Time Pad!"));
-    let result = decrypt(&key1,&key2);
-    println!("{}",result);
+    let result = decrypt(&key1, &key2);
+    println!("{}", result);
 }

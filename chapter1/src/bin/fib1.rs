@@ -1,4 +1,3 @@
-
 // fib1.rs
 // Adapted From Classic Computer Science Problems in Python/Java Chapter 1
 // Copyright 2023 Markus Peter
@@ -16,11 +15,9 @@
 // limitations under the License.
 
 fn fib1(n: usize) -> usize {
-    fib1(n-1) + fib1(n-2)
+    fib1(n - 1) + fib1(n - 2)
 }
 
 fn main() {
-    println!("{}",fib1(5));
+    println!("{}", fib1(5));
 }
-
-
