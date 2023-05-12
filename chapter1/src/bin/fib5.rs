@@ -15,7 +15,7 @@
 // limitations under the License.
 
 pub fn fib5(n: usize) -> usize {
-    if n==0 {
+    if n == 0 {
         n
     } else {
         let (mut last, mut next) = (0, 1);

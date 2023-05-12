@@ -43,7 +43,7 @@ impl<T> Stack<T> {
 impl fmt::Display for Stack<u8> {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(formatter, "[").expect("Cannot write to formatter!?");
-        if self.stack.len() > 0 {
+        if !self.stack.is_empty() {
             for index in 0..self.stack.len() - 1 {
                 write!(formatter, "{}, ", self.stack[index]).expect("Cannot write to formatter!?");
             }
@@ -95,18 +95,18 @@ fn main() {
         towers[0].push(i)
     }
 
-    for i in 0..tower_count {
-        println!("Tower {}: {}", i + 1, towers[i]);
+    for (i,item) in towers.iter().enumerate() {
+        println!("Tower {}: {}", i + 1, item);
     }
 
     let mut towers_remaining = towers.iter_mut();
-    let mut tower_a = towers_remaining.next().unwrap();
-    let mut tower_b = towers_remaining.next().unwrap();
-    let mut tower_c = towers_remaining.next().unwrap();
+    let tower_a = towers_remaining.next().unwrap();
+    let tower_b = towers_remaining.next().unwrap();
+    let tower_c = towers_remaining.next().unwrap();
 
-    solve_hanoi(&mut tower_a, &mut tower_c, &mut tower_b, towers_remaining);
+    solve_hanoi(tower_a, tower_c, tower_b, towers_remaining);
 
-    for i in 0..tower_count {
-        println!("Tower {}: {}", i + 1, towers[i]);
+    for (i,item) in towers.iter().enumerate() {
+        println!("Tower {}: {}", i + 1, item);
     }
 }

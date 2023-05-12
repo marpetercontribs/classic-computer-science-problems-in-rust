@@ -17,15 +17,15 @@
 use std::collections::HashMap;
 
 pub struct Fib3 {
-    memo: HashMap::<usize,usize>
+    memo: HashMap<usize, usize>,
 }
 
 impl Fib3 {
-    fn new() -> Self {
-        let mut memo = HashMap::<usize,usize>::new() ;
-        memo.insert(0,0); // Part 1 of the recursion's stop condition
-        memo.insert(1,1); // Part 2 of the recursion's stop condition       
-        Fib3 { memo: memo }
+    pub fn new() -> Self {
+        let mut memo = HashMap::<usize, usize>::new();
+        memo.insert(0, 0); // Part 1 of the recursion's stop condition
+        memo.insert(1, 1); // Part 2 of the recursion's stop condition
+        Fib3 { memo }
     }
     pub fn get(&mut self, n: usize) -> usize {
         if !self.memo.contains_key(&n) {

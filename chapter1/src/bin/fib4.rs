@@ -20,7 +20,7 @@ use memoize::memoize;
 #[memoize]
 
 pub fn fib4(n: usize) -> usize {
-    if n<2 {
+    if n < 2 {
         n
     } else {
         fib4(n - 1) + fib4(n - 2)
