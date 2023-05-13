@@ -130,15 +130,18 @@ fn main() {
     let mut sum_no_solution_bfs = 0;
     let mut sum_solved_astar = 0;
     let mut sum_no_solution_astar = 0;
-    let mut total_count_dfs = 0;
-    let mut total_count_bfs = 0;
-    let mut total_count_astar = 0;
+    let mut total_explored_dfs = 0;
+    let mut total_explored_bfs = 0;
+    let mut total_explored_astar = 0;
+    let mut total_considered_dfs = 0;
+    let mut total_considered_bfs = 0;
+    let mut total_considered_astar = 0;
 
     let runs = 1000;
 
     for _ in 0..runs {
         let maze = Maze::default_new();
-        let (solution1, count) = crate::generic_search::dfs_counting(
+        let (solution1, explored, considered) = crate::generic_search::dfs_counting(
             maze.start,
             |ml: &MazeLocation| maze.goal_test(ml),
             |ml: &MazeLocation| maze.successors(ml),
@@ -147,9 +150,10 @@ fn main() {
             None => sum_no_solution_dfs += 1,
             Some(_) => sum_solved_dfs += 1,
         }
-        total_count_dfs += count;
+        total_explored_dfs += explored;
+        total_considered_dfs += considered;
 
-        let (solution2, count) = generic_search::bfs_counting(
+        let (solution2, explored, considered) = generic_search::bfs_counting(
             maze.start,
             |ml: &MazeLocation| maze.goal_test(ml),
             |ml: &MazeLocation| maze.successors(ml),
@@ -158,9 +162,10 @@ fn main() {
             None => sum_no_solution_bfs += 1,
             Some(_) => sum_solved_bfs += 1,
         }
-        total_count_bfs += count;
+        total_explored_bfs += explored;
+        total_considered_bfs += considered;
 
-        let (solution3, count) = generic_search::astar_counting(
+        let (solution3, explored, considered) = generic_search::astar_counting(
             maze.start,
             |ml: &MazeLocation| maze.goal_test(ml),
             |ml: &MazeLocation| maze.successors(ml),
@@ -170,19 +175,23 @@ fn main() {
             None => sum_no_solution_astar += 1,
             Some(_) => sum_solved_astar += 1,
         }
-        total_count_astar += count;
+        total_explored_astar += explored;
+        total_considered_astar += considered;
     }
     println!(
-        "Depth-first search   found {sum_solved_dfs} solutions, explored {} states on average.",
-        total_count_dfs / runs
+        "Depth-first search   found {sum_solved_dfs} solutions, tested {} states and considered {} on average.",
+        total_explored_dfs / runs,
+        total_considered_dfs / runs
     );
     println!(
-        "Breadth-first search found {sum_solved_bfs} solutions, explored {} states on average.",
-        total_count_bfs / runs
+        "Breadth-first search found {sum_solved_bfs} solutions, tested {} states and considered {} on average.",
+        total_explored_bfs / runs,
+        total_considered_bfs / runs
     );
     println!(
-        "A-Star search        found {sum_solved_astar} solutions, explored {} states on average.",
-        total_count_astar / runs
+        "A-Star search        found {sum_solved_astar} solutions, tested {} states and considered {} on average.",
+        total_explored_astar / runs,
+        total_considered_astar / runs
     );
     println!("No solutions were found in {sum_no_solution_dfs} / {sum_no_solution_bfs} / {sum_no_solution_astar} cases.");
 }
