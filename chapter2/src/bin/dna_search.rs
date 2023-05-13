@@ -83,7 +83,7 @@ fn binary_contains(gene: &Gene, key_codon: &Codon) -> bool {
 
 fn main() {
     let gene_str = "ACGTGGCTCTCTAACGTACGTACGTACGGGGTTTATATATACCCTAGGACTCCCTTT";
-    let mut gene = string_to_gene(&gene_str);
+    let mut gene = string_to_gene(gene_str);
     let acg = (Nucleotide::A, Nucleotide::C, Nucleotide::G);
     let gat = (Nucleotide::G, Nucleotide::A, Nucleotide::T);
     println!("{}", linear_contains(&gene, &acg));
