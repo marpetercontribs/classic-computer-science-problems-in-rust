@@ -22,7 +22,7 @@ Exercises completed:
   - [ ] 4. One-time-pad to encrypt images
 - Chapter 2
   - [X] 1. Demonstrate performance advantage of binary over linear search
-  - [ ] 2. Count the number of states covered in `bfs`, `dfs` and `astar` searches
+  - [X] 2. Count the number of states covered in `bfs`, `dfs` and `astar` searches
   - [ ] 3. Solve missionaries problem if the number of missionaries differs from the number of cannibals
 - Chapter 3
    - [ ] 1. Extend `word_search` to allow for words to cross

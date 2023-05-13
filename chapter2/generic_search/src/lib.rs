@@ -110,6 +110,11 @@ pub fn node_to_path<T: PartialOrd + Eq + Copy>(node: &Node<T>) -> Vec<T> {
 }
 
 pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
+    let (result, _) = dfs_counting(initial, goal_test, successors);
+    result
+}
+
+pub fn dfs_counting<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> (Option<Rc<Node<T>>>, usize) {
     // frontier is where we've yet to go
     let mut frontier = Vec::<Rc<Node<T>>>::new();
     let mut explored = HashSet::<T>::new();
@@ -119,7 +124,7 @@ pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
         let current_state = current_node.state;
         // if we found the goal, we're done
         if goal_test(&current_state) {
-            return Some(current_node);
+            return (Some(current_node), explored.len());
         }
         // check where we can go next and haven't explored
         for child in successors(&current_state) {
@@ -129,10 +134,15 @@ pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
             }
         }
     }
-    None // went through everything and never found goal
+    (None, explored.len()) // went through everything and never found goal
 }
 
 pub fn bfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
+    let (result, _) = bfs_counting(initial, goal_test, successors);
+    result
+}
+
+pub fn bfs_counting<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> (Option<Rc<Node<T>>>, usize) {
     // frontier is where we've yet to go
     let mut frontier = VecDeque::<Rc<Node<T>>>::new();
     let mut explored = HashSet::<T>::new();
@@ -142,7 +152,7 @@ pub fn bfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
         let current_state = current_node.state;
         // if we found the goal, we're done
         if goal_test(&current_state) {
-            return Some(current_node);
+            return (Some(current_node), explored.len());
         }
         // check where we can go next and haven't explored
         for child in successors(&current_state) {
@@ -152,11 +162,17 @@ pub fn bfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
             }
         }
     }
-    None // went through everything and never found goal
+    (None, explored.len()) // went through everything and never found goal
 }
 
 pub fn astar<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>, H: Fn(&T) -> f64>
     (initial: T, goal_test: GT, successors: S, heuristic: H) -> Option<Rc<Node<T>>> {
+    let (result, _) = astar_counting(initial, goal_test, successors, heuristic);
+    result
+}
+
+pub fn astar_counting<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>, H: Fn(&T) -> f64>
+    (initial: T, goal_test: GT, successors: S, heuristic: H) -> (Option<Rc<Node<T>>>, usize) {
     // frontier is where we've yet to go
     let mut frontier = BinaryHeap::<Rc<Node<T>>>::new();
     let mut explored = HashMap::<T,f64>::new();
@@ -166,7 +182,7 @@ pub fn astar<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T)
         let current_state = current_node.state;
         // if we found the goal, we're done
         if goal_test(&current_state) {
-            return Some(current_node);
+            return (Some(current_node), explored.len());
         }
         // check where we can go next and haven't explored
         for child in successors(&current_state) {
@@ -177,7 +193,7 @@ pub fn astar<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T)
             }
         }
     }
-    None // went through everything and never found goal
+    (None, explored.len()) // went through everything and never found goal
 }
 
 #[cfg(test)]
