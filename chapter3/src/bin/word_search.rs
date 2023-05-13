@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use csp;
+
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
 use std::collections::HashSet;
@@ -26,7 +26,7 @@ fn generate_grid(rows: usize, columns: usize) -> Grid {
     for _ in 0..rows {
         let mut row_chars = Vec::<char>::new();
         for _ in 0..columns {
-            row_chars.push(rng.gen_range('A'..'Z'));
+            row_chars.push(rng.gen_range('A'..='Z'));
         }
         grid.push(row_chars);
     }
@@ -50,7 +50,7 @@ fn generate_domain(word: &str, grid: &Grid) -> Vec<Vec<GridLocation>> {
                 domain.push(
                     (0..length)
                         .map(|o| GridLocation {
-                            row: row,
+                            row,
                             column: column + o,
                         })
                         .collect::<Vec<GridLocation>>(),
@@ -71,7 +71,7 @@ fn generate_domain(word: &str, grid: &Grid) -> Vec<Vec<GridLocation>> {
                     (0..length)
                         .map(|o| GridLocation {
                             row: row + o,
-                            column: column,
+                            column,
                         })
                         .collect::<Vec<GridLocation>>(),
                 );
@@ -96,7 +96,7 @@ fn display_grid(grid: &Grid) {
         for c in row {
             print!("{c}");
         }
-        println!("");
+        println!();
     }
 }
 
@@ -136,7 +136,7 @@ fn main() {
     let mut grid: Grid = generate_grid(9, 9);
 
     for word in &words {
-        locations.insert(word.clone(), generate_domain(&word, &grid));
+        locations.insert(word.clone(), generate_domain(word, &grid));
     }
 
     let mut csp =
