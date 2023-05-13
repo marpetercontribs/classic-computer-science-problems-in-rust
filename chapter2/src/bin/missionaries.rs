@@ -151,7 +151,7 @@ impl ToString for MCState {
 }
 
 fn display_solution(path: &Vec<MCState>) {
-    if path.len() == 0 {
+    if path.is_empty() {
         return;
     }
     let mut old_state = &path[0];

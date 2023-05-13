@@ -44,7 +44,7 @@ struct MazeLocation {
 
 impl ToString for MazeLocation {
     fn to_string(&self) -> String {
-        format!("({},{})", self.row.to_string(), self.column.to_string())
+        format!("({},{})", self.row, self.column)
     }
 }
 
@@ -153,13 +153,13 @@ impl Maze {
     fn euclidean_distance(&self, ml: &MazeLocation) -> f64 {
         let x_distance = (ml.column - self.goal.column) as f64;
         let y_distance = (ml.row - self.goal.row) as f64;
-        return (x_distance * x_distance + y_distance * y_distance).sqrt();
+        (x_distance * x_distance + y_distance * y_distance).sqrt()
     }
 
     fn manhattan_distance(&self, ml: &MazeLocation) -> f64 {
         let x_distance = (ml.column as f64) - (self.goal.column as f64);
         let y_distance = (ml.row as f64) - (self.goal.row as f64);
-        return x_distance.abs() + y_distance.abs();
+        x_distance.abs() + y_distance.abs()
     }
 }
 impl ToString for Maze {
@@ -179,11 +179,11 @@ fn main() {
     let mut maze = Maze::default_new();
     let solution1 = crate::generic_search::dfs(
         maze.start,
-        |ml: &MazeLocation| maze.goal_test(&ml),
-        |ml: &MazeLocation| maze.successors(&ml),
+        |ml: &MazeLocation| maze.goal_test(ml),
+        |ml: &MazeLocation| maze.successors(ml),
     );
     match solution1 {
-        None => println!("{}", "No solution found using depth-first search"),
+        None => println!("No solution found using depth-first search"),
         Some(node) => {
             let path = generic_search::node_to_path(&node);
             maze.mark(&path);
@@ -194,11 +194,11 @@ fn main() {
     println!("----------");
     let solution2 = generic_search::bfs(
         maze.start,
-        |ml: &MazeLocation| maze.goal_test(&ml),
-        |ml: &MazeLocation| maze.successors(&ml),
+        |ml: &MazeLocation| maze.goal_test(ml),
+        |ml: &MazeLocation| maze.successors(ml),
     );
     match solution2 {
-        None => println!("{}", "No solution found using breadth-first search"),
+        None => println!("No solution found using breadth-first search"),
         Some(node) => {
             let path = generic_search::node_to_path(&node);
             maze.mark(&path);
@@ -209,12 +209,12 @@ fn main() {
     println!("----------");
     let solution3 = generic_search::astar(
         maze.start,
-        |ml: &MazeLocation| maze.goal_test(&ml),
-        |ml: &MazeLocation| maze.successors(&ml),
-        |ml: &MazeLocation| maze.manhattan_distance(&ml),
+        |ml: &MazeLocation| maze.goal_test(ml),
+        |ml: &MazeLocation| maze.successors(ml),
+        |ml: &MazeLocation| maze.manhattan_distance(ml),
     );
     match solution3 {
-        None => println!("{}", "No solution found using astar search"),
+        None => println!("No solution found using astar search"),
         Some(node) => {
             let path = generic_search::node_to_path(&node);
             maze.mark(&path);
