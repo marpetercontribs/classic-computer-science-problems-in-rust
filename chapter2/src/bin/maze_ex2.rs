@@ -1,5 +1,6 @@
-//maze.rs
-// Adapted From Classic Computer Science Problems in Python/Java Chapter 2
+// maze_ex2.rs
+// Solution to exercise 2
+// in Classic Computer Science Problems in Python/Java Chapter 2
 // Copyright 2023 Markus Peter
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
