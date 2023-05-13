@@ -11,9 +11,9 @@ The alternative approach would be to treat each executable program/problem as a 
 
 Missing ports:
 
-- Chapter 1.1: Generator version (equivalent of fib6 in Python / fib5 in Java book)
+- Everything in Chapter 4ff
 
-Exercises competed:
+Exercises completed:
 
 - Chapter 1
   - [X] 1. Own Fibonacci algorithm with unit tests and performance comparison

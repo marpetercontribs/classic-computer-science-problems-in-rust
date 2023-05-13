@@ -15,7 +15,7 @@
 // limitations under the License.
 
 pub fn fib2(n: usize) -> usize {
-    if n<2 {
+    if n < 2 {
         // println!("fib({}) -> {}",n,n);
         n
     } else {
