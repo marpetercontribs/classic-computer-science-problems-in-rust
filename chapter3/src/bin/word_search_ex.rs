@@ -150,12 +150,13 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
         // for each word
         for (word, locations) in assignment.iter() {
             reduced_assignment.remove(word); // avoid checking overlap of a word with itself or another word twice
-                                             // test if the two location vectors overlap
             for (other_word, other_locations) in reduced_assignment.iter() {
+                // test if the two location vectors overlap
                 let first = locations.iter().collect::<HashSet<_>>();
                 let other = other_locations.iter().collect::<HashSet<_>>();
                 let overlap = first.intersection(&other).collect::<Vec<_>>();
                 if overlap.len() == 1 {
+                    // the words "cross" -> at which positions (letters)?
                     let word_index = locations
                         .iter()
                         .position(|index| index == *overlap[0])
