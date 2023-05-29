@@ -1,5 +1,6 @@
-// word_search.rs
-// Adapted From Classic Computer Science Problems in Python/Java Chapter 3
+// word_search_ex.rs
+// Solution to exercise 1
+// in Classic Computer Science Problems in Python/Java Chapter 3
 // Copyright 2023 Markus Peter
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
