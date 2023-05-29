@@ -15,7 +15,6 @@
 // limitations under the License.
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
-use std::collections::HashSet;
 
 type Grid = Vec<Vec<char>>;
 
@@ -142,6 +141,10 @@ impl WordSearchConstraint {
     }
 }
 
+fn difference(first: usize, last: usize) -> i32 {
+    (first as i32) - (last as i32)
+}
+
 impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
     fn satisfied(&self, assignment: &HashMap<String, Vec<GridLocation>>) -> bool {
         // instead of considering "overlapping" words invalid,
@@ -150,28 +153,80 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
         // for each word
         for (word, locations) in assignment.iter() {
             reduced_assignment.remove(word); // avoid checking overlap of a word with itself or another word twice
-                                             // test if the two location vectors overlap
+            let delta_col = difference(locations[1].column, locations[0].column);
+            let delta_row = difference(locations[1].row, locations[0].row);
+            // check if the locations overlaps with another (remaining) word's
             for (other_word, other_locations) in reduced_assignment.iter() {
-                let first = locations.iter().collect::<HashSet<_>>();
-                let other = other_locations.iter().collect::<HashSet<_>>();
-                let overlap = first.intersection(&other).collect::<Vec<_>>();
-                if overlap.len() == 1 {
-                    let word_index = locations
-                        .iter()
-                        .position(|index| index == *overlap[0])
-                        .unwrap();
-                    let other_index = other_locations
-                        .iter()
-                        .position(|index| index == *overlap[0])
-                        .unwrap();
-                    if word.char_indices().nth(word_index)
-                        != other_word.char_indices().nth(other_index)
-                    {
-                        return false;
+                let delta_other_col =
+                    difference(other_locations[1].column, other_locations[0].column);
+                let delta_other_row = difference(other_locations[1].row, other_locations[0].row);
+                let determinant = delta_col * delta_other_row - delta_row * delta_other_col;
+                let row_dist = difference(other_locations[0].row, locations[0].row);
+                let col_dist = difference(other_locations[0].column, locations[0].column);
+                if determinant == 0 {
+                    // the two words are parallel
+                    let row_dist_last =
+                        difference(other_locations[other_word.len() - 1].row, locations[0].row);
+                    let col_dist_last = difference(
+                        other_locations[other_word.len() - 1].column,
+                        locations[0].column,
+                    );
+                    if delta_col == 0 {
+                        // both words run vertically
+                        if locations[0].column == other_locations[0].column {
+                            // and in the same column
+                            let other_start = delta_row * row_dist;
+                            let other_end = delta_row * row_dist_last;
+                            if (other_start >= 0 && other_start < (word.len() as i32))
+                                || (other_end >= 0 && other_end < (word.len() as i32))
+                            {
+                                // the other word's first or last letter are in the first word
+                                return false;
+                            }
+                        }
+                    } else if delta_row == 0 {
+                        // both words run horizontally
+                        if locations[0].row == other_locations[0].row {
+                            // and in the same row
+                            let other_start = delta_col * col_dist;
+                            let other_end = delta_col * col_dist_last;
+                            if (other_start >= 0 && other_start < (word.len() as i32))
+                                || (other_end >= 0 && other_end < (word.len() as i32))
+                            {
+                                // the other word's first or last letter are in the first word
+                                return false;
+                            }
+                        }
+                    } else {
+                        // both words run diagonal - to be detailed!
+                        let other_word_first_col = delta_col * col_dist;
+                        let other_word_first_row = delta_row * row_dist;
+                        let other_word_last_col = delta_col * col_dist_last;
+                        let other_word_last_row = delta_row * row_dist_last;
+                        if (other_word_first_col == other_word_first_row
+                            && other_word_first_col >= 0
+                            && other_word_first_col < (word.len() as i32))
+                            || (other_word_last_col == other_word_last_row
+                                && other_word_last_col >= 0
+                                && other_word_last_col < (word.len() as i32))
+                        {
+                            return false;
+                        }
                     }
-                } else if overlap.len() > 1 {
-                    // several letters overlap --> not reasonable
-                    return false;
+                } else {
+                    let other_word_index =
+                        (delta_row * col_dist - delta_col * row_dist) * determinant;
+                    if other_word_index >= 0 && other_word_index < (other_word.len() as i32) {
+                        let word_index =
+                            (delta_other_row * col_dist - delta_other_col * row_dist) * determinant;
+                        if word_index >= 0 && word_index < (word.len() as i32) {
+                            if word.char_indices().nth(word_index as usize)
+                                != other_word.char_indices().nth(other_word_index as usize)
+                            {
+                                return false;
+                            };
+                        }
+                    }
                 }
             }
         }
