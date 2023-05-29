@@ -13,8 +13,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-use csp::Constraint;
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
 
@@ -143,6 +141,10 @@ impl WordSearchConstraint {
     }
 }
 
+fn difference(first: usize, last: usize) -> i32 {
+    (first as i32) - (last as i32)
+}
+
 impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
     fn satisfied(&self, assignment: &HashMap<String, Vec<GridLocation>>) -> bool {
         // instead of considering "overlapping" words invalid,
@@ -151,26 +153,30 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
         // for each word
         for (word, locations) in assignment.iter() {
             reduced_assignment.remove(word); // avoid checking overlap of a word with itself or another word twice
-            let delta_col: i32 = (locations[1].column as i32) - (locations[0].column as i32);
-            let delta_row: i32 = (locations[1].row as i32) - (locations[0].row as i32);
+            let delta_col = difference(locations[1].column, locations[0].column);
+            let delta_row = difference(locations[1].row, locations[0].row);
             // check if the locations overlaps with another (remaining) word's
             for (other_word, other_locations) in reduced_assignment.iter() {
-                let delta_other_col: i32 =
-                    (other_locations[1].column as i32) - (other_locations[0].column as i32);
-                let delta_other_row: i32 =
-                    (other_locations[1].row as i32) - (other_locations[0].row as i32);
+                let delta_other_col =
+                    difference(other_locations[1].column, other_locations[0].column);
+                let delta_other_row = difference(other_locations[1].row, other_locations[0].row);
                 let determinant = delta_col * delta_other_row - delta_row * delta_other_col;
+                let row_dist = difference(other_locations[0].row, locations[0].row);
+                let col_dist = difference(other_locations[0].column, locations[0].column);
                 if determinant == 0 {
                     // the two words are parallel
+                    let row_dist_last =
+                        difference(other_locations[other_word.len() - 1].row, locations[0].row);
+                    let col_dist_last = difference(
+                        other_locations[other_word.len() - 1].column,
+                        locations[0].column,
+                    );
                     if delta_col == 0 {
                         // both words run vertically
                         if locations[0].column == other_locations[0].column {
                             // and in the same column
-                            let other_start = delta_row
-                                * ((other_locations[0].row as i32) - (locations[0].row as i32));
-                            let other_end = delta_row
-                                * ((other_locations[other_word.len() - 1].row as i32)
-                                    - (locations[0].row as i32));
+                            let other_start = delta_row * row_dist;
+                            let other_end = delta_row * row_dist_last;
                             if (other_start >= 0 && other_start < (word.len() as i32))
                                 || (other_end >= 0 && other_end < (word.len() as i32))
                             {
@@ -182,12 +188,8 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
                         // both words run horizontally
                         if locations[0].row == other_locations[0].row {
                             // and in the same row
-                            let other_start = delta_col
-                                * ((other_locations[0].column as i32)
-                                    - (locations[0].column as i32));
-                            let other_end = delta_col
-                                * ((other_locations[other_word.len() - 1].column as i32)
-                                    - (locations[0].column as i32));
+                            let other_start = delta_col * col_dist;
+                            let other_end = delta_col * col_dist_last;
                             if (other_start >= 0 && other_start < (word.len() as i32))
                                 || (other_end >= 0 && other_end < (word.len() as i32))
                             {
@@ -197,16 +199,10 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
                         }
                     } else {
                         // both words run diagonal - to be detailed!
-                        let other_word_first_col = delta_col
-                            * ((other_locations[0].column as i32) - (locations[0].column as i32));
-                        let other_word_first_row = delta_row
-                            * ((other_locations[0].row as i32) - (locations[0].row as i32));
-                        let other_word_last_col = delta_col
-                            * ((other_locations[other_word.len() - 1].column as i32)
-                                - (locations[0].column as i32));
-                        let other_word_last_row = delta_row
-                            * ((other_locations[other_word.len() - 1].row as i32)
-                                - (locations[0].row as i32));
+                        let other_word_first_col = delta_col * col_dist;
+                        let other_word_first_row = delta_row * row_dist;
+                        let other_word_last_col = delta_col * col_dist_last;
+                        let other_word_last_row = delta_row * row_dist_last;
                         if (other_word_first_col == other_word_first_row
                             && other_word_first_col >= 0
                             && other_word_first_col < (word.len() as i32))
@@ -218,18 +214,11 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
                         }
                     }
                 } else {
-                    let other_word_index = (delta_col
-                        * ((locations[0].row as i32) - (other_locations[0].row as i32))
-                        - delta_row
-                            * ((locations[0].column as i32) - (other_locations[0].column as i32)))
-                        / determinant;
+                    let other_word_index =
+                        (delta_row * col_dist - delta_col * row_dist) * determinant;
                     if other_word_index >= 0 && other_word_index < (other_word.len() as i32) {
-                        let word_index = (delta_other_col
-                            * ((locations[0].row as i32) - (other_locations[0].row as i32))
-                            - delta_other_row
-                                * ((locations[0].column as i32)
-                                    - (other_locations[0].column as i32)))
-                            / determinant;
+                        let word_index =
+                            (delta_other_row * col_dist - delta_other_col * row_dist) * determinant;
                         if word_index >= 0 && word_index < (word.len() as i32) {
                             if word.char_indices().nth(word_index as usize)
                                 != other_word.char_indices().nth(other_word_index as usize)
@@ -275,12 +264,8 @@ fn main() {
         None => println!("No solution found!"),
         Some(solution) => {
             for (word, grid_locations) in solution.iter() {
-                let locs = grid_locations.clone();
-                // if rng.gen_bool(0.5) {
-                //     locs.reverse(); // probably doesn't work so easily anymore once crossing words are allowed
-                // }
                 for (index, letter) in word.chars().enumerate() {
-                    let (row, column) = (locs[index].row, locs[index].column);
+                    let (row, column) = (grid_locations[index].row, grid_locations[index].column);
                     grid[row][column] = letter;
                 }
             }
@@ -292,6 +277,7 @@ fn main() {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use csp::Constraint;
 
     #[test]
     fn test_cross_on_first_letters() {
