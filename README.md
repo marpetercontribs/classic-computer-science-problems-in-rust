@@ -25,6 +25,6 @@ Exercises completed:
   - [X] 2. Count the number of states covered in `bfs`, `dfs` and `astar` searches
   - [X] 3. Solve missionaries problem if the number of missionaries differs from the number of cannibals
 - Chapter 3
-   - [ ] 1. Extend `word_search` to allow for words to cross
+   - [X] 1. Extend `word_search` to allow for words to cross
    - [ ] 2. Write a solver for problem 3.6
    - [X] 3. Write Sudoku solver
