@@ -24,6 +24,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod edge;
+pub mod graph;
+
 fn main() {
     println!("Use 'cargo run --bin <program name>' to run one of the programs belonging to this chapter.");
 }
