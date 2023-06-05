@@ -92,7 +92,7 @@ impl<V: Clone + PartialEq + std::fmt::Display> ToString for Graph<V> {
         let mut result = String::new();
         for i in 0..self.get_vertex_count() {
             result.push_str(&format!(
-                "{} -> [{}]\n",
+                "{} -> {}\n",
                 self.vertex_at(i),
                 vec_to_string(&self.neighbors_of_index(i))
             ));
@@ -110,4 +110,68 @@ fn vec_to_string<V: std::fmt::Display>(list: &Vec<V>) -> String {
     result.pop();
     result.push(']');
     result
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    impl Graph<String> {
+        fn add_edge_by_string(&mut self, first: &str, second: &str) {
+            self.add_edge_by_vertices(&first.to_string(), &second.to_string());
+        }
+    }
+
+    #[test]
+    fn basic_graph_construction_works() {
+        let mut city_graph = Graph::<String>::new(
+            [
+                "Seattle",
+                "San Francisco",
+                "Los Angeles",
+                "Riverside",
+                "Phoenix",
+                "Chicago",
+                "Boston",
+                "New York",
+                "Atlanta",
+                "Miami",
+                "Dallas",
+                "Houston",
+                "Detroit",
+                "Philadelphia",
+                "Washington",
+            ]
+            .iter().map(|s| s.to_string()),
+        );
+ 
+		city_graph.add_edge_by_string("Seattle", "Chicago");
+		city_graph.add_edge_by_string("Seattle", "San Francisco");
+		city_graph.add_edge_by_string("San Francisco", "Riverside");
+		city_graph.add_edge_by_string("San Francisco", "Los Angeles");
+		city_graph.add_edge_by_string("Los Angeles", "Riverside");
+		city_graph.add_edge_by_string("Los Angeles", "Phoenix");
+		city_graph.add_edge_by_string("Riverside", "Phoenix");
+		city_graph.add_edge_by_string("Riverside", "Chicago");
+		city_graph.add_edge_by_string("Phoenix", "Dallas");
+		city_graph.add_edge_by_string("Phoenix", "Houston");
+		city_graph.add_edge_by_string("Dallas", "Chicago");
+		city_graph.add_edge_by_string("Dallas", "Atlanta");
+		city_graph.add_edge_by_string("Dallas", "Houston");
+		city_graph.add_edge_by_string("Houston", "Atlanta");
+		city_graph.add_edge_by_string("Houston", "Miami");
+		city_graph.add_edge_by_string("Atlanta", "Chicago");
+		city_graph.add_edge_by_string("Atlanta", "Washington");
+		city_graph.add_edge_by_string("Atlanta", "Miami");
+		city_graph.add_edge_by_string("Miami", "Washington");
+		city_graph.add_edge_by_string("Chicago", "Detroit");
+		city_graph.add_edge_by_string("Detroit", "Boston");
+		city_graph.add_edge_by_string("Detroit", "Washington");
+		city_graph.add_edge_by_string("Detroit", "New York");
+		city_graph.add_edge_by_string("Boston", "New York");
+		city_graph.add_edge_by_string("New York", "Philadelphia");
+		city_graph.add_edge_by_string("Philadelphia", "Washington"); 
+        
+        println!("{}", city_graph.to_string());
+    }
 }
