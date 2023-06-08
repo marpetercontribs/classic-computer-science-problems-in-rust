@@ -68,19 +68,15 @@ impl<V: Clone + PartialEq> Graph<V> {
     pub fn edges_of(&self, vertex: &V) -> Vec<Edge> {
         self.edges_of_index(self.index_of(&vertex))
     }
-
-    // This is an undirected graph, so we always add
-    // edges in both directions
+    // This is an undirected graph, so we always add edges in both directions
     pub fn add_edge(&mut self, edge: Edge) {
         self.edges[edge.v].push(edge.reversed());
         self.edges[edge.u].push(edge);
     }
-
     // Add an edge using vertex indices (convenience method)
     pub fn add_edge_by_indices(&mut self, u: usize, v: usize) {
         self.add_edge(Edge::new(u, v));
     }
-
     // Add an edge by looking up vertex indices (convenience method)
     pub fn add_edge_by_vertices(&mut self, first: &V, second: &V) {
         self.add_edge(Edge::new(self.index_of(first), self.index_of(second)));
