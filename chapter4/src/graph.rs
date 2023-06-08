@@ -66,7 +66,7 @@ impl<V: Clone + PartialEq> Graph<V> {
     }
     // Look up the index of a vertex and return its edges (convenience method)
     pub fn edges_of(&self, vertex: &V) -> Vec<Edge> {
-        self.edges_of_index(self.index_of(&vertex))
+        self.edges_of_index(self.index_of(vertex))
     }
     // This is an undirected graph, so we always add edges in both directions
     pub fn add_edge(&mut self, edge: Edge) {
@@ -97,7 +97,7 @@ impl<V: Clone + PartialEq + std::fmt::Display> ToString for Graph<V> {
     }
 }
 
-fn vec_to_string<V: std::fmt::Display>(list: &Vec<V>) -> String {
+fn vec_to_string<V: std::fmt::Display>(list: &[V]) -> String {
     let mut result = String::from("[");
     for s in list.iter().map(|v| v.to_string()) {
         result.push_str(&format!("{s}, "));
