@@ -13,22 +13,3 @@ Missing ports:
 
 - Everything in Chapter 4.3ff
 
-Exercises completed:
-
-- Chapter 1
-  - [X] 1. Own Fibonacci algorithm with unit tests and performance comparison
-  - [ ] 2. Specific to the programming language
-  - [X] 3. Generlize hanoi to arbitrary number of towers
-  - [ ] 4. One-time-pad to encrypt images
-- Chapter 2
-  - [X] 1. Demonstrate performance advantage of binary over linear search
-  - [X] 2. Count the number of states covered in `bfs`, `dfs` and `astar` searches
-  - [X] 3. Solve missionaries problem if the number of missionaries differs from the number of cannibals
-- Chapter 3
-   - [X] 1. Extend `word_search` to allow for words to cross
-   - [ ] 2. Write a solver for problem 3.6
-   - [X] 3. Write Sudoku solver
-- Chapter 4
-   - [ ] 1. Add functions to remove edges and vertices 
-   - [ ] 2. Add support for di(rected) graphs
-   - [ ] 3. Solve the Seven Bridges of Koenigsberg problem
