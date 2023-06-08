@@ -24,6 +24,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub mod edge;
+pub mod graph;
+pub mod graph_ex;
+
 fn main() {
     println!("Use 'cargo test <program name> -- --nocapture' to run [un]weighted_graph belonging to this chapter.");
     println!("Use 'cargo run --bin <program name>' to run one of the other programs belonging to this chapter.");
