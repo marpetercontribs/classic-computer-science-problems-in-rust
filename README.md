@@ -28,3 +28,7 @@ Exercises completed:
    - [X] 1. Extend `word_search` to allow for words to cross
    - [ ] 2. Write a solver for problem 3.6
    - [X] 3. Write Sudoku solver
+- Chapter 4
+   - [ ] 1. Add functions to remove edges and vertices 
+   - [ ] 2. Add support for di(rected) graphs
+   - [ ] 3. Solve the Seven Bridges of Koenigsberg problem
