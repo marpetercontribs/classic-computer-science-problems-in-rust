@@ -43,8 +43,25 @@ impl<V: Clone + PartialEq> Graph<V> {
     }
     // Remove a vertex from the graph
     pub fn remove_vertex(&mut self, vertex: V) {
-
-    } 
+        // removing all Edges starting from or ending at vertex
+        self.edges_of(&vertex)
+            .iter()
+            .for_each(|edge| self.remove_edge(edge));
+        // requires updating all Edges with u or v greater than the index of the removed vertex!
+        let index = self.index_of(&vertex);
+        self.vertices.remove(index);
+        self.edges.remove(index);
+        self.edges.iter_mut().for_each(|edges| {
+            edges.iter_mut().for_each(|edge| {
+                if edge.u > index {
+                    edge.u -= 1
+                }
+                if edge.v > index {
+                    edge.v -= 1
+                }
+            })
+        });
+    }
     // Find the vertex at a specific index
     pub fn vertex_at(&self, index: usize) -> V {
         self.vertices[index].clone()
@@ -72,32 +89,40 @@ impl<V: Clone + PartialEq> Graph<V> {
     pub fn edges_of(&self, vertex: &V) -> Vec<Edge> {
         self.edges_of_index(self.index_of(&vertex))
     }
-
-    // This is an undirected graph, so we always add
-    // edges in both directions
+    // This is an undirected graph, so we always add edges in both directions
     pub fn add_edge(&mut self, edge: Edge) {
         self.edges[edge.v].push(edge.reversed());
         self.edges[edge.u].push(edge);
     }
-
     // Add an edge using vertex indices (convenience method)
     pub fn add_edge_by_indices(&mut self, u: usize, v: usize) {
         self.add_edge(Edge::new(u, v));
     }
-
     // Add an edge by looking up vertex indices (convenience method)
     pub fn add_edge_by_vertices(&mut self, first: &V, second: &V) {
         self.add_edge(Edge::new(self.index_of(first), self.index_of(second)));
     }
 
     // This is an undirected graph, so we always remove edges in both directions
-    pub fn remove_edge(&mut self, edge: Edge) {
+    pub fn remove_edge(&mut self, edge: &Edge) {
+        let index = self.edges[edge.u]
+            .iter()
+            .position(|e| e.u == edge.u && e.v == edge.v)
+            .unwrap();
+        self.edges[edge.u].remove(index);
+        let index = self.edges[edge.v]
+            .iter()
+            .position(|e| e.u == edge.v && e.v == edge.u)
+            .unwrap();
+        self.edges[edge.v].remove(index);
     }
     // Remove an edge using vertex indices (convenience method)
     pub fn remove_edge_by_indices(&mut self, u: usize, v: usize) {
+        self.remove_edge(&Edge::new(u, v));
     }
     // Remove an edge by looking up vertex indices (convenience method)
     pub fn remove_edge_by_vertices(&mut self, first: &V, second: &V) {
+        self.remove_edge(&Edge::new(self.index_of(first), self.index_of(second)));
     }
 }
 
@@ -156,41 +181,42 @@ mod tests {
                 "Philadelphia",
                 "Washington",
             ]
-            .iter().map(|s| s.to_string()),
+            .iter()
+            .map(|s| s.to_string()),
         );
- 
-		city_graph.add_edge_by_string("Seattle", "Chicago");
-		city_graph.add_edge_by_string("Seattle", "San Francisco");
-		city_graph.add_edge_by_string("San Francisco", "Riverside");
-		city_graph.add_edge_by_string("San Francisco", "Los Angeles");
-		city_graph.add_edge_by_string("Los Angeles", "Riverside");
-		city_graph.add_edge_by_string("Los Angeles", "Phoenix");
-		city_graph.add_edge_by_string("Riverside", "Phoenix");
-		city_graph.add_edge_by_string("Riverside", "Chicago");
-		city_graph.add_edge_by_string("Phoenix", "Dallas");
-		city_graph.add_edge_by_string("Phoenix", "Houston");
-		city_graph.add_edge_by_string("Dallas", "Chicago");
-		city_graph.add_edge_by_string("Dallas", "Atlanta");
-		city_graph.add_edge_by_string("Dallas", "Houston");
-		city_graph.add_edge_by_string("Houston", "Atlanta");
-		city_graph.add_edge_by_string("Houston", "Miami");
-		city_graph.add_edge_by_string("Atlanta", "Chicago");
-		city_graph.add_edge_by_string("Atlanta", "Washington");
-		city_graph.add_edge_by_string("Atlanta", "Miami");
-		city_graph.add_edge_by_string("Miami", "Washington");
-		city_graph.add_edge_by_string("Chicago", "Detroit");
-		city_graph.add_edge_by_string("Detroit", "Boston");
-		city_graph.add_edge_by_string("Detroit", "Washington");
-		city_graph.add_edge_by_string("Detroit", "New York");
-		city_graph.add_edge_by_string("Boston", "New York");
-		city_graph.add_edge_by_string("New York", "Philadelphia");
-		city_graph.add_edge_by_string("Philadelphia", "Washington"); 
-        
+
+        city_graph.add_edge_by_string("Seattle", "Chicago");
+        city_graph.add_edge_by_string("Seattle", "San Francisco");
+        city_graph.add_edge_by_string("San Francisco", "Riverside");
+        city_graph.add_edge_by_string("San Francisco", "Los Angeles");
+        city_graph.add_edge_by_string("Los Angeles", "Riverside");
+        city_graph.add_edge_by_string("Los Angeles", "Phoenix");
+        city_graph.add_edge_by_string("Riverside", "Phoenix");
+        city_graph.add_edge_by_string("Riverside", "Chicago");
+        city_graph.add_edge_by_string("Phoenix", "Dallas");
+        city_graph.add_edge_by_string("Phoenix", "Houston");
+        city_graph.add_edge_by_string("Dallas", "Chicago");
+        city_graph.add_edge_by_string("Dallas", "Atlanta");
+        city_graph.add_edge_by_string("Dallas", "Houston");
+        city_graph.add_edge_by_string("Houston", "Atlanta");
+        city_graph.add_edge_by_string("Houston", "Miami");
+        city_graph.add_edge_by_string("Atlanta", "Chicago");
+        city_graph.add_edge_by_string("Atlanta", "Washington");
+        city_graph.add_edge_by_string("Atlanta", "Miami");
+        city_graph.add_edge_by_string("Miami", "Washington");
+        city_graph.add_edge_by_string("Chicago", "Detroit");
+        city_graph.add_edge_by_string("Detroit", "Boston");
+        city_graph.add_edge_by_string("Detroit", "Washington");
+        city_graph.add_edge_by_string("Detroit", "New York");
+        city_graph.add_edge_by_string("Boston", "New York");
+        city_graph.add_edge_by_string("New York", "Philadelphia");
+        city_graph.add_edge_by_string("Philadelphia", "Washington");
+
         println!("{}", city_graph.to_string());
 
         city_graph.remove_edge_by_vertices(&"Boston".to_string(), &"New York".to_string());
         city_graph.remove_vertex("Dallas".to_string());
 
-        println!("{}", city_graph.to_string());       
+        println!("{}", city_graph.to_string());
     }
 }
