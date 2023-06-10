@@ -16,6 +16,10 @@
 use chapter4::graph::Graph;
 use chapter4::edge::Edge;
 
+use generic_search::Node;
+use generic_search::bfs;
+// use generic_search::node_to_path;
+
 pub struct UnweightedGraph<V: Clone + PartialEq> {
     vertices: Vec<V>,
     edges: Vec<Vec<Edge>>,
@@ -93,14 +97,8 @@ fn vec_to_string<V: ToString>(list: &[V]) -> String {
     result
 }
 
-impl UnweightedGraph<String> {
-    pub fn add_edge_by_string(&mut self, first: &str, second: &str) {
-        self.add_edge_by_vertices(&first.to_string(), &second.to_string());
-    }
-}
-
 fn main() {
-    let mut city_graph = UnweightedGraph::<String>::new(
+    let mut city_graph = UnweightedGraph::<&str>::new(
         [
             "Seattle",
             "San Francisco",
@@ -118,35 +116,49 @@ fn main() {
             "Philadelphia",
             "Washington",
         ]
-        .iter().map(|s| s.to_string()),
+        .into_iter()
     );
     
-    city_graph.add_edge_by_string("Seattle", "Chicago");
-    city_graph.add_edge_by_string("Seattle", "San Francisco");
-    city_graph.add_edge_by_string("San Francisco", "Riverside");
-    city_graph.add_edge_by_string("San Francisco", "Los Angeles");
-    city_graph.add_edge_by_string("Los Angeles", "Riverside");
-    city_graph.add_edge_by_string("Los Angeles", "Phoenix");
-    city_graph.add_edge_by_string("Riverside", "Phoenix");
-    city_graph.add_edge_by_string("Riverside", "Chicago");
-    city_graph.add_edge_by_string("Phoenix", "Dallas");
-    city_graph.add_edge_by_string("Phoenix", "Houston");
-    city_graph.add_edge_by_string("Dallas", "Chicago");
-    city_graph.add_edge_by_string("Dallas", "Atlanta");
-    city_graph.add_edge_by_string("Dallas", "Houston");
-    city_graph.add_edge_by_string("Houston", "Atlanta");
-    city_graph.add_edge_by_string("Houston", "Miami");
-    city_graph.add_edge_by_string("Atlanta", "Chicago");
-    city_graph.add_edge_by_string("Atlanta", "Washington");
-    city_graph.add_edge_by_string("Atlanta", "Miami");
-    city_graph.add_edge_by_string("Miami", "Washington");
-    city_graph.add_edge_by_string("Chicago", "Detroit");
-    city_graph.add_edge_by_string("Detroit", "Boston");
-    city_graph.add_edge_by_string("Detroit", "Washington");
-    city_graph.add_edge_by_string("Detroit", "New York");
-    city_graph.add_edge_by_string("Boston", "New York");
-    city_graph.add_edge_by_string("New York", "Philadelphia");
-    city_graph.add_edge_by_string("Philadelphia", "Washington"); 
+    city_graph.add_edge_by_vertices(&"Seattle", &"Chicago");
+    city_graph.add_edge_by_vertices(&"Seattle", &"San Francisco");
+    city_graph.add_edge_by_vertices(&"San Francisco", &"Riverside");
+    city_graph.add_edge_by_vertices(&"San Francisco", &"Los Angeles");
+    city_graph.add_edge_by_vertices(&"Los Angeles", &"Riverside");
+    city_graph.add_edge_by_vertices(&"Los Angeles", &"Phoenix");
+    city_graph.add_edge_by_vertices(&"Riverside", &"Phoenix");
+    city_graph.add_edge_by_vertices(&"Riverside", &"Chicago");
+    city_graph.add_edge_by_vertices(&"Phoenix", &"Dallas");
+    city_graph.add_edge_by_vertices(&"Phoenix", &"Houston");
+    city_graph.add_edge_by_vertices(&"Dallas", &"Chicago");
+    city_graph.add_edge_by_vertices(&"Dallas", &"Atlanta");
+    city_graph.add_edge_by_vertices(&"Dallas", &"Houston");
+    city_graph.add_edge_by_vertices(&"Houston", &"Atlanta");
+    city_graph.add_edge_by_vertices(&"Houston", &"Miami");
+    city_graph.add_edge_by_vertices(&"Atlanta", &"Chicago");
+    city_graph.add_edge_by_vertices(&"Atlanta", &"Washington");
+    city_graph.add_edge_by_vertices(&"Atlanta", &"Miami");
+    city_graph.add_edge_by_vertices(&"Miami", &"Washington");
+    city_graph.add_edge_by_vertices(&"Chicago", &"Detroit");
+    city_graph.add_edge_by_vertices(&"Detroit", &"Boston");
+    city_graph.add_edge_by_vertices(&"Detroit", &"Washington");
+    city_graph.add_edge_by_vertices(&"Detroit", &"New York");
+    city_graph.add_edge_by_vertices(&"Boston", &"New York");
+    city_graph.add_edge_by_vertices(&"New York", &"Philadelphia");
+    city_graph.add_edge_by_vertices(&"Philadelphia", &"Washington"); 
     
     println!("{}", city_graph.to_string());
+
+    let bfs_result = generic_search::bfs(
+        "Boston",
+        |v| *v == "Miami",
+        |v| city_graph.neighbors_of(v)
+    );
+
+    match bfs_result {
+        None => println!("No solution found using breadth-first search"),
+        Some(node) => {
+            let path = generic_search::node_to_path(&node);
+            println!("Path from Boston to Miami:: {}", vec_to_string(&path));
+        }
+    }
 }
