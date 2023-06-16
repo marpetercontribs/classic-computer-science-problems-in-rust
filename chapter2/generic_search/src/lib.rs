@@ -105,7 +105,6 @@ pub fn node_to_path<T: PartialOrd + Eq + Copy>(node: &Node<T>) -> Vec<T> {
         current_node = &parent;
         path.push(current_node.state);
     }
-    println!("Path is {} steps long.",path.len());
     path.into_iter().rev().collect()
 }
 
@@ -118,7 +117,6 @@ pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
     while let Some(current_node) = frontier.pop() {
         let current_state = current_node.state;
         // if we found the goal, we're done
-        tested += 1;
         if goal_test(&current_state) {
             return Some(current_node);
         }
@@ -157,6 +155,7 @@ pub fn bfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
 }
 
 pub fn astar<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>, H: Fn(&T) -> f64>
+    (initial: T, goal_test: GT, successors: S, heuristic: H) -> Option<Rc<Node<T>>> {
     // frontier is where we've yet to go
     let mut frontier = BinaryHeap::<Rc<Node<T>>>::new();
     let mut explored = HashMap::<T,f64>::new();
