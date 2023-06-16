@@ -31,13 +31,13 @@ pub trait Graph {
     fn vertex_at(&self, index: usize) -> Self::Vertex;
     // Find the vertices that a vertex at some index is connected to
     fn neighbors_of_index(&self, index: usize) -> Vec<Self::Vertex>;
-     // Return all of the edges associated with a vertex at some index
-    fn edges_of_index(&self, index: usize) -> Vec<Edge>;  
+    // Return all of the edges associated with a vertex at some index
+    fn edges_of_index(&self, index: usize) -> Vec<Edge>;
     // This is an undirected graph, so we always add edges in both directions
-     fn add_edge(&mut self, edge: Edge);   
+    fn add_edge(&mut self, edge: Edge);
 
     // Add an edge using vertex indices (convenience method)
-     fn add_edge_by_indices(&mut self, u: usize, v: usize) {
+    fn add_edge_by_indices(&mut self, u: usize, v: usize) {
         self.add_edge(Edge::new(u, v));
     }
     // Add an edge by looking up vertex indices (convenience method)
@@ -45,7 +45,7 @@ pub trait Graph {
         self.add_edge(Edge::new(self.index_of(first), self.index_of(second)));
     }
 
-     // Look up a vertice's index and find its neighbors (convenience method)
+    // Look up a vertice's index and find its neighbors (convenience method)
     fn neighbors_of(&self, vertex: &Self::Vertex) -> Vec<Self::Vertex> {
         self.neighbors_of_index(self.index_of(vertex))
     }

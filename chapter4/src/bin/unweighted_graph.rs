@@ -13,12 +13,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter4::graph::Graph;
 use chapter4::edge::Edge;
-
-use generic_search::Node;
-use generic_search::bfs;
-// use generic_search::node_to_path;
+use chapter4::graph::Graph;
 
 pub struct UnweightedGraph<V: Clone + PartialEq> {
     vertices: Vec<V>,
@@ -116,9 +112,9 @@ fn main() {
             "Philadelphia",
             "Washington",
         ]
-        .into_iter()
+        .into_iter(),
     );
-    
+
     city_graph.add_edge_by_vertices(&"Seattle", &"Chicago");
     city_graph.add_edge_by_vertices(&"Seattle", &"San Francisco");
     city_graph.add_edge_by_vertices(&"San Francisco", &"Riverside");
@@ -144,15 +140,12 @@ fn main() {
     city_graph.add_edge_by_vertices(&"Detroit", &"New York");
     city_graph.add_edge_by_vertices(&"Boston", &"New York");
     city_graph.add_edge_by_vertices(&"New York", &"Philadelphia");
-    city_graph.add_edge_by_vertices(&"Philadelphia", &"Washington"); 
-    
+    city_graph.add_edge_by_vertices(&"Philadelphia", &"Washington");
+
     println!("{}", city_graph.to_string());
 
-    let bfs_result = generic_search::bfs(
-        "Boston",
-        |v| *v == "Miami",
-        |v| city_graph.neighbors_of(v)
-    );
+    let bfs_result =
+        generic_search::bfs("Boston", |v| *v == "Miami", |v| city_graph.neighbors_of(v));
 
     match bfs_result {
         None => println!("No solution found using breadth-first search"),
