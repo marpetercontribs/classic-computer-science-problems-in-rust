@@ -16,3 +16,27 @@
 
 pub mod edge;
 pub mod graph;
+pub mod unweighted_graph;
+pub mod weighted_graph;
+
+pub fn vec_to_string<V: ToString>(list: &[V]) -> String {
+    let mut result = String::from("[");
+    for s in list.iter().map(|v| v.to_string()) {
+        result.push_str(&format!("{s}, "));
+    }
+    result.pop();
+    result.pop();
+    result.push(']');
+    result
+}
+
+pub fn tuple_vec_to_string<V: ToString, S: ToString>(list: &[(V, S)]) -> String {
+    let mut result = String::from("[");
+    for (vs, ss) in list.iter().map(|(v, s)| (v.to_string(), s.to_string())) {
+        result.push_str(&format!("({vs}, {ss}), "));
+    }
+    result.pop();
+    result.pop();
+    result.push(']');
+    result
+}

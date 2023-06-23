@@ -15,7 +15,9 @@
 // limitations under the License.
 
 pub trait Edge {
-    fn reversed(&self) -> Self where Self: Sized;
+    fn reversed(&self) -> Self
+    where
+        Self: Sized;
 }
 
 #[derive(Clone)]
@@ -42,5 +44,38 @@ impl Edge for SimpleEdge {
 impl ToString for SimpleEdge {
     fn to_string(&self) -> String {
         format!("{} -> {}", self.u, self.v)
+    }
+}
+
+#[derive(Clone)]
+pub struct WeightedEdge {
+    pub simple_edge: SimpleEdge,
+    pub weight: f64,
+}
+
+impl WeightedEdge {
+    pub fn new(u: usize, v: usize, weight: f64) -> Self {
+        WeightedEdge {
+            simple_edge: SimpleEdge { u, v },
+            weight,
+        }
+    }
+}
+
+impl Edge for WeightedEdge {
+    fn reversed(&self) -> WeightedEdge {
+        WeightedEdge {
+            simple_edge: self.simple_edge.reversed(),
+            weight: self.weight,
+        }
+    }
+}
+
+impl ToString for WeightedEdge {
+    fn to_string(&self) -> String {
+        format!(
+            "{} {} -> {}",
+            self.simple_edge.u, self.weight, self.simple_edge.v
+        )
     }
 }
