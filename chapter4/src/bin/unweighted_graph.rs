@@ -14,18 +14,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 use chapter4::edge::Edge;
+use chapter4::edge::SimpleEdge;
 use chapter4::graph::Graph;
 
 pub struct UnweightedGraph<V: Clone + PartialEq> {
     vertices: Vec<V>,
-    edges: Vec<Vec<Edge>>,
+    edges: Vec<Vec<SimpleEdge>>,
+}
+
+impl<V: Clone + PartialEq> UnweightedGraph<V> {
+    // Add an edge using vertex indices (convenience method)
+    fn add_edge_by_indices(&mut self, u: usize, v: usize) {
+        self.add_edge(SimpleEdge::new(u, v));
+    }
+    // Add an edge by looking up vertex indices (convenience method)
+    fn add_edge_by_vertices(&mut self, first: &<UnweightedGraph<V> as Graph>::Vertex,
+            second: &<UnweightedGraph<V> as Graph>::Vertex) {
+        self.add_edge(SimpleEdge::new(self.index_of(first), self.index_of(second)));
+    }
 }
 
 impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
     type Vertex = V;
+    type SizedEdge = SimpleEdge;
     fn new(vertices: impl Iterator<Item = V>) -> Self {
         let vertices = Vec::from_iter(vertices);
-        let edges = vertices.iter().map(|_| Vec::<Edge>::new()).collect();
+        let edges = vertices.iter().map(|_| Vec::<SimpleEdge>::new()).collect();
         UnweightedGraph { vertices, edges }
     }
     // Number of vertices
@@ -39,7 +53,7 @@ impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
     // Add a vertex to the graph and return its index
     fn add_vertex(&mut self, vertex: V) -> usize {
         self.vertices.push(vertex);
-        self.edges.push(Vec::<Edge>::new());
+        self.edges.push(Vec::<SimpleEdge>::new());
         self.get_vertex_count() - 1
     }
     // Find the vertex at a specific index
@@ -58,11 +72,11 @@ impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
             .collect()
     }
     // Return all of the edges associated with a vertex at some index
-    fn edges_of_index(&self, index: usize) -> Vec<Edge> {
+    fn edges_of_index(&self, index: usize) -> Vec<SimpleEdge> {
         self.edges[index].clone()
     }
     // This is an undirected graph, so we always add edges in both directions
-    fn add_edge(&mut self, edge: Edge) {
+    fn add_edge(&mut self, edge: SimpleEdge) {
         self.edges[edge.v].push(edge.reversed());
         self.edges[edge.u].push(edge);
     }

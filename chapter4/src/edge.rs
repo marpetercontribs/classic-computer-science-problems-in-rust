@@ -14,25 +14,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+pub trait Edge {
+    fn reversed(&self) -> Self where Self: Sized;
+}
+
 #[derive(Clone)]
-pub struct Edge {
+pub struct SimpleEdge {
     pub u: usize,
     pub v: usize,
 }
 
-impl Edge {
+impl SimpleEdge {
     pub fn new(u: usize, v: usize) -> Self {
-        Edge { u, v }
+        SimpleEdge { u, v }
     }
-    pub fn reversed(&self) -> Edge {
-        Edge {
+}
+
+impl Edge for SimpleEdge {
+    fn reversed(&self) -> SimpleEdge {
+        SimpleEdge {
             u: self.v,
             v: self.u,
         }
     }
 }
 
-impl ToString for Edge {
+impl ToString for SimpleEdge {
     fn to_string(&self) -> String {
         format!("{} -> {}", self.u, self.v)
     }

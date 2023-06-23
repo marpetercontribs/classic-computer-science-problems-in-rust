@@ -18,6 +18,7 @@ use crate::edge::Edge;
 
 pub trait Graph {
     type Vertex: Clone + PartialEq;
+    type SizedEdge: Edge + Sized;
     fn new(vertices: impl Iterator<Item = Self::Vertex>) -> Self;
     // Number of vertices
     fn get_vertex_count(&self) -> usize;
@@ -32,25 +33,16 @@ pub trait Graph {
     // Find the vertices that a vertex at some index is connected to
     fn neighbors_of_index(&self, index: usize) -> Vec<Self::Vertex>;
     // Return all of the edges associated with a vertex at some index
-    fn edges_of_index(&self, index: usize) -> Vec<Edge>;
+    fn edges_of_index(&self, index: usize) -> Vec<Self::SizedEdge>;
     // This is an undirected graph, so we always add edges in both directions
-    fn add_edge(&mut self, edge: Edge);
-
-    // Add an edge using vertex indices (convenience method)
-    fn add_edge_by_indices(&mut self, u: usize, v: usize) {
-        self.add_edge(Edge::new(u, v));
-    }
-    // Add an edge by looking up vertex indices (convenience method)
-    fn add_edge_by_vertices(&mut self, first: &Self::Vertex, second: &Self::Vertex) {
-        self.add_edge(Edge::new(self.index_of(first), self.index_of(second)));
-    }
+    fn add_edge(&mut self, edge: Self::SizedEdge);
 
     // Look up a vertice's index and find its neighbors (convenience method)
     fn neighbors_of(&self, vertex: &Self::Vertex) -> Vec<Self::Vertex> {
         self.neighbors_of_index(self.index_of(vertex))
     }
     // Look up the index of a vertex and return its edges (convenience method)
-    fn edges_of(&self, vertex: &Self::Vertex) -> Vec<Edge> {
+    fn edges_of(&self, vertex: &Self::Vertex) -> Vec<Self::SizedEdge> {
         self.edges_of_index(self.index_of(vertex))
     }
 }
