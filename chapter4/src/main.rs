@@ -26,7 +26,6 @@
 
 pub mod edge;
 pub mod graph;
-pub mod graph_ex;
 
 fn main() {
     println!("Use 'cargo test <program name> -- --nocapture' to run [un]weighted_graph belonging to this chapter.");

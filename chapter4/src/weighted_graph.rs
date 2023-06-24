@@ -74,6 +74,44 @@ impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
         self.edges[edge.simple_edge.v].push(edge.reversed());
         self.edges[edge.simple_edge.u].push(edge);
     }
+    // Remove a vertex from the graph
+    fn remove_vertex(&mut self, vertex: V) {
+        // removing all Edges starting from or ending at vertex
+        self.edges_of(&vertex)
+            .iter()
+            .for_each(|edge| self.remove_edge(edge));
+        // requires updating all Edges with u or v greater than the index of the removed vertex!
+        let index = self.index_of(&vertex);
+        self.vertices.remove(index);
+        self.edges.remove(index);
+        self.edges.iter_mut().for_each(|edges| {
+            edges.iter_mut().for_each(|edge| {
+                if edge.simple_edge.u > index {
+                    edge.simple_edge.u -= 1
+                }
+                if edge.simple_edge.v > index {
+                    edge.simple_edge.v -= 1
+                }
+            })
+        });
+    }
+    // This is an undirected graph, so we always remove edges in both directions
+    fn remove_edge(&mut self, edge: &WeightedEdge) {
+        let index = self.edges[edge.simple_edge.u]
+            .iter()
+            .position(|e| {
+                e.simple_edge.u == edge.simple_edge.u && e.simple_edge.v == edge.simple_edge.v
+            })
+            .unwrap();
+        self.edges[edge.simple_edge.u].remove(index);
+        let index = self.edges[edge.simple_edge.v]
+            .iter()
+            .position(|e| {
+                e.simple_edge.u == edge.simple_edge.v && e.simple_edge.v == edge.simple_edge.u
+            })
+            .unwrap();
+        self.edges[edge.simple_edge.v].remove(index);
+    }
 }
 
 impl<V: Clone + PartialEq + ToString> ToString for WeightedGraph<V> {
@@ -145,6 +183,11 @@ mod tests {
         city_graph.add_edge_by_vertices(&"Boston", &"New York", 190.0);
         city_graph.add_edge_by_vertices(&"New York", &"Philadelphia", 81.0);
         city_graph.add_edge_by_vertices(&"Philadelphia", &"Washington", 123.0);
+
+        println!("{}", city_graph.to_string());
+
+        city_graph.remove_edge_by_vertices(&"Boston", &"New York");
+        city_graph.remove_vertex("Dallas");
 
         println!("{}", city_graph.to_string());
     }

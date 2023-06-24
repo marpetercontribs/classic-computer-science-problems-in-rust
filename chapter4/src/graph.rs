@@ -25,17 +25,29 @@ pub trait Graph {
     fn edges(&self) -> Vec<Vec<Self::SizedEdge>>;
     // Add a vertex to the graph and return its index
     fn add_vertex(&mut self, vertex: Self::Vertex) -> usize;
+    // Exercise 4.1: Remove a vertex from the graph
+    fn remove_vertex(&mut self, vertex: Self::Vertex);
     // Add an edge to the graph; for undirected graphs add edges in both directions
     fn add_edge(&mut self, edge: Self::SizedEdge);
-    // Find the vertex at a specific index    // Number of vertices
+    // Exercise 4.1: This is an undirected graph, so we always remove edges in both directions
+    fn remove_edge(&mut self, edge: &Self::SizedEdge);
+    // Exercise 4.1: Remove an edge by looking up vertex indices (convenience method)
+    fn remove_edge_by_vertices(&mut self, first: &Self::Vertex, second: &Self::Vertex) {
+        let u = self.index_of(first);
+        let v = self.index_of(second);
+        let edges = self.edges();
+        let edge = edges[u].iter().find(|e| e.v() == v).unwrap();
+        self.remove_edge(&edge);
+    }
+    // Number of vertices
     fn get_vertex_count(&self) -> usize {
         self.vertices().len()
     }
     // Number of edges
-    fn get_edge_count(&self) -> usize{
+    fn get_edge_count(&self) -> usize {
         self.edges().iter().flatten().count()
     }
-   // Find the index of a vertex in the graph
+    // Find the index of a vertex in the graph
     fn index_of(&self, vertex: &Self::Vertex) -> usize {
         self.vertices().iter().position(|v| v == vertex).unwrap()
     }
@@ -61,70 +73,5 @@ pub trait Graph {
     // Look up the index of a vertex and return its edges (convenience method)
     fn edges_of(&self, vertex: &Self::Vertex) -> Vec<Self::SizedEdge> {
         self.edges_of_index(self.index_of(vertex))
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    impl Graph<String> {
-        fn add_edge_by_string(&mut self, first: &str, second: &str) {
-            self.add_edge_by_vertices(&first.to_string(), &second.to_string());
-        }
-    }
-
-    #[test]
-    fn basic_graph_construction_works() {
-        let mut city_graph = Graph::<String>::new(
-            [
-                "Seattle",
-                "San Francisco",
-                "Los Angeles",
-                "Riverside",
-                "Phoenix",
-                "Chicago",
-                "Boston",
-                "New York",
-                "Atlanta",
-                "Miami",
-                "Dallas",
-                "Houston",
-                "Detroit",
-                "Philadelphia",
-                "Washington",
-            ]
-            .iter()
-            .map(|s| s.to_string()),
-        );
-
-        city_graph.add_edge_by_string("Seattle", "Chicago");
-        city_graph.add_edge_by_string("Seattle", "San Francisco");
-        city_graph.add_edge_by_string("San Francisco", "Riverside");
-        city_graph.add_edge_by_string("San Francisco", "Los Angeles");
-        city_graph.add_edge_by_string("Los Angeles", "Riverside");
-        city_graph.add_edge_by_string("Los Angeles", "Phoenix");
-        city_graph.add_edge_by_string("Riverside", "Phoenix");
-        city_graph.add_edge_by_string("Riverside", "Chicago");
-        city_graph.add_edge_by_string("Phoenix", "Dallas");
-        city_graph.add_edge_by_string("Phoenix", "Houston");
-        city_graph.add_edge_by_string("Dallas", "Chicago");
-        city_graph.add_edge_by_string("Dallas", "Atlanta");
-        city_graph.add_edge_by_string("Dallas", "Houston");
-        city_graph.add_edge_by_string("Houston", "Atlanta");
-        city_graph.add_edge_by_string("Houston", "Miami");
-        city_graph.add_edge_by_string("Atlanta", "Chicago");
-        city_graph.add_edge_by_string("Atlanta", "Washington");
-        city_graph.add_edge_by_string("Atlanta", "Miami");
-        city_graph.add_edge_by_string("Miami", "Washington");
-        city_graph.add_edge_by_string("Chicago", "Detroit");
-        city_graph.add_edge_by_string("Detroit", "Boston");
-        city_graph.add_edge_by_string("Detroit", "Washington");
-        city_graph.add_edge_by_string("Detroit", "New York");
-        city_graph.add_edge_by_string("Boston", "New York");
-        city_graph.add_edge_by_string("New York", "Philadelphia");
-        city_graph.add_edge_by_string("Philadelphia", "Washington");
-
-        println!("{}", city_graph.to_string());
     }
 }

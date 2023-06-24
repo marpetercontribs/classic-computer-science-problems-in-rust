@@ -63,6 +63,41 @@ impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
         self.edges[edge.v].push(edge.reversed());
         self.edges[edge.u].push(edge);
     }
+
+    // Remove a vertex from the graph
+    fn remove_vertex(&mut self, vertex: V) {
+        // removing all Edges starting from or ending at vertex
+        self.edges_of(&vertex)
+            .iter()
+            .for_each(|edge| self.remove_edge(edge));
+        // requires updating all Edges with u or v greater than the index of the removed vertex!
+        let index = self.index_of(&vertex);
+        self.vertices.remove(index);
+        self.edges.remove(index);
+        self.edges.iter_mut().for_each(|edges| {
+            edges.iter_mut().for_each(|edge| {
+                if edge.u > index {
+                    edge.u -= 1
+                }
+                if edge.v > index {
+                    edge.v -= 1
+                }
+            })
+        });
+    }
+    // This is an undirected graph, so we always remove edges in both directions
+    fn remove_edge(&mut self, edge: &SimpleEdge) {
+        let index = self.edges[edge.u]
+            .iter()
+            .position(|e| e.u == edge.u && e.v == edge.v)
+            .unwrap();
+        self.edges[edge.u].remove(index);
+        let index = self.edges[edge.v]
+            .iter()
+            .position(|e| e.u == edge.v && e.v == edge.u)
+            .unwrap();
+        self.edges[edge.v].remove(index);
+    }
 }
 
 impl<V: Clone + PartialEq + ToString> ToString for UnweightedGraph<V> {
@@ -147,5 +182,10 @@ mod tests {
                 println!("Path from Boston to Miami: {}", vec_to_string(&path));
             }
         }
+
+        city_graph.remove_edge_by_vertices(&"Boston", &"New York");
+        city_graph.remove_vertex("Dallas");
+
+        println!("{}", city_graph.to_string());
     }
 }
