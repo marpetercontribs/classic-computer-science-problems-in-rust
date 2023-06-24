@@ -18,6 +18,8 @@ pub trait Edge {
     fn reversed(&self) -> Self
     where
         Self: Sized;
+    fn u(&self) -> usize;
+    fn v(&self) -> usize;
 }
 
 #[derive(Clone)]
@@ -38,6 +40,12 @@ impl Edge for SimpleEdge {
             u: self.v,
             v: self.u,
         }
+    }
+    fn u(&self) -> usize {
+        self.u
+    }
+    fn v(&self) -> usize {
+        self.v
     }
 }
 
@@ -68,6 +76,12 @@ impl Edge for WeightedEdge {
             simple_edge: self.simple_edge.reversed(),
             weight: self.weight,
         }
+    }
+    fn u(&self) -> usize {
+        self.simple_edge.u
+    }
+    fn v(&self) -> usize {
+        self.simple_edge.v
     }
 }
 

@@ -57,38 +57,17 @@ impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
             .collect();
         WeightedGraph { vertices, edges }
     }
-    // Number of vertices
-    fn get_vertex_count(&self) -> usize {
-        self.vertices.len()
+    fn vertices(&self) -> Vec<V> {
+        self.vertices.clone()
     }
-    // Number of edges
-    fn get_edge_count(&self) -> usize {
-        self.edges.iter().flatten().count()
+    fn edges(&self) -> Vec<Vec<WeightedEdge>> {
+        self.edges.clone()
     }
     // Add a vertex to the graph and return its index
     fn add_vertex(&mut self, vertex: V) -> usize {
         self.vertices.push(vertex);
         self.edges.push(Vec::<WeightedEdge>::new());
         self.get_vertex_count() - 1
-    }
-    // Find the vertex at a specific index
-    fn vertex_at(&self, index: usize) -> V {
-        self.vertices[index].clone()
-    }
-    // Find the index of a vertex in the graph
-    fn index_of(&self, vertex: &V) -> usize {
-        self.vertices.iter().position(|v| v == vertex).unwrap()
-    }
-    // Find the vertices that a vertex at some index is connected to
-    fn neighbors_of_index(&self, index: usize) -> Vec<V> {
-        self.edges[index]
-            .iter()
-            .map(|edge| self.vertex_at(edge.simple_edge.v))
-            .collect()
-    }
-    // Return all of the edges associated with a vertex at some index
-    fn edges_of_index(&self, index: usize) -> Vec<WeightedEdge> {
-        self.edges[index].clone()
     }
     // This is an undirected graph, so we always add edges in both directions
     fn add_edge(&mut self, edge: WeightedEdge) {

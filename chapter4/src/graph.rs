@@ -18,25 +18,42 @@ use crate::edge::Edge;
 
 pub trait Graph {
     type Vertex: Clone + PartialEq;
-    type SizedEdge: Edge + Sized;
+    type SizedEdge: Edge + Sized + Clone;
     fn new(vertices: impl Iterator<Item = Self::Vertex>) -> Self;
-    // Number of vertices
-    fn get_vertex_count(&self) -> usize;
-    // Number of edges
-    fn get_edge_count(&self) -> usize;
+    // "getter" methods to allow implementing most methods on trait level
+    fn vertices(&self) -> Vec<Self::Vertex>;
+    fn edges(&self) -> Vec<Vec<Self::SizedEdge>>;
     // Add a vertex to the graph and return its index
     fn add_vertex(&mut self, vertex: Self::Vertex) -> usize;
-    // Find the vertex at a specific index
-    fn index_of(&self, vertex: &Self::Vertex) -> usize;
-    // Find the index of a vertex in the graph
-    fn vertex_at(&self, index: usize) -> Self::Vertex;
-    // Find the vertices that a vertex at some index is connected to
-    fn neighbors_of_index(&self, index: usize) -> Vec<Self::Vertex>;
-    // Return all of the edges associated with a vertex at some index
-    fn edges_of_index(&self, index: usize) -> Vec<Self::SizedEdge>;
-    // This is an undirected graph, so we always add edges in both directions
+    // Add an edge to the graph; for undirected graphs add edges in both directions
     fn add_edge(&mut self, edge: Self::SizedEdge);
-
+    // Find the vertex at a specific index    // Number of vertices
+    fn get_vertex_count(&self) -> usize {
+        self.vertices().len()
+    }
+    // Number of edges
+    fn get_edge_count(&self) -> usize{
+        self.edges().iter().flatten().count()
+    }
+   // Find the index of a vertex in the graph
+    fn index_of(&self, vertex: &Self::Vertex) -> usize {
+        self.vertices().iter().position(|v| v == vertex).unwrap()
+    }
+    // Find the vertex at a specific index
+    fn vertex_at(&self, index: usize) -> Self::Vertex {
+        self.vertices()[index].clone()
+    }
+    // Find the vertices that a vertex at some index is connected to
+    fn neighbors_of_index(&self, index: usize) -> Vec<Self::Vertex> {
+        self.edges()[index]
+            .iter()
+            .map(|edge| self.vertex_at(edge.v()))
+            .collect()
+    }
+    // Return all of the edges associated with a vertex at some index
+    fn edges_of_index(&self, index: usize) -> Vec<Self::SizedEdge> {
+        self.edges()[index].clone()
+    }
     // Look up a vertice's index and find its neighbors (convenience method)
     fn neighbors_of(&self, vertex: &Self::Vertex) -> Vec<Self::Vertex> {
         self.neighbors_of_index(self.index_of(vertex))
