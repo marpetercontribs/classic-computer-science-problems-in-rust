@@ -32,10 +32,10 @@ pub trait Graph {
         self.vertices().len()
     }
     // Number of edges
-    fn get_edge_count(&self) -> usize{
+    fn get_edge_count(&self) -> usize {
         self.edges().iter().flatten().count()
     }
-   // Find the index of a vertex in the graph
+    // Find the index of a vertex in the graph
     fn index_of(&self, vertex: &Self::Vertex) -> usize {
         self.vertices().iter().position(|v| v == vertex).unwrap()
     }
