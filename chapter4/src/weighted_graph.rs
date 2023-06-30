@@ -18,12 +18,14 @@ use crate::edge::WeightedEdge;
 use crate::graph::Graph;
 use crate::tuple_vec_to_string;
 
+use std::collections::BinaryHeap;
+
 pub struct WeightedGraph<V: Clone + PartialEq> {
     vertices: Vec<V>,
     edges: Vec<Vec<WeightedEdge>>,
 }
 
-impl<V: Clone + PartialEq> WeightedGraph<V> {
+impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
     // Add an edge by looking up vertex indices (convenience method)
     fn add_edge_by_vertices(
         &mut self,
@@ -43,6 +45,55 @@ impl<V: Clone + PartialEq> WeightedGraph<V> {
             .iter()
             .map(|edge| (self.vertex_at(edge.simple_edge.v), edge.weight))
             .collect()
+    }
+
+    fn total_weight(&self, edges: &Vec<WeightedEdge> ) -> f64 {
+        edges.iter()
+             .fold(0_f64, |sum, current| sum + current.weight)
+    }
+
+    fn visit(&self, index: usize, visited: &mut Vec<bool>, pq: &mut BinaryHeap::<WeightedEdge> ) {
+        visited[index] = true;
+        for edge in self.edges_of_index(index) {
+            if !visited[edge.simple_edge.v] {
+                pq.push(edge);
+            }
+        }
+    }
+
+    fn mst(&self, start: usize) -> Vec<WeightedEdge> {
+        let mut result = Vec::<WeightedEdge>::new();
+        if start > self.get_vertex_count() - 1 {
+            return result;
+        }
+        let mut pq = BinaryHeap::<WeightedEdge>::new();
+        let mut visited = vec![false; self.get_vertex_count()];
+
+        self.visit(start, &mut visited, &mut pq);
+
+        while let Some(edge) =  pq.pop() {
+            if !visited[edge.simple_edge.v] {
+                result.push(edge.clone());
+                self.visit(edge.simple_edge.v, &mut visited, &mut pq);
+            }
+        }
+        result
+    }
+
+    fn path_to_string(&self, path: &Vec<WeightedEdge>) -> String {
+        let mut result = String::new();
+        for edge in path {
+            result.push_str(&self.vertex_at(edge.simple_edge.u).to_string());
+            result.push(' ');
+            result.push_str(&edge.weight.to_string());
+            result.push_str(" > ");
+            result.push_str(&self.vertex_at(edge.simple_edge.v).to_string());
+            result.push('\n');        
+        }
+        result.push_str("Total weight: ");
+        result.push_str(&self.total_weight(path).to_string());
+        result.push('\n');          
+        result       
     }
 }
 
@@ -186,9 +237,14 @@ mod tests {
 
         println!("{}", city_graph.to_string());
 
+        let result = city_graph.mst(0);
+
+        println!("{}", city_graph.path_to_string(&result));
+
         city_graph.remove_edge_by_vertices(&"Boston", &"New York");
         city_graph.remove_vertex("Dallas");
 
         println!("{}", city_graph.to_string());
+
     }
 }

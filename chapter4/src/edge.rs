@@ -13,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+use core::cmp::Ordering;
 
 pub trait Edge {
     fn reversed(&self) -> Self
@@ -22,7 +23,7 @@ pub trait Edge {
     fn v(&self) -> usize;
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct SimpleEdge {
     pub u: usize,
     pub v: usize,
@@ -55,7 +56,7 @@ impl ToString for SimpleEdge {
     }
 }
 
-#[derive(Clone)]
+#[derive(Clone, PartialEq)]
 pub struct WeightedEdge {
     pub simple_edge: SimpleEdge,
     pub weight: f64,
@@ -93,3 +94,24 @@ impl ToString for WeightedEdge {
         )
     }
 }
+
+impl Ord for WeightedEdge {
+    fn cmp(&self, other: &Self) -> Ordering {
+        let distance = self.weight - other.weight;
+        if distance < -0.000001_f64 {
+            Ordering::Greater // Note the reversed order, because Rust's BinaryHeap pops highest priority element first!
+        } else if distance > 0.000001_f64 {
+            Ordering::Less // Note the reversed order, because Rust's BinaryHeap pops highest priority element first!
+        } else {
+            Ordering::Equal
+        }
+    }
+}
+
+impl PartialOrd for WeightedEdge {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(&other))
+    }
+}
+
+impl Eq for WeightedEdge {}
