@@ -27,7 +27,7 @@ pub struct WeightedGraph<V: Clone + PartialEq> {
 
 impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
     // Add an edge by looking up vertex indices (convenience method)
-    fn add_edge_by_vertices(
+    pub fn add_edge_by_vertices(
         &mut self,
         first: &<WeightedGraph<V> as Graph>::Vertex,
         second: &<WeightedGraph<V> as Graph>::Vertex,
