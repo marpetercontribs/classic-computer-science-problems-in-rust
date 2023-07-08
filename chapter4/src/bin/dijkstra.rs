@@ -44,7 +44,7 @@ impl Ord for DijkstraNode {
 
 impl PartialOrd for DijkstraNode {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(&other))
+        Some(self.cmp(other))
     }
 }
 
@@ -70,7 +70,7 @@ fn dijkstra<V: Clone + PartialEq>(
         for we in wg.edges_of_index(u) {
             // look at every edge/vertex from the vertex in question
             let dist_v = distances[we.simple_edge.v]; // the old distance to this vertex
-            if dist_v == None || dist_v.unwrap() > we.weight + dist_u {
+            if dist_v.is_none() || dist_v.unwrap() > we.weight + dist_u {
                 // no old distance or found shorter path
                 distances[we.simple_edge.v] = Some(we.weight + dist_u); // update distance to this vertex
                 path_map.insert(we.simple_edge.v, we.clone()); // update the edge on the shortest path to this vertex
@@ -88,15 +88,15 @@ fn dijkstra<V: Clone + PartialEq>(
 
 fn distance_array_to_vertex_dict<V: PartialEq + Clone + Eq + Hash>(wg: &WeightedGraph<V>, distances: Vec<Option<f64>>) -> HashMap<V,Option<f64>> {
     let mut result = HashMap::<V,Option<f64>>::new();
-    for i in 0..distances.len() {
-        result.insert(wg.vertex_at(i), distances[i]);
+    for (i,distance) in distances.iter().enumerate() {
+        result.insert(wg.vertex_at(i), *distance);
     }
     result
 }
 
 fn path_map_to_path(start: usize, end: usize, path_map: HashMap<usize,WeightedEdge>) -> Vec<WeightedEdge> {
     let mut result = Vec::<WeightedEdge>::new();
-    if path_map.len() > 0 {
+    if !path_map.is_empty() {
         let mut edge = path_map.get(&end).unwrap();
         result.push(edge.clone());
         while edge.simple_edge.u != start {
@@ -159,7 +159,7 @@ fn main() {
 
     println!("{}", city_graph.to_string());
 
-    println!("");
+    println!();
     let (distances, path_map) = dijkstra(&city_graph, &"Los Angeles");
     let name_distance = distance_array_to_vertex_dict(&city_graph,distances);
     println!("Distances from Los Angeles:");
@@ -168,7 +168,7 @@ fn main() {
         println!("{key}: {real_value}");
     }
 
-    println!("");
+    println!();
     println!("Shortest path from Los Angeles to Boston:");
     let path = path_map_to_path(city_graph.index_of(&"Los Angeles"), city_graph.index_of(&"Boston"), path_map);
     println!("{}", city_graph.path_to_string(&path));

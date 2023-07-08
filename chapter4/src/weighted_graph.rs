@@ -47,13 +47,13 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
             .collect()
     }
 
-    fn total_weight(&self, edges: &Vec<WeightedEdge>) -> f64 {
+    fn total_weight(&self, edges: &[WeightedEdge]) -> f64 {
         edges
             .iter()
             .fold(0_f64, |sum, current| sum + current.weight)
     }
 
-    fn visit(&self, index: usize, visited: &mut Vec<bool>, pq: &mut BinaryHeap<WeightedEdge>) {
+    fn visit(&self, index: usize, visited: &mut [bool], pq: &mut BinaryHeap<WeightedEdge>) {
         visited[index] = true;
         for edge in self.edges_of_index(index) {
             if !visited[edge.simple_edge.v] {
