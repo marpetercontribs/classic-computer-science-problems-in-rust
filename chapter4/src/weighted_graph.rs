@@ -47,12 +47,13 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
             .collect()
     }
 
-    fn total_weight(&self, edges: &Vec<WeightedEdge> ) -> f64 {
-        edges.iter()
-             .fold(0_f64, |sum, current| sum + current.weight)
+    fn total_weight(&self, edges: &Vec<WeightedEdge>) -> f64 {
+        edges
+            .iter()
+            .fold(0_f64, |sum, current| sum + current.weight)
     }
 
-    fn visit(&self, index: usize, visited: &mut Vec<bool>, pq: &mut BinaryHeap::<WeightedEdge> ) {
+    fn visit(&self, index: usize, visited: &mut Vec<bool>, pq: &mut BinaryHeap<WeightedEdge>) {
         visited[index] = true;
         for edge in self.edges_of_index(index) {
             if !visited[edge.simple_edge.v] {
@@ -71,7 +72,7 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
 
         self.visit(start, &mut visited, &mut pq);
 
-        while let Some(edge) =  pq.pop() {
+        while let Some(edge) = pq.pop() {
             if !visited[edge.simple_edge.v] {
                 result.push(edge.clone());
                 self.visit(edge.simple_edge.v, &mut visited, &mut pq);
@@ -80,7 +81,7 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
         result
     }
 
-    fn path_to_string(&self, path: &Vec<WeightedEdge>) -> String {
+    pub fn path_to_string(&self, path: &Vec<WeightedEdge>) -> String {
         let mut result = String::new();
         for edge in path {
             result.push_str(&self.vertex_at(edge.simple_edge.u).to_string());
@@ -88,12 +89,12 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
             result.push_str(&edge.weight.to_string());
             result.push_str(" > ");
             result.push_str(&self.vertex_at(edge.simple_edge.v).to_string());
-            result.push('\n');        
+            result.push('\n');
         }
         result.push_str("Total weight: ");
         result.push_str(&self.total_weight(path).to_string());
-        result.push('\n');          
-        result       
+        result.push('\n');
+        result
     }
 }
 
@@ -202,6 +203,5 @@ mod tests {
         let result = city_graph.mst(0);
 
         println!("{}", city_graph.path_to_string(&result));
-
     }
 }
