@@ -106,8 +106,7 @@ impl<V: Clone + PartialEq + ToString> ToString for UnweightedDiGraph<V> {
 
 
 pub struct UnweightedGraph<V: Clone + PartialEq> {
-    vertices: Vec<V>,
-    edges: Vec<Vec<SimpleEdge>>,
+    graph: UnweightedDiGraph<V>,
 }
 
 impl<V: Clone + PartialEq> UnweightedGraph<V> {
@@ -127,73 +126,38 @@ impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
     fn new(vertices: impl Iterator<Item = V>) -> Self {
         let vertices = Vec::from_iter(vertices);
         let edges = vertices.iter().map(|_| Vec::<SimpleEdge>::new()).collect();
-        UnweightedGraph { vertices, edges }
+        UnweightedGraph { graph: UnweightedDiGraph { vertices, edges } }
     }
     fn vertices(&self) -> Vec<V> {
-        self.vertices.clone()
+        self.graph.vertices.clone()
     }
     fn edges(&self) -> Vec<Vec<SimpleEdge>> {
-        self.edges.clone()
+        self.graph.edges.clone()
     }
     // Add a vertex to the graph and return its index
     fn add_vertex(&mut self, vertex: V) -> usize {
-        self.vertices.push(vertex);
-        self.edges.push(Vec::<SimpleEdge>::new());
-        self.get_vertex_count() - 1
+        self.graph.add_vertex(vertex)
     }
     // This is an undirected graph, so we always add edges in both directions
     fn add_edge(&mut self, edge: SimpleEdge) {
-        self.edges[edge.v].push(edge.reversed());
-        self.edges[edge.u].push(edge);
+        self.graph.add_edge(edge.reversed());
+        self.graph.add_edge(edge);
     }
 
     // Remove a vertex from the graph
     fn remove_vertex(&mut self, vertex: V) {
-        // removing all Edges starting from or ending at vertex
-        self.edges_of(&vertex)
-            .iter()
-            .for_each(|edge| self.remove_edge(edge));
-        // requires updating all Edges with u or v greater than the index of the removed vertex!
-        let index = self.index_of(&vertex);
-        self.vertices.remove(index);
-        self.edges.remove(index);
-        self.edges.iter_mut().for_each(|edges| {
-            edges.iter_mut().for_each(|edge| {
-                if edge.u > index {
-                    edge.u -= 1
-                }
-                if edge.v > index {
-                    edge.v -= 1
-                }
-            })
-        });
+        self.graph.remove_vertex(vertex);
     }
     // This is an undirected graph, so we always remove edges in both directions
     fn remove_edge(&mut self, edge: &SimpleEdge) {
-        let index = self.edges[edge.u]
-            .iter()
-            .position(|e| e.u == edge.u && e.v == edge.v)
-            .unwrap();
-        self.edges[edge.u].remove(index);
-        let index = self.edges[edge.v]
-            .iter()
-            .position(|e| e.u == edge.v && e.v == edge.u)
-            .unwrap();
-        self.edges[edge.v].remove(index);
+        self.graph.remove_edge(edge);
+        self.graph.remove_edge(&edge.reversed());
     }
 }
 
 impl<V: Clone + PartialEq + ToString> ToString for UnweightedGraph<V> {
     fn to_string(&self) -> String {
-        let mut result = String::new();
-        for i in 0..self.get_vertex_count() {
-            result.push_str(&format!(
-                "{} -> {}\n",
-                self.vertex_at(i).to_string(),
-                vec_to_string(&self.neighbors_of_index(i))
-            ));
-        }
-        result
+        self.graph.to_string()
     }
 }
 
