@@ -85,16 +85,22 @@ fn dijkstra<V: Clone + PartialEq>(
     (distances, path_map)
 }
 
-
-fn distance_array_to_vertex_dict<V: PartialEq + Clone + Eq + Hash>(wg: &WeightedGraph<V>, distances: Vec<Option<f64>>) -> HashMap<V,Option<f64>> {
-    let mut result = HashMap::<V,Option<f64>>::new();
-    for (i,distance) in distances.iter().enumerate() {
+fn distance_array_to_vertex_dict<V: PartialEq + Clone + Eq + Hash>(
+    wg: &WeightedGraph<V>,
+    distances: Vec<Option<f64>>,
+) -> HashMap<V, Option<f64>> {
+    let mut result = HashMap::<V, Option<f64>>::new();
+    for (i, distance) in distances.iter().enumerate() {
         result.insert(wg.vertex_at(i), *distance);
     }
     result
 }
 
-fn path_map_to_path(start: usize, end: usize, path_map: HashMap<usize,WeightedEdge>) -> Vec<WeightedEdge> {
+fn path_map_to_path(
+    start: usize,
+    end: usize,
+    path_map: HashMap<usize, WeightedEdge>,
+) -> Vec<WeightedEdge> {
     let mut result = Vec::<WeightedEdge>::new();
     if !path_map.is_empty() {
         let mut edge = path_map.get(&end).unwrap();
@@ -161,7 +167,7 @@ fn main() {
 
     println!();
     let (distances, path_map) = dijkstra(&city_graph, &"Los Angeles");
-    let name_distance = distance_array_to_vertex_dict(&city_graph,distances);
+    let name_distance = distance_array_to_vertex_dict(&city_graph, distances);
     println!("Distances from Los Angeles:");
     for (key, value) in name_distance.iter() {
         let real_value = value.unwrap();
@@ -170,6 +176,10 @@ fn main() {
 
     println!();
     println!("Shortest path from Los Angeles to Boston:");
-    let path = path_map_to_path(city_graph.index_of(&"Los Angeles"), city_graph.index_of(&"Boston"), path_map);
+    let path = path_map_to_path(
+        city_graph.index_of(&"Los Angeles"),
+        city_graph.index_of(&"Boston"),
+        path_map,
+    );
     println!("{}", city_graph.path_to_string(&path));
 }
