@@ -18,16 +18,99 @@ use crate::edge::SimpleEdge;
 use crate::graph::Graph;
 use crate::vec_to_string;
 
+pub struct UnweightedDiGraph<V: Clone + PartialEq> {
+    vertices: Vec<V>,
+    edges: Vec<Vec<SimpleEdge>>,
+}
+
+impl<V: Clone + PartialEq> UnweightedDiGraph<V> {
+    // Add an edge by looking up vertex indices (convenience method)
+    fn add_edge_by_vertices(
+        &mut self,
+        first: &<UnweightedDiGraph<V> as Graph>::Vertex,
+        second: &<UnweightedDiGraph<V> as Graph>::Vertex,
+    ) {
+        self.add_edge(SimpleEdge::new(self.index_of(first), self.index_of(second)));
+    }
+}
+
+impl<V: Clone + PartialEq> Graph for UnweightedDiGraph<V> {
+    type Vertex = V;
+    type SizedEdge = SimpleEdge;
+    fn new(vertices: impl Iterator<Item = V>) -> Self {
+        let vertices = Vec::from_iter(vertices);
+        let edges = vertices.iter().map(|_| Vec::<SimpleEdge>::new()).collect();
+        UnweightedDiGraph { vertices, edges }
+    }
+    fn vertices(&self) -> Vec<V> {
+        self.vertices.clone()
+    }
+    fn edges(&self) -> Vec<Vec<SimpleEdge>> {
+        self.edges.clone()
+    }
+    // Add a vertex to the graph and return its index
+    fn add_vertex(&mut self, vertex: V) -> usize {
+        self.vertices.push(vertex);
+        self.edges.push(Vec::<SimpleEdge>::new());
+        self.get_vertex_count() - 1
+    }
+    // This is a directed graph, so we always add edges in one direction
+    fn add_edge(&mut self, edge: SimpleEdge) {
+        self.edges[edge.u].push(edge);
+    }
+
+    // Remove a vertex from the graph
+    fn remove_vertex(&mut self, vertex: V) {
+        // removing all Edges starting from or ending at vertex
+        self.edges_of(&vertex)
+            .iter()
+            .for_each(|edge| self.remove_edge(edge));
+        // requires updating all Edges with u or v greater than the index of the removed vertex!
+        let index = self.index_of(&vertex);
+        self.vertices.remove(index);
+        self.edges.remove(index);
+        self.edges.iter_mut().for_each(|edges| {
+            edges.iter_mut().for_each(|edge| {
+                if edge.u > index {
+                    edge.u -= 1
+                }
+                if edge.v > index {
+                    edge.v -= 1
+                }
+            })
+        });
+    }
+    // This is an directed graph, so we always remove edges in one direction
+    fn remove_edge(&mut self, edge: &SimpleEdge) {
+        let index = self.edges[edge.u]
+            .iter()
+            .position(|e| e.u == edge.u && e.v == edge.v)
+            .unwrap();
+        self.edges[edge.u].remove(index);
+    }
+}
+
+impl<V: Clone + PartialEq + ToString> ToString for UnweightedDiGraph<V> {
+    fn to_string(&self) -> String {
+        let mut result = String::new();
+        for i in 0..self.get_vertex_count() {
+            result.push_str(&format!(
+                "{} -> {}\n",
+                self.vertex_at(i).to_string(),
+                vec_to_string(&self.neighbors_of_index(i))
+            ));
+        }
+        result
+    }
+}
+
+
 pub struct UnweightedGraph<V: Clone + PartialEq> {
     vertices: Vec<V>,
     edges: Vec<Vec<SimpleEdge>>,
 }
 
 impl<V: Clone + PartialEq> UnweightedGraph<V> {
-    // Add an edge using vertex indices (convenience method)
-    // fn add_edge_by_indices(&mut self, u: usize, v: usize) {
-    //     self.add_edge(SimpleEdge::new(u, v));
-    // }
     // Add an edge by looking up vertex indices (convenience method)
     fn add_edge_by_vertices(
         &mut self,
