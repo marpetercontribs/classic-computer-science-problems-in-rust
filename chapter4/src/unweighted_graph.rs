@@ -104,7 +104,6 @@ impl<V: Clone + PartialEq + ToString> ToString for UnweightedDiGraph<V> {
     }
 }
 
-
 pub struct UnweightedGraph<V: Clone + PartialEq> {
     graph: UnweightedDiGraph<V>,
 }
@@ -126,7 +125,9 @@ impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
     fn new(vertices: impl Iterator<Item = V>) -> Self {
         let vertices = Vec::from_iter(vertices);
         let edges = vertices.iter().map(|_| Vec::<SimpleEdge>::new()).collect();
-        UnweightedGraph { graph: UnweightedDiGraph { vertices, edges } }
+        UnweightedGraph {
+            graph: UnweightedDiGraph { vertices, edges },
+        }
     }
     fn vertices(&self) -> Vec<V> {
         self.graph.vertices.clone()

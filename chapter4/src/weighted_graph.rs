@@ -246,6 +246,5 @@ mod tests {
         city_graph.remove_vertex("Dallas");
 
         println!("{}", city_graph.to_string());
-
     }
 }
