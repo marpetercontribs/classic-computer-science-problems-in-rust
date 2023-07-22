@@ -30,5 +30,5 @@ Exercises completed:
    - [X] 3. Write Sudoku solver
 - Chapter 4
    - [X] 1. Add functions to remove edges and vertices 
-   - [ ] 2. Add support for di(rected) graphs
+   - [X] 2. Add support for di(rected) graphs
    - [ ] 3. Solve the Seven Bridges of Koenigsberg problem

@@ -29,6 +29,13 @@ pub trait Graph {
     fn remove_vertex(&mut self, vertex: Self::Vertex);
     // Add an edge to the graph; for undirected graphs add edges in both directions
     fn add_edge(&mut self, edge: Self::SizedEdge);
+    // Add an edge by looking up vertex indices (convenience method)
+    fn add_edge_by_vertices(&mut self, first: &Self::Vertex, second: &Self::Vertex) {
+        self.add_edge(Self::SizedEdge::new(
+            self.index_of(first),
+            self.index_of(second),
+        ));
+    }
     // Exercise 4.1: This is an undirected graph, so we always remove edges in both directions
     fn remove_edge(&mut self, edge: &Self::SizedEdge);
     // Exercise 4.1: Remove an edge by looking up vertex indices (convenience method)
@@ -37,7 +44,7 @@ pub trait Graph {
         let v = self.index_of(second);
         let edges = self.edges();
         let edge = edges[u].iter().find(|e| e.v() == v).unwrap();
-        self.remove_edge(&edge);
+        self.remove_edge(edge);
     }
     // Number of vertices
     fn get_vertex_count(&self) -> usize {

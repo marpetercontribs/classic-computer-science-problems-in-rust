@@ -23,17 +23,6 @@ pub struct UnweightedDiGraph<V: Clone + PartialEq> {
     edges: Vec<Vec<SimpleEdge>>,
 }
 
-impl<V: Clone + PartialEq> UnweightedDiGraph<V> {
-    // Add an edge by looking up vertex indices (convenience method)
-    fn add_edge_by_vertices(
-        &mut self,
-        first: &<UnweightedDiGraph<V> as Graph>::Vertex,
-        second: &<UnweightedDiGraph<V> as Graph>::Vertex,
-    ) {
-        self.add_edge(SimpleEdge::new(self.index_of(first), self.index_of(second)));
-    }
-}
-
 impl<V: Clone + PartialEq> Graph for UnweightedDiGraph<V> {
     type Vertex = V;
     type SizedEdge = SimpleEdge;
@@ -108,25 +97,12 @@ pub struct UnweightedGraph<V: Clone + PartialEq> {
     graph: UnweightedDiGraph<V>,
 }
 
-impl<V: Clone + PartialEq> UnweightedGraph<V> {
-    // Add an edge by looking up vertex indices (convenience method)
-    fn add_edge_by_vertices(
-        &mut self,
-        first: &<UnweightedGraph<V> as Graph>::Vertex,
-        second: &<UnweightedGraph<V> as Graph>::Vertex,
-    ) {
-        self.add_edge(SimpleEdge::new(self.index_of(first), self.index_of(second)));
-    }
-}
-
 impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
     type Vertex = V;
     type SizedEdge = SimpleEdge;
     fn new(vertices: impl Iterator<Item = V>) -> Self {
-        let vertices = Vec::from_iter(vertices);
-        let edges = vertices.iter().map(|_| Vec::<SimpleEdge>::new()).collect();
         UnweightedGraph {
-            graph: UnweightedDiGraph { vertices, edges },
+            graph: UnweightedDiGraph::new(vertices),
         }
     }
     fn vertices(&self) -> Vec<V> {

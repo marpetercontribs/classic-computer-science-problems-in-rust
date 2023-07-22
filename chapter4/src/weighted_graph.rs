@@ -20,17 +20,17 @@ use crate::tuple_vec_to_string;
 
 use std::collections::BinaryHeap;
 
-pub struct WeightedGraph<V: Clone + PartialEq> {
+pub struct WeightedDiGraph<V: Clone + PartialEq> {
     vertices: Vec<V>,
     edges: Vec<Vec<WeightedEdge>>,
 }
 
-impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
+impl<V: Clone + PartialEq + ToString> WeightedDiGraph<V> {
     // Add an edge by looking up vertex indices (convenience method)
     pub fn add_edge_by_vertices(
         &mut self,
-        first: &<WeightedGraph<V> as Graph>::Vertex,
-        second: &<WeightedGraph<V> as Graph>::Vertex,
+        first: &<WeightedDiGraph<V> as Graph>::Vertex,
+        second: &<WeightedDiGraph<V> as Graph>::Vertex,
         weight: f64,
     ) {
         self.add_edge(WeightedEdge::new(
@@ -98,7 +98,7 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
     }
 }
 
-impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
+impl<V: Clone + PartialEq> Graph for WeightedDiGraph<V> {
     type Vertex = V;
     type SizedEdge = WeightedEdge;
     fn new(vertices: impl Iterator<Item = V>) -> Self {
@@ -107,7 +107,7 @@ impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
             .iter()
             .map(|_| Vec::<WeightedEdge>::new())
             .collect();
-        WeightedGraph { vertices, edges }
+        WeightedDiGraph { vertices, edges }
     }
     fn vertices(&self) -> Vec<V> {
         self.vertices.clone()
@@ -121,9 +121,8 @@ impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
         self.edges.push(Vec::<WeightedEdge>::new());
         self.get_vertex_count() - 1
     }
-    // This is an undirected graph, so we always add edges in both directions
+    // This is a directed graph, so we always add edges in one direction
     fn add_edge(&mut self, edge: WeightedEdge) {
-        self.edges[edge.simple_edge.v].push(edge.reversed());
         self.edges[edge.simple_edge.u].push(edge);
     }
     // Remove a vertex from the graph
@@ -147,7 +146,7 @@ impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
             })
         });
     }
-    // This is an undirected graph, so we always remove edges in both directions
+    // This is an directed graph, so we always remove edges in one direction
     fn remove_edge(&mut self, edge: &WeightedEdge) {
         let index = self.edges[edge.simple_edge.u]
             .iter()
@@ -156,17 +155,10 @@ impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
             })
             .unwrap();
         self.edges[edge.simple_edge.u].remove(index);
-        let index = self.edges[edge.simple_edge.v]
-            .iter()
-            .position(|e| {
-                e.simple_edge.u == edge.simple_edge.v && e.simple_edge.v == edge.simple_edge.u
-            })
-            .unwrap();
-        self.edges[edge.simple_edge.v].remove(index);
     }
 }
 
-impl<V: Clone + PartialEq + ToString> ToString for WeightedGraph<V> {
+impl<V: Clone + PartialEq + ToString> ToString for WeightedDiGraph<V> {
     fn to_string(&self) -> String {
         let mut result = String::new();
         for i in 0..self.get_vertex_count() {
@@ -177,6 +169,86 @@ impl<V: Clone + PartialEq + ToString> ToString for WeightedGraph<V> {
             ));
         }
         result
+    }
+}
+
+pub struct WeightedGraph<V: Clone + PartialEq> {
+    graph: WeightedDiGraph<V>,
+}
+
+impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
+    // Add an edge by looking up vertex indices (convenience method)
+    pub fn add_edge_by_vertices(
+        &mut self,
+        first: &<WeightedGraph<V> as Graph>::Vertex,
+        second: &<WeightedGraph<V> as Graph>::Vertex,
+        weight: f64,
+    ) {
+        self.add_edge(WeightedEdge::new(
+            self.index_of(first),
+            self.index_of(second),
+            weight,
+        ));
+    }
+    // Find the vertices that a vertex at some index is connected to
+    fn neighbors_of_index_with_weight(&self, index: usize) -> Vec<(V, f64)> {
+        self.graph.neighbors_of_index_with_weight(index)
+    }
+
+    fn total_weight(&self, edges: &[WeightedEdge]) -> f64 {
+        self.graph.total_weight(edges)
+    }
+
+    fn visit(&self, index: usize, visited: &mut [bool], pq: &mut BinaryHeap<WeightedEdge>) {
+        self.graph.visit(index, visited, pq);
+    }
+
+    fn mst(&self, start: usize) -> Vec<WeightedEdge> {
+        self.graph.mst(start)
+    }
+
+    pub fn path_to_string(&self, path: &Vec<WeightedEdge>) -> String {
+        self.graph.path_to_string(path)
+    }
+}
+
+impl<V: Clone + PartialEq> Graph for WeightedGraph<V> {
+    type Vertex = V;
+    type SizedEdge = WeightedEdge;
+    fn new(vertices: impl Iterator<Item = V>) -> Self {
+        WeightedGraph {
+            graph: WeightedDiGraph::new(vertices),
+        }
+    }
+    fn vertices(&self) -> Vec<V> {
+        self.graph.vertices()
+    }
+    fn edges(&self) -> Vec<Vec<WeightedEdge>> {
+        self.graph.edges()
+    }
+    // Add a vertex to the graph and return its index
+    fn add_vertex(&mut self, vertex: V) -> usize {
+        self.graph.add_vertex(vertex)
+    }
+    // This is an undirected graph, so we always add edges in both directions
+    fn add_edge(&mut self, edge: WeightedEdge) {
+        self.graph.add_edge(edge.reversed());
+        self.graph.add_edge(edge);
+    }
+    // Remove a vertex from the graph
+    fn remove_vertex(&mut self, vertex: V) {
+        self.graph.remove_vertex(vertex);
+    }
+    // This is an undirected graph, so we always remove edges in both directions
+    fn remove_edge(&mut self, edge: &WeightedEdge) {
+        self.graph.remove_edge(edge);
+        self.graph.remove_edge(&edge.reversed());
+    }
+}
+
+impl<V: Clone + PartialEq + ToString> ToString for WeightedGraph<V> {
+    fn to_string(&self) -> String {
+        self.graph.to_string()
     }
 }
 

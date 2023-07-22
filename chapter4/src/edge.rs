@@ -19,6 +19,9 @@ pub trait Edge {
     fn reversed(&self) -> Self
     where
         Self: Sized;
+    fn new(u: usize, v: usize) -> Self
+    where
+        Self: Sized;
     fn u(&self) -> usize;
     fn v(&self) -> usize;
 }
@@ -29,13 +32,10 @@ pub struct SimpleEdge {
     pub v: usize,
 }
 
-impl SimpleEdge {
-    pub fn new(u: usize, v: usize) -> Self {
+impl Edge for SimpleEdge {
+    fn new(u: usize, v: usize) -> Self {
         SimpleEdge { u, v }
     }
-}
-
-impl Edge for SimpleEdge {
     fn reversed(&self) -> SimpleEdge {
         SimpleEdge {
             u: self.v,
@@ -72,6 +72,12 @@ impl WeightedEdge {
 }
 
 impl Edge for WeightedEdge {
+    fn new(u: usize, v: usize) -> Self {
+        WeightedEdge {
+            simple_edge: SimpleEdge { u, v },
+            weight: 0_f64,
+        }
+    }
     fn reversed(&self) -> WeightedEdge {
         WeightedEdge {
             simple_edge: self.simple_edge.reversed(),
