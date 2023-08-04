@@ -32,3 +32,7 @@ Exercises completed:
    - [X] 1. Add functions to remove edges and vertices 
    - [X] 2. Add support for di(rected) graphs
    - [ ] 3. Solve the Seven Bridges of Koenigsberg problem
+- Chapter 5
+   - [ ] 1. Add support for improved Tournament selection
+   - [ ] 2. Extend CSP of chapter 3 by support for genetic algorithm
+   - [ ] 3. Create a BitString that implements Chromosome and use it to solve 5.3
