@@ -27,7 +27,7 @@
 use chapter5::chromosome::Chromosome;
 use chapter5::genetic_algorithm::GeneticAlgorithm;
 use chapter5::genetic_algorithm::SelectionType;
-use rand::{random,Rng};
+use rand::{random, Rng};
 
 #[derive(Clone)]
 struct SimpleEquation {
@@ -84,5 +84,5 @@ fn main() {
     let mut ga: GeneticAlgorithm<SimpleEquation> =
         GeneticAlgorithm::new(initial_population, 0.1, 0.7, SelectionType::Tournament);
     let result: SimpleEquation = ga.run(100, 13.0);
-    println!("{}",result.to_string());
+    println!("{}", result.to_string());
 }
