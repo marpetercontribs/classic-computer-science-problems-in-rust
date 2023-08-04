@@ -59,8 +59,8 @@ impl<C: Chromosome> GeneticAlgorithm<C> {
         let mut picks: Vec<C> = Vec::<C>::new();
         for _ in 0..2 {
             let mut pick = random::<f64>();
-            for i in 0..wheel.len() {
-                pick -= wheel[i];
+            for (i, value) in wheel.iter().enumerate() {
+                pick -= value;
                 if pick <= 0_f64 {
                     picks.push(self.population[i].clone());
                     break;

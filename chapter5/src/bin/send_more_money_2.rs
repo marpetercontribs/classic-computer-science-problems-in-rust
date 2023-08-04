@@ -27,7 +27,7 @@ use chapter5::chromosome::Chromosome;
 use chapter5::genetic_algorithm::GeneticAlgorithm;
 use chapter5::genetic_algorithm::SelectionType;
 use rand::seq::SliceRandom;
-use rand::{random, thread_rng, Rng};
+use rand::{thread_rng, Rng};
 
 #[derive(Clone)]
 struct SendMoreMoney {
@@ -81,8 +81,8 @@ impl Chromosome for SendMoreMoney {
         let idx3 = child1.index_of(letter2);
         let idx4 = child2.index_of(letter1);
         (child1.letters[idx1], child1.letters[idx3]) = (child1.letters[idx3], child1.letters[idx1]);
-        (child2.letters[idx2], child2.letters[idx4]) = (child2.letters[idx4], child2.letters[idx2]); 
-        (child1.clone(), child2.clone())
+        (child2.letters[idx2], child2.letters[idx4]) = (child2.letters[idx4], child2.letters[idx2]);
+        (child1, child2)
     }
     fn mutate(&mut self) {
         let mut rng = rand::thread_rng();
@@ -113,7 +113,7 @@ fn main() {
         initial_population.push(SendMoreMoney::random_instance());
     }
     let mut ga: GeneticAlgorithm<SendMoreMoney> =
-         GeneticAlgorithm::new(initial_population, 0.2, 0.7, SelectionType::Roulette);
+        GeneticAlgorithm::new(initial_population, 0.2, 0.7, SelectionType::Roulette);
     let result: SendMoreMoney = ga.run(1000, 1.0);
-    println!("{}",result.to_string());
+    println!("{}", result.to_string());
 }

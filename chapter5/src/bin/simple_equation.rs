@@ -44,7 +44,7 @@ impl Chromosome for SimpleEquation {
         let mut child2 = that.clone();
         child1.y = child2.y;
         child2.y = self.y;
-        (child1.clone(), child2.clone())
+        (child1, child2)
     }
     fn mutate(&mut self) {
         if random::<f64>() > 0.5 {
@@ -53,12 +53,10 @@ impl Chromosome for SimpleEquation {
             } else {
                 self.x -= 1;
             }
+        } else if random::<f64>() > 0.5 {
+            self.y += 1;
         } else {
-            if random::<f64>() > 0.5 {
-                self.y += 1;
-            } else {
-                self.y -= 1;
-            }
+            self.y -= 1;
         }
     }
     fn random_instance() -> Self {
