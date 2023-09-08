@@ -1,0 +1,56 @@
+// data_point.rs
+// Adapted From Classic Computer Science Problems in Python/Java Chapter 6
+// Copyright 2023 Markus Peter
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+// http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+use std::iter::zip;
+
+pub trait DataPoint: Clone {
+    fn new(initials: Vec<f64>) -> Self;
+    fn originals(&self) -> Vec<f64>;
+    fn coordinates(&self) -> Vec<f64>;
+    fn num_dimensions(&self) -> usize;
+    fn distance(&self, other: &Self) -> f64;
+}
+
+#[derive(Clone)]
+pub struct SimpleDataPoint {
+    originals: Vec<f64>,
+    coordinates: Vec<f64>,
+    num_dimensions: usize,
+}
+
+impl DataPoint for SimpleDataPoint {
+    fn new(initials: Vec<f64>) -> Self {
+        SimpleDataPoint {
+            originals: initials.clone(),
+            coordinates: initials.clone(),
+            num_dimensions: initials.len(),
+        }
+    }
+    fn originals(&self) -> Vec<f64> {
+        self.originals.clone()
+    }
+    fn coordinates(&self) -> Vec<f64> {
+        self.coordinates.clone()
+    }
+    fn num_dimensions(&self) -> usize {
+        self.num_dimensions
+    }
+    fn distance(&self, other: &SimpleDataPoint) -> f64 {
+        let combined: f64 = zip(self.coordinates.iter(), other.coordinates.iter())
+            .map(|(x, y)| (x - y) * (x - y))
+            .sum();
+        combined.sqrt()
+    }
+}
