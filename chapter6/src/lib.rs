@@ -16,3 +16,4 @@
 
 pub mod data_point;
 pub mod kmeans;
+pub mod statistics;

@@ -13,14 +13,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+use std::fmt;
 use std::iter::zip;
 
 pub trait DataPoint: Clone {
     fn new(initials: Vec<f64>) -> Self;
     fn originals(&self) -> Vec<f64>;
     fn coordinates(&self) -> Vec<f64>;
+    fn set_coordinates(&mut self, coordinates: Vec<f64>);
     fn num_dimensions(&self) -> usize;
-    fn distance(&self, other: &Self) -> f64;
+    fn distance<P: DataPoint>(&self, other: &P) -> f64;
 }
 
 #[derive(Clone)]
@@ -28,6 +30,12 @@ pub struct SimpleDataPoint {
     originals: Vec<f64>,
     coordinates: Vec<f64>,
     num_dimensions: usize,
+}
+
+impl fmt::Debug for SimpleDataPoint {
+    fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        write!(formatter, "{:?}", self.originals())
+    }
 }
 
 impl DataPoint for SimpleDataPoint {
@@ -44,11 +52,14 @@ impl DataPoint for SimpleDataPoint {
     fn coordinates(&self) -> Vec<f64> {
         self.coordinates.clone()
     }
+    fn set_coordinates(&mut self, coordinates: Vec<f64>) {
+        self.coordinates = coordinates;
+    }
     fn num_dimensions(&self) -> usize {
         self.num_dimensions
     }
-    fn distance(&self, other: &SimpleDataPoint) -> f64 {
-        let combined: f64 = zip(self.coordinates.iter(), other.coordinates.iter())
+    fn distance<P: DataPoint>(&self, other: &P) -> f64 {
+        let combined: f64 = zip(self.coordinates.iter(), other.coordinates().iter())
             .map(|(x, y)| (x - y) * (x - y))
             .sum();
         combined.sqrt()
