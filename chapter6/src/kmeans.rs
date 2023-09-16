@@ -22,7 +22,7 @@ use rand::{thread_rng, Rng};
 
 #[derive(Clone)]
 pub struct Cluster<P: DataPoint> {
-    points: Vec<P>,
+    pub points: Vec<P>,
     centroid: SimpleDataPoint,
 }
 impl<P: DataPoint> Cluster<P> {
