@@ -6,7 +6,7 @@
 // the books, but to have a file structure similar to Kopec's (on github)
 // compatible with rust's package manager cargo, with one folder per chapter
 // without having to change the generated Cargo.toml for each program
-//   of chapter 1 in the books, and
+//   of chapter 2 in the books, and
 // without having a seperate rust package and sub-folder for each program
 //   with its own src folder and generic file name main.rs
 //

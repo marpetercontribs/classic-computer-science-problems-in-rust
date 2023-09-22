@@ -1,12 +1,12 @@
 // main.rs
 // Adapted for Rust version
-// of Classic Computer Science Problems in Python/Java Chapter 5
+// of Classic Computer Science Problems in Python/Java Chapter 6
 //
 // This code does not directly correspond to any of the problems covered in
 // the books, but to have a file structure similar to Kopec's (on github)
 // compatible with rust's package manager cargo, with one folder per chapter
 // without having to change the generated Cargo.toml for each program
-//   of chapter 5 in the books, and
+//   of chapter 7 in the books, and
 // without having a seperate rust package and sub-folder for each program
 //   with its own src folder and generic file name main.rs
 //
@@ -25,6 +25,8 @@
 // limitations under the License.
 
 fn main() {
-    println!("Use 'cargo test <program name> -- --nocapture' to run [un]weighted_graph belonging to this chapter.");
+    println!(
+        "Use 'cargo test <program name> -- --nocapture' to run kmeans belonging to this chapter."
+    );
     println!("Use 'cargo run --bin <program name>' to run one of the other programs belonging to this chapter.");
 }
