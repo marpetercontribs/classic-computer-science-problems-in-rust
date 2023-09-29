@@ -15,25 +15,31 @@
 // limitations under the License.
 
 use crate::utils;
+use std::rc::Rc;
 
-pub struct Neuron<AF: Fn(f64) -> f64> {
-    weights: Vec<f64>,
+pub struct Neuron {
+    pub weights: Vec<f64>,
     learning_rate: f64,
-    output_cache: f64,
-    delta: f64,
-    activation_function: Box<AF>,
-    activation_function_derivative: Box<AF>,
+    pub output_cache: f64,
+    pub delta: f64,
+    pub activation_function: Rc<dyn Fn(f64) -> f64>,
+    pub activation_function_derivative: Rc<dyn Fn(f64) -> f64>,
 }
 
-impl<AF: Fn(f64) -> f64> Neuron<AF> {
-    pub fn new(weights: Vec<f64>, learning_rate: f64, activation_function: AF, activation_function_derivative: AF) -> Self {
+impl Neuron {
+    pub fn new(
+        weights: Vec<f64>,
+        learning_rate: f64,
+        activation_function: Rc<dyn Fn(f64) -> f64>,
+        activation_function_derivative: Rc<dyn Fn(f64) -> f64>,
+    ) -> Self {
         Neuron {
             weights,
             learning_rate,
             output_cache: 0.0,
             delta: 0.0,
-            activation_function: Box::new(activation_function),
-            activation_function_derivative: Box::new(activation_function_derivative),
+            activation_function: Rc::clone(&activation_function),
+            activation_function_derivative: Rc::clone(&activation_function_derivative),
         }
     }
     pub fn output(&mut self, input: &[f64]) -> f64 {

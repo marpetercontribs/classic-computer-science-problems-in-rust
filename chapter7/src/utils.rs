@@ -27,3 +27,20 @@ pub fn sigmoid_derivative(x: f64) -> f64 {
     let sigmoid = sigmoid(x);
     sigmoid * (1.0 - sigmoid)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_dot_product() {
+        assert_eq!(dot_product(&vec![1.0, 0.0, 0.0], &vec![0.0, 1.0, 1.0]), 0.0);
+        assert_eq!(dot_product(&vec![1.0, 1.0, 0.0], &vec![0.0, 1.0, 1.0]), 1.0);
+        assert_eq!(dot_product(&vec![1.0, 2.0, 3.0], &vec![0.0, 1.0, 1.0]), 5.0);
+    }
+
+    #[test]
+    fn test_sigmoid() {
+        assert_eq!(sigmoid(0.0), 0.5);
+    }
+}
