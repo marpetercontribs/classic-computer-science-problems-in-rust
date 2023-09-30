@@ -19,7 +19,7 @@ use std::rc::Rc;
 
 pub struct Neuron {
     pub weights: Vec<f64>,
-    learning_rate: f64,
+    pub learning_rate: f64,
     pub output_cache: f64,
     pub delta: f64,
     pub activation_function: Rc<dyn Fn(f64) -> f64>,

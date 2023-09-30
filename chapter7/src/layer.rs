@@ -17,17 +17,18 @@
 use crate::neuron::Neuron;
 use crate::utils::dot_product;
 use rand::Rng;
+use std::cell::RefCell;
 use std::rc::Rc;
 
 pub struct Layer {
-    previous_layer: Box<Option<Layer>>, // Box due to recursive definition
-    neurons: Vec<Neuron>,
-    output_cache: Vec<f64>,
+    pub previous_layer: Option<Rc<RefCell<Layer>>>, // Rc due to recursive definition and because Network owns the layers
+    pub neurons: Vec<Neuron>,
+    pub output_cache: Vec<f64>,
 }
 
 impl Layer {
     pub fn new(
-        previous_layer: Option<Layer>,
+        previous_layer: Option<Rc<RefCell<Layer>>>,
         num_neurons: usize,
         learning_rate: f64,
         activation_function: Rc<dyn Fn(f64) -> f64>,
@@ -39,7 +40,9 @@ impl Layer {
                 || vec![0.0; num_neurons],
                 |layer| {
                     let mut rng = rand::thread_rng();
-                    (0..layer.neurons.len()).map(|_| rng.gen::<f64>()).collect()
+                    (0..layer.borrow().neurons.len())
+                        .map(|_| rng.gen::<f64>())
+                        .collect()
                 },
             );
             neurons.push(Neuron::new(
@@ -50,36 +53,43 @@ impl Layer {
             ));
         }
         Layer {
-            previous_layer: Box::new(previous_layer),
+            previous_layer: previous_layer.map(|layer| Rc::clone(&layer)),
             neurons,
             output_cache: vec![0.0; num_neurons],
         }
     }
 
-    pub fn outputs(&mut self, inputs: Vec<f64>) -> Vec<f64> {
+    pub fn outputs(&mut self, inputs: &[f64]) -> Vec<f64> {
         self.output_cache = if self.previous_layer.is_none() {
-            inputs
+            inputs.to_vec()
         } else {
             self.neurons
                 .iter_mut()
-                .map(|neuron| neuron.output(&inputs))
+                .map(|neuron| neuron.output(inputs))
                 .collect()
         };
         self.output_cache.clone()
     }
     // should only be called on output layer
-    pub fn calculate_deltas_for_output_layer(&mut self, expected: Vec<f64>){
+    pub fn calculate_deltas_for_output_layer(&mut self, expected: &[f64]) {
         for n in 0..self.neurons.len() {
-            self.neurons[n].delta = (self.neurons[n].activation_function_derivative)(self.neurons[n].output_cache) * (expected[n] - self.output_cache[n]);
+            self.neurons[n].delta =
+                (self.neurons[n].activation_function_derivative)(self.neurons[n].output_cache)
+                    * (expected[n] - self.output_cache[n]);
         }
     }
     // should not be called on output layer
     pub fn calculate_deltas_for_hidden_layer(&mut self, next_layer: &Layer) {
         for (index, neuron) in self.neurons.iter_mut().enumerate() {
-            let next_weights: Vec<f64> = next_layer.neurons.iter().map(|n| n.weights[index]).collect();
+            let next_weights: Vec<f64> = next_layer
+                .neurons
+                .iter()
+                .map(|n| n.weights[index])
+                .collect();
             let next_deltas: Vec<f64> = next_layer.neurons.iter().map(|n| n.delta).collect();
             let sum_weights_and_deltas: f64 = dot_product(&next_weights, &next_deltas);
-            neuron.delta = (neuron.activation_function_derivative)(neuron.output_cache) * sum_weights_and_deltas;
+            neuron.delta = (neuron.activation_function_derivative)(neuron.output_cache)
+                * sum_weights_and_deltas;
         }
-    }        
+    }
 }
