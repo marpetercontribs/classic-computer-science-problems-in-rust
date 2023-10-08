@@ -41,3 +41,8 @@ Exercises completed:
    - [ ] 2. Add function that generates a visualization of the (2D) points and clusters
    - [ ] 3. Add constructor for KMeans that allows specifying initial centroids
    - [ ] 4. Research and implement the kmeans++ algorithm
+- Chapter 7
+   - [ ] 1. Use the chapter's framework to classify another dataset
+   - [ ] 2. Try a different activation function
+   - [ ] 3. Solve this chapter's problems using a widely framework such as TensorFlow
+   - [ ] 4. Rewrite Network, Layer and Neuron using a 3rd-party library optimizing numerical computations
