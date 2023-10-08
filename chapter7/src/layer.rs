@@ -37,7 +37,7 @@ impl Layer {
         let mut neurons = Vec::<Neuron>::new();
         for _ in 0..num_neurons {
             let randon_weights: Vec<f64> = previous_layer.as_ref().map_or_else(
-                || vec![0.0; num_neurons],
+                Vec::<f64>::new,
                 |layer| {
                     let mut rng = rand::thread_rng();
                     (0..layer.borrow().neurons.len())
@@ -72,10 +72,9 @@ impl Layer {
     }
     // should only be called on output layer
     pub fn calculate_deltas_for_output_layer(&mut self, expected: &[f64]) {
-        for n in 0..self.neurons.len() {
-            self.neurons[n].delta =
-                (self.neurons[n].activation_function_derivative)(self.neurons[n].output_cache)
-                    * (expected[n] - self.output_cache[n]);
+        for (n,neuron) in self.neurons.iter_mut().enumerate() {
+            neuron.delta = (neuron.activation_function)(neuron.output_cache)
+             * (expected[n] - self.output_cache[n]);
         }
     }
     // should not be called on output layer

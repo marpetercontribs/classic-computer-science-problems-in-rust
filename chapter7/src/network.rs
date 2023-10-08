@@ -56,8 +56,8 @@ impl Network {
     }
     pub fn outputs(&self, input: &[f64]) -> Vec<f64> {
         let mut inputs: Vec<f64> = input.to_vec();
+        // using self.layers.iter().fold( ... ) did not work because the intermediate "inputs" don't seem to live long enough
         for layer in self.layers.iter() {
-            // using self.layers.iter().fold( ... ) did not work because the intermediate "inputs" don't seem to live long enough
             inputs = layer.borrow_mut().outputs(&inputs);
         }
         inputs
@@ -67,30 +67,25 @@ impl Network {
         self.layers[last_layer_no]
             .borrow_mut()
             .calculate_deltas_for_output_layer(expected);
-        for layer_no in (0..(last_layer_no - 1)).rev() {
-            self.layers[last_layer_no]
+        for layer_no in (0..=(last_layer_no - 1)).rev() {
+            self.layers[layer_no]
                 .borrow_mut()
                 .calculate_deltas_for_hidden_layer(&self.layers[layer_no + 1].borrow());
         }
     }
     pub fn update_weights(&self) {
-        for layer in self.layers[1..].iter() {
-            for neuron in layer.borrow_mut().neurons.iter_mut() {
+        for layer_no in 1..self.layers.len() {
+            let previous_layer = self.layers[layer_no - 1].borrow();
+            let mut layer = self.layers[layer_no].borrow_mut();
+            for neuron in layer.neurons.iter_mut() {
                 for weight in 0..neuron.weights.len() {
-                    neuron.weights[weight] += neuron.learning_rate
-                        * (layer
-                            .borrow() // deref Rc and borrow content of RefCell
-                            .previous_layer
-                            .as_ref() // to avoid move
-                            .unwrap() // the Option!
-                            .borrow() // deref Rc and borrow content of RefCell
-                            .output_cache[weight])
-                        * neuron.delta
+                    neuron.weights[weight] +=
+                        neuron.learning_rate * previous_layer.output_cache[weight] * neuron.delta
                 }
             }
         }
     }
-    pub fn train(&self, inputs: Vec<Vec<f64>>, expecteds: Vec<Vec<f64>>) {
+    pub fn train(&self, inputs: &[Vec<f64>], expecteds: &[Vec<f64>]) {
         for (run, xs) in inputs.iter().enumerate() {
             let ys = &expecteds[run];
             let _ = self.outputs(xs);
@@ -100,15 +95,15 @@ impl Network {
     }
     pub fn validate<T: std::cmp::PartialEq>(
         &self,
-        inputs: Vec<Vec<f64>>,
-        expecteds: Vec<T>,
+        inputs: &[Vec<f64>],
+        expecteds: &[T],
         interpret_output: &dyn Fn(&[f64]) -> T,
     ) -> (usize, usize, f64) {
         let mut correct: usize = 0;
         let len = inputs.len();
         for (input, expected) in zip(inputs, expecteds) {
-            let result: T = interpret_output(&self.outputs(&input));
-            if result == expected {
+            let result: T = interpret_output(&self.outputs(input));
+            if result == *expected {
                 correct += 1;
             }
         }
