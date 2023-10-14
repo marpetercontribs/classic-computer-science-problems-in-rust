@@ -15,3 +15,5 @@
 // limitations under the License.
 
 pub mod board;
+pub mod minimax;
+pub mod tictactoe;

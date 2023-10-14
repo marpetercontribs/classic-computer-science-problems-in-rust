@@ -15,16 +15,20 @@
 // limitations under the License.
 
 pub trait Piece {
-    fn opposite(&self) -> Self;
+    fn opposite(&self) -> Self
+    where
+        Self: Sized;
 }
 
-pub trait Board<P: Piece, M> {
+pub trait Board<P: Piece, M: Copy> {
     fn turn(&self) -> P;
-    fn do_move(&self, location: M) -> Self; // move not allowed as method name
+    fn do_move(&self, location: M) -> Self
+    where
+        Self: Sized; // move not allowed as method name
     fn legal_moves(&self) -> Vec<M>;
     fn is_win(&self) -> bool;
     fn is_draw(&self) -> bool {
-        !self.is_win() && self.legal_moves().len() == 0
+        !self.is_win() && self.legal_moves().is_empty()
     }
-    fn evaluate(&self, player: P) -> f64;
+    fn evaluate(&self, player: &P) -> f64;
 }
