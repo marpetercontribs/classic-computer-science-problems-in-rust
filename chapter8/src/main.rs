@@ -1,6 +1,6 @@
 // main.rs
 // Adapted for Rust version
-// of Classic Computer Science Problems in Python/Java Chapter 7
+// of Classic Computer Science Problems in Python/Java Chapter 8
 //
 // This code does not directly correspond to any of the problems covered in
 // the books, but to have a file structure similar to Kopec's (on github)
