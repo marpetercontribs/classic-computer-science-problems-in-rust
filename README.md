@@ -46,3 +46,9 @@ Exercises completed:
    - [ ] 2. Try a different activation function
    - [ ] 3. Solve this chapter's problems using a widely framework such as TensorFlow
    - [ ] 4. Rewrite Network, Layer and Neuron using a 3rd-party library optimizing numerical computations
+- Chapter 8
+   - [ ] 1. Add unit tests to tictactoe to verify that methods get_legal_moves, is_win and is_draw are correct
+   - [ ] 2. Add minimax unit tests for connectfour
+   - [ ] 3. Refactor tictactoe_ai and connectfour_ai so that you have two methods usable for both games
+   - [ ] 4. Change connectfour_ai to let the computer play against itself
+   - [ ] 4. Can you optimize the evaluation method in connectfour (using profiling or other means) to increase the search depth with increasing runtime?
