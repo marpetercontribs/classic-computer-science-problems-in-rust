@@ -51,7 +51,58 @@ pub fn minimax<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
             );
             worst_eval = f64::min(worst_eval, result);
         }
-       worst_eval
+        worst_eval
+    }
+}
+
+pub fn alphabeta<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
+    board: &B,
+    maximizing: bool,
+    original_player: &P,
+    max_depth: usize,
+) -> f64 {
+    inner_alphabeta(
+        board,
+        maximizing,
+        original_player,
+        max_depth,
+        f64::NEG_INFINITY,
+        f64::INFINITY,
+    )
+}
+
+fn inner_alphabeta<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
+    board: &B,
+    maximizing: bool,
+    original_player: &P,
+    max_depth: usize,
+    alpha: f64,
+    beta: f64,
+) -> f64 {
+    if board.is_win() || board.is_draw() || max_depth == 0 {
+        return board.evaluate(original_player);
+    }
+    // Recursive case - maximize your gains or minimize the opponent's gains
+    let mut alpha = alpha;
+    let mut beta = beta;
+    if maximizing {
+        for _ in board.legal_moves().iter() {
+            let result = inner_alphabeta(board, false, original_player, max_depth - 1, alpha, beta);
+            alpha = alpha.max(result);
+            if beta <= alpha {
+                break;
+            }
+        }
+        alpha
+    } else {
+        for _ in board.legal_moves().iter() {
+            let result = inner_alphabeta(board, false, original_player, max_depth - 1, alpha, beta);
+            beta = beta.min(result);
+            if beta <= alpha {
+                break;
+            }
+        }
+        beta
     }
 }
 
@@ -64,7 +115,7 @@ pub fn find_best_move<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
     let mut best_eval = f64::NEG_INFINITY;
     let mut best_move: Option<Move> = None; // Declaration as Move is not sufficient because the following loop may not initialize best_move
     for a_move in board.legal_moves().iter() {
-        let result = minimax(&board.do_move(*a_move), false, &board.turn(), max_depth - 1);
+        let result = alphabeta(&board.do_move(*a_move), false, &board.turn(), max_depth - 1);
         if result > best_eval {
             best_eval = result;
             best_move = Some(*a_move);
