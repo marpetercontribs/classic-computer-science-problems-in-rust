@@ -1,6 +1,6 @@
 // main.rs
 // Adapted for Rust version
-// of Classic Computer Science Problems in Python/Java Chapter 7
+// of Classic Computer Science Problems in Python/Java Chapter 9
 //
 // This code does not directly correspond to any of the problems covered in
 // the books, but to have a file structure similar to Kopec's (on github)
@@ -25,5 +25,7 @@
 // limitations under the License.
 
 fn main() {
-    println!("Use 'cargo run --bin <program name>' to run iris_test or wine_test belonging to this chapter.");
+    println!(
+        "Use 'cargo test <program name> -- --nocapture' to run knapsack, tsp or phone_number_mnemonics belonging to this chapter."
+    );
 }
