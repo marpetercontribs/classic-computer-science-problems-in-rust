@@ -26,7 +26,7 @@
 
 fn main() {
     println!(
-        "Use 'cargo test <program name> -- --nocapture' to run kmeans belonging to this chapter."
+        "Use 'cargo test tictactoe -- --nocapture' to run tictactoe belonging to this chapter."
     );
-    println!("Use 'cargo run --bin <program name>' to run one of the other programs belonging to this chapter.");
+    println!("Use 'cargo run --bin <program name>' to run tictactoe_ai or connectfour_ai belonging to this chapter.");
 }
