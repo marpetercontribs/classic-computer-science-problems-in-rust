@@ -26,6 +26,7 @@
 
 fn main() {
     println!(
-        "Use 'cargo test <program name> -- --nocapture' to run knapsack, tsp or phone_number_mnemonics belonging to this chapter."
+        "Use 'cargo test <program name> -- --nocapture' to run knapsack or phone_number_mnemonics belonging to this chapter."
     );
+    println!("Use 'cargo run --bintsp' to run tsp belonging to this chapter.");
 }
