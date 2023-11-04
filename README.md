@@ -47,7 +47,7 @@ Exercises completed:
     - [ ] 2. Add minimax unit tests for connectfour
     - [ ] 3. Refactor tictactoe_ai and connectfour_ai so that you have two methods usable for both games
     - [ ] 4. Change connectfour_ai to let the computer play against itself
-    - [ ] 5. Can you optimize the evaluation method in connectfour (using profiling or other means) to increase the search depth with increasing runtime?
+    - [ ] 5. Can you optimize the evaluation method in connectfour (using profiling or other means) to increase the search depth without increasing runtime?
 - Chapter 9
     - [ ] 1. Implement the naive approach to the traveling salesman problem using the graph framework of chapter 4 
     - [ ] 2. Implement a genetic algorithm as covered in chapter 5 to solve the traveling salesman problem
