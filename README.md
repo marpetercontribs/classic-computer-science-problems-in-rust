@@ -9,10 +9,6 @@ Reusable code, such as `generic_search` of chapter 2 and `csp` of chapter 3, are
 
 The alternative approach would be to treat each executable program/problem as a separate package within a chapter folder. Benefit would be that each program could be built and run easily using the usual `cargo build [--release]` / `cargo run` command within the program's folder. But it would also lead to a large number of additional *src* folders, *Cargo.toml* files, etc. In addition, the real source code files would have the name *main.rs*, not expressing the real names/intent of the programs.
 
-Missing ports:
-
-- Everything in Chapter 9.3ff
-
 Exercises completed:
 
 - Chapter 1
@@ -51,4 +47,8 @@ Exercises completed:
    - [ ] 2. Add minimax unit tests for connectfour
    - [ ] 3. Refactor tictactoe_ai and connectfour_ai so that you have two methods usable for both games
    - [ ] 4. Change connectfour_ai to let the computer play against itself
-   - [ ] 4. Can you optimize the evaluation method in connectfour (using profiling or other means) to increase the search depth with increasing runtime?
+   - [ ] 5. Can you optimize the evaluation method in connectfour (using profiling or other means) to increase the search depth with increasing runtime?
+- Chapter 9
+   - [ ] 1. Implement the naive approach to the traveling salesman problem using the graph framework of chapter 4 
+   - [ ] 2. Implement a genetic algorithm as covered in chapter 5 to solve the traveling salesman problem
+   - [ ] 3. Use a dictionary in the phone number mnemonics program to only return permutations containing "valid" words   
