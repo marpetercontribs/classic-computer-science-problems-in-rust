@@ -12,43 +12,43 @@ The alternative approach would be to treat each executable program/problem as a 
 Exercises completed:
 
 - Chapter 1
-  - [X] 1. Own Fibonacci algorithm with unit tests and performance comparison
-  - [ ] 2. Specific to the programming language
-  - [X] 3. Generlize hanoi to arbitrary number of towers
-  - [ ] 4. One-time-pad to encrypt images
+    - [X] 1. Own Fibonacci algorithm with unit tests and performance comparison
+    - [ ] 2. Specific to the programming language
+    - [X] 3. Generlize hanoi to arbitrary number of towers
+    - [ ] 4. One-time-pad to encrypt images
 - Chapter 2
-  - [X] 1. Demonstrate performance advantage of binary over linear search
-  - [X] 2. Count the number of states covered in `bfs`, `dfs` and `astar` searches
-  - [X] 3. Solve missionaries problem if the number of missionaries differs from the number of cannibals
+    - [X] 1. Demonstrate performance advantage of binary over linear search
+    - [X] 2. Count the number of states covered in `bfs`, `dfs` and `astar` searches
+    - [X] 3. Solve missionaries problem if the number of missionaries differs from the number of cannibals
 - Chapter 3
-   - [X] 1. Extend `word_search` to allow for words to cross
-   - [ ] 2. Write a solver for problem 3.6
-   - [X] 3. Write Sudoku solver
+    - [X] 1. Extend `word_search` to allow for words to cross
+    - [ ] 2. Write a solver for problem 3.6
+    - [X] 3. Write Sudoku solver
 - Chapter 4
-   - [X] 1. Add functions to remove edges and vertices 
-   - [X] 2. Add support for di(rected) graphs
-   - [ ] 3. Solve the Seven Bridges of Koenigsberg problem
+    - [X] 1. Add functions to remove edges and vertices 
+    - [X] 2. Add support for di(rected) graphs
+    - [ ] 3. Solve the Seven Bridges of Koenigsberg problem
 - Chapter 5
-   - [ ] 1. Add support for improved Tournament selection
-   - [ ] 2. Extend CSP of chapter 3 by support for genetic algorithm
-   - [ ] 3. Create a BitString that implements Chromosome and use it to solve 5.3
+    - [ ] 1. Add support for improved Tournament selection
+    - [ ] 2. Extend CSP of chapter 3 by support for genetic algorithm
+    - [ ] 3. Create a BitString that implements Chromosome and use it to solve 5.3
 - Chapter 6
-   - [ ] 1. Add support for importing DataPoints from a csv file
-   - [ ] 2. Add function that generates a visualization of the (2D) points and clusters
-   - [ ] 3. Add constructor for KMeans that allows specifying initial centroids
-   - [ ] 4. Research and implement the kmeans++ algorithm
+    - [ ] 1. Add support for importing DataPoints from a csv file
+    - [ ] 2. Add function that generates a visualization of the (2D) points and clusters
+    - [ ] 3. Add constructor for KMeans that allows specifying initial centroids
+    - [ ] 4. Research and implement the kmeans++ algorithm
 - Chapter 7
-   - [ ] 1. Use the chapter's framework to classify another dataset
-   - [ ] 2. Try a different activation function
-   - [ ] 3. Solve this chapter's problems using a widely framework such as TensorFlow
-   - [ ] 4. Rewrite Network, Layer and Neuron using a 3rd-party library optimizing numerical computations
+    - [ ] 1. Use the chapter's framework to classify another dataset
+    - [ ] 2. Try a different activation function
+    - [ ] 3. Solve this chapter's problems using a widely framework such as TensorFlow
+    - [ ] 4. Rewrite Network, Layer and Neuron using a 3rd-party library optimizing numerical computations
 - Chapter 8
-   - [ ] 1. Add unit tests to tictactoe to verify that methods get_legal_moves, is_win and is_draw are correct
-   - [ ] 2. Add minimax unit tests for connectfour
-   - [ ] 3. Refactor tictactoe_ai and connectfour_ai so that you have two methods usable for both games
-   - [ ] 4. Change connectfour_ai to let the computer play against itself
-   - [ ] 5. Can you optimize the evaluation method in connectfour (using profiling or other means) to increase the search depth with increasing runtime?
+    - [ ] 1. Add unit tests to tictactoe to verify that methods get_legal_moves, is_win and is_draw are correct
+    - [ ] 2. Add minimax unit tests for connectfour
+    - [ ] 3. Refactor tictactoe_ai and connectfour_ai so that you have two methods usable for both games
+    - [ ] 4. Change connectfour_ai to let the computer play against itself
+    - [ ] 5. Can you optimize the evaluation method in connectfour (using profiling or other means) to increase the search depth with increasing runtime?
 - Chapter 9
-   - [ ] 1. Implement the naive approach to the traveling salesman problem using the graph framework of chapter 4 
-   - [ ] 2. Implement a genetic algorithm as covered in chapter 5 to solve the traveling salesman problem
-   - [ ] 3. Use a dictionary in the phone number mnemonics program to only return permutations containing "valid" words   
+    - [ ] 1. Implement the naive approach to the traveling salesman problem using the graph framework of chapter 4 
+    - [ ] 2. Implement a genetic algorithm as covered in chapter 5 to solve the traveling salesman problem
+    - [ ] 3. Use a dictionary in the phone number mnemonics program to only return permutations containing "valid" words   
