@@ -16,7 +16,8 @@
 use std::collections::HashMap;
 use std::io;
 
-// TODO: remove asymmetry in parameters?
+// Option 1 - which avoids treating the letters as Strings unnecessarily,
+//            but makes the cartesian_product function parameters asymmetric 
 fn cartesian_product(first: &[String], second: &[char]) -> Vec<String> {
     let mut product: Vec<String> = Vec::<>::new();
     for in_first in first {
@@ -56,6 +57,47 @@ pub fn possible_mnemonics(phone_number: &str) -> Vec<String> {
     mnemonics
 }
 
+// Option 2 - Treat the letters as Strings as is done in Kopec's book,
+//            leads to a symmetric cartesian_product function 
+fn cartesian_product2(first: &[String], second: &[String]) -> Vec<String> {
+    let mut product: Vec<String> = Vec::<>::new();
+    for in_first in first {
+        for in_second in second {
+            let mut combination = in_first.clone();
+            combination.push_str( in_second );
+            product.push(combination);
+        }
+    }
+    product
+} 
+
+pub fn possible_mnemonics2(phone_number: &str) -> Vec<String> {
+    // We define DIGIT_MAPPING here, instead of as a const/static outside the function
+    // because it is only used here anyway, and declaring it as a const outside would
+    // require using once_cell::sync::Lazy::new( || ... ) because vec! cannot be used
+    // directly in const expressions.
+    let DIGIT_MAPPING: HashMap<char, Vec<String>> =
+        HashMap::from([
+            ('1', vec!["1".to_string()] ),
+            ('2', ["A", "B", "C"].iter().map(|s| s.to_string()).collect()),
+            ('3', ["D", "E", "F"].iter().map(|s| s.to_string()).collect()),
+            ('4', ["G", "H", "I"].iter().map(|s| s.to_string()).collect()),
+            ('5', ["J", "K", "L"].iter().map(|s| s.to_string()).collect()),
+            ('6', ["M", "N", "P"].iter().map(|s| s.to_string()).collect()),
+            ('7', ["P", "Q", "R", "S"].iter().map(|s| s.to_string()).collect()),
+            ('8', ["T", "U", "V"].iter().map(|s| s.to_string()).collect()),
+            ('9', ["W", "X", "Y", "Z"].iter().map(|s| s.to_string()).collect()),
+            ('0', vec!["0".to_string()]),
+        ]);
+    let mut mnemonics: Vec<String> = vec!["".to_string()];
+    for digit in phone_number.chars() {
+        if let Some(combo) = DIGIT_MAPPING.get(&digit) {
+            mnemonics = cartesian_product2(&mnemonics, combo);
+        }
+    }
+    mnemonics
+}
+
 fn main() {
     println!("Enter a phone number:");
 
@@ -64,7 +106,7 @@ fn main() {
         .read_line(&mut phone_number)
         .expect("Error reading your input.");
 
-    let mnemonics = possible_mnemonics(&phone_number);
+    let mnemonics = possible_mnemonics2(&phone_number);
 
     println!("Here are the potential mnemonics:");
     println!("{:?}", mnemonics);
