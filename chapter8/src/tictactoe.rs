@@ -128,15 +128,9 @@ mod tests {
     #[test]
     fn test_easy_position() {
         let to_win_easy_position = vec![
-            TTTPiece::X,
-            TTTPiece::O,
-            TTTPiece::X,
-            TTTPiece::X,
-            TTTPiece::E,
-            TTTPiece::O,
-            TTTPiece::E,
-            TTTPiece::E,
-            TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+            TTTPiece::X, TTTPiece::E, TTTPiece::O,
+            TTTPiece::E, TTTPiece::E, TTTPiece::O,
         ];
         let board = TTTBoard::new_from(to_win_easy_position, TTTPiece::X);
         assert_eq!(find_best_move(&board, 8), Some(6));
@@ -145,15 +139,9 @@ mod tests {
     #[test]
     fn test_block_position() {
         let to_block_position = vec![
-            TTTPiece::X,
-            TTTPiece::E,
-            TTTPiece::E,
-            TTTPiece::E,
-            TTTPiece::E,
-            TTTPiece::O,
-            TTTPiece::E,
-            TTTPiece::X,
-            TTTPiece::O,
+            TTTPiece::X, TTTPiece::E, TTTPiece::E,
+            TTTPiece::E, TTTPiece::E, TTTPiece::O,
+            TTTPiece::E, TTTPiece::X, TTTPiece::O,
         ];
         let board = TTTBoard::new_from(to_block_position, TTTPiece::X);
         assert_eq!(find_best_move(&board, 8), Some(2));
@@ -162,17 +150,97 @@ mod tests {
     #[test]
     fn test_hard_position() {
         let to_win_hard_position = vec![
-            TTTPiece::X,
-            TTTPiece::E,
-            TTTPiece::E,
-            TTTPiece::E,
-            TTTPiece::E,
-            TTTPiece::O,
-            TTTPiece::O,
-            TTTPiece::X,
-            TTTPiece::E,
+            TTTPiece::X, TTTPiece::E, TTTPiece::E,
+            TTTPiece::E, TTTPiece::E, TTTPiece::O,
+            TTTPiece::O, TTTPiece::X, TTTPiece::E,
         ];
         let board = TTTBoard::new_from(to_win_hard_position, TTTPiece::X);
         assert_eq!(find_best_move(&board, 8), Some(1));
+    }
+
+    #[test]
+    fn test_is_draw_detected() {
+        let draw_position = vec![
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+        ];
+        let board = TTTBoard::new_from(draw_position, TTTPiece::O);
+        assert!(board.is_draw());
+    }
+
+    #[test]
+    fn test_is_no_draw_detected() {
+        let no_draw_position = vec![
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+            TTTPiece::O, TTTPiece::X, TTTPiece::X,
+        ];
+        let board = TTTBoard::new_from(no_draw_position, TTTPiece::O);
+        assert!(!board.is_draw());
+        let no_draw_position = vec![
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+            TTTPiece::O, TTTPiece::X, TTTPiece::E,
+        ];
+        let board = TTTBoard::new_from(no_draw_position, TTTPiece::X);
+        assert!(!board.is_draw());
+    }
+
+    #[test]
+    fn test_is_win_detected() {
+        let win_position = vec![
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+            TTTPiece::O, TTTPiece::X, TTTPiece::X,
+        ];
+        let mut board = TTTBoard::new_from(win_position.clone(), TTTPiece::O);
+        assert!(board.is_win());
+        board.turn = TTTPiece::X;
+        assert!(board.is_win());
+    }
+
+    #[test]
+    fn test_is_no_win_detected_draw() {
+        let draw_position = vec![
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+        ];
+        let board = TTTBoard::new_from(draw_position, TTTPiece::O);
+        assert!(!board.is_win());
+    }
+
+    #[test]
+    fn test_is_no_win_detected_open() {
+        let open_position = vec![
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+            TTTPiece::E, TTTPiece::X, TTTPiece::X,
+        ];
+        let board = TTTBoard::new_from(open_position, TTTPiece::X);
+        assert!(!board.is_win());
+    }
+
+    #[test]
+    fn test_legal_moves_non_empty() {
+        let to_win_easy_position = vec![
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+            TTTPiece::X, TTTPiece::E, TTTPiece::O,
+            TTTPiece::E, TTTPiece::E, TTTPiece::O,
+        ];
+        let board = TTTBoard::new_from(to_win_easy_position, TTTPiece::X);
+        assert_eq!(board.legal_moves(), vec![4,6,7]);
+    }
+
+    #[test]
+    fn test_legal_moves_empty() {
+        let win_position = vec![
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+            TTTPiece::X, TTTPiece::O, TTTPiece::X,
+            TTTPiece::O, TTTPiece::X, TTTPiece::O,
+        ];
+        let board = TTTBoard::new_from(win_position, TTTPiece::X);
+        assert_eq!(board.legal_moves(), vec![]);
     }
 }
