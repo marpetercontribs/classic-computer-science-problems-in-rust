@@ -86,8 +86,8 @@ fn inner_alphabeta<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
     let mut alpha = alpha;
     let mut beta = beta;
     if maximizing {
-        for _ in board.legal_moves().iter() {
-            let result = inner_alphabeta(board, false, original_player, max_depth - 1, alpha, beta);
+        for a_move in board.legal_moves().iter() {
+            let result = inner_alphabeta(&board.do_move(*a_move), false, original_player, max_depth - 1, alpha, beta);
             alpha = alpha.max(result);
             if beta <= alpha {
                 break;
@@ -95,8 +95,8 @@ fn inner_alphabeta<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
         }
         alpha
     } else {
-        for _ in board.legal_moves().iter() {
-            let result = inner_alphabeta(board, false, original_player, max_depth - 1, alpha, beta);
+        for a_move in board.legal_moves().iter() {
+            let result = inner_alphabeta(&board.do_move(*a_move), true, original_player, max_depth - 1, alpha, beta);
             beta = beta.min(result);
             if beta <= alpha {
                 break;
@@ -115,7 +115,7 @@ pub fn find_best_move<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
     let mut best_eval = f64::NEG_INFINITY;
     let mut best_move: Option<Move> = None; // Declaration as Move is not sufficient because the following loop may not initialize best_move
     for a_move in board.legal_moves().iter() {
-        let result = alphabeta(&board.do_move(*a_move), false, &board.turn(), max_depth - 1);
+        let result = alphabeta(&board.do_move(*a_move), false, &board.turn(), max_depth);
         if result > best_eval {
             best_eval = result;
             best_move = Some(*a_move);
