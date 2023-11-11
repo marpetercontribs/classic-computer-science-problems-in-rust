@@ -221,3 +221,194 @@ impl ToString for C4Board {
         result
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::minimax::find_best_move;
+
+    fn three_reds_three_blacks_board() -> Vec<Vec<C4Piece>> {
+        let three_reds = vec![C4Piece::R;3];
+        let three_blacks = vec![C4Piece::B;3];
+        let mut column_one = three_reds.clone();
+        column_one.extend(three_blacks.clone());
+        let mut column_two = three_blacks;
+        column_two.extend(three_reds);      
+
+        vec![
+            column_one.clone(), column_two.clone(),
+            column_one.clone(), column_two.clone(),
+            column_one.clone(), column_two.clone(),
+            column_one, column_two]
+    }
+
+    fn incomplete_three_reds_three_blacks_board() -> Vec<Vec<C4Piece>> {
+        let three_reds = vec![C4Piece::R;3];
+        let three_blacks = vec![C4Piece::B;3];
+        let mut column_one = three_reds.clone();
+        column_one.extend(three_blacks.clone());
+        let mut column_two = three_blacks;
+        column_two.extend(three_reds);      
+
+        vec![
+            column_one.clone(), column_two.clone(),
+            column_one.clone(), column_two.clone(),
+            column_one.clone(), column_two.clone(),
+            column_one, vec![C4Piece::E;3]]
+    }
+
+    fn half_three_reds_three_blacks_board() -> Vec<Vec<C4Piece>> {
+        let mut column_one = vec![C4Piece::R;3];
+        column_one.extend(vec![C4Piece::E;3]);
+        let mut column_two = vec![C4Piece::B;3];
+        column_two.extend(vec![C4Piece::E;3]);      
+
+        vec![
+            column_one.clone(), column_two.clone(),
+            column_one.clone(), column_two.clone(),
+            column_one.clone(), column_two.clone(),
+            column_one, column_two]
+    }
+
+    #[test]
+    fn test_is_draw_detected() {
+        let draw_position = three_reds_three_blacks_board();
+        let board = C4Board::new_from(draw_position, C4Piece::R);
+        assert!(board.is_draw());
+    }
+
+    #[test]
+    fn test_is_no_draw_detected() {
+        let board = C4Board::new_from(incomplete_three_reds_three_blacks_board(), C4Piece::R);
+        assert!(!board.is_draw());
+        let board = C4Board::new_from(half_three_reds_three_blacks_board(), C4Piece::R);
+        assert!(!board.is_draw());
+    }
+
+    #[test]
+    fn test_is_vertical_win_detected() {
+        let mut winning_board = half_three_reds_three_blacks_board();
+        winning_board[2][3] = C4Piece::R;
+        let board = C4Board::new_from(winning_board, C4Piece::R);
+        assert!(board.is_win());
+        let mut winning_board = half_three_reds_three_blacks_board();
+        winning_board[1][3] = C4Piece::B;   
+        let board = C4Board::new_from(winning_board, C4Piece::R);
+        assert!(board.is_win());
+    }
+
+    #[test]
+    fn test_is_horizontal_win_detected() {
+        let mut winning_board = half_three_reds_three_blacks_board();
+        winning_board[1][1] = C4Piece::R;
+        winning_board[3][1] = C4Piece::R;
+        let board = C4Board::new_from(winning_board, C4Piece::R);
+        assert!(board.is_win());
+    }
+
+    #[test]
+    fn test_is_diagonal_win_detected() {
+        let mut winning_board = half_three_reds_three_blacks_board();
+        winning_board[1][1] = C4Piece::R;
+        winning_board[3][3] = C4Piece::R;
+        let board = C4Board::new_from(winning_board, C4Piece::R);
+        assert!(board.is_win());
+        let mut winning_board = half_three_reds_three_blacks_board();
+        winning_board[0][3] = C4Piece::B;
+        winning_board[2][1] = C4Piece::B;
+        let board = C4Board::new_from(winning_board, C4Piece::R);
+        assert!(board.is_win());
+    }
+
+    #[test]
+    fn test_is_no_win_detected_draw() {
+        let draw_position = three_reds_three_blacks_board();
+        let board = C4Board::new_from(draw_position, C4Piece::R);
+        assert!(!board.is_win());
+    }
+
+    #[test]
+    fn test_is_no_win_detected_open() {
+        let board = C4Board::new_from(incomplete_three_reds_three_blacks_board(), C4Piece::R);
+        assert!(!board.is_win());
+        let board = C4Board::new_from(half_three_reds_three_blacks_board(), C4Piece::R);
+        assert!(!board.is_win());
+    }
+
+    #[test]
+    fn test_legal_moves_non_empty() {
+        let board = C4Board::new_from(incomplete_three_reds_three_blacks_board(), C4Piece::R);
+        assert_eq!(board.legal_moves(),vec![7]);
+        let board = C4Board::new_from(half_three_reds_three_blacks_board(), C4Piece::R);
+        assert_eq!(board.legal_moves(),vec![0, 1, 2, 3, 4, 5, 6, 7]);
+
+    }
+
+    #[test]
+    fn test_legal_moves_empty() {
+        let board = C4Board::new_from(three_reds_three_blacks_board(), C4Piece::R);
+        assert_eq!(board.legal_moves(),vec![]);
+        let board = C4Board::new_from(three_reds_three_blacks_board(), C4Piece::B);
+        assert_eq!(board.legal_moves(),vec![]);
+    }
+
+    #[test]
+    fn test_easy_position() {
+        let mut position = vec![vec![C4Piece::E; NUM_ROWS]; NUM_COLUMNS];
+        position[0][0] = C4Piece::B;
+        position[1][1] = C4Piece::B;
+        position[2][2] = C4Piece::B;
+        position[1][0] = C4Piece::R;
+        position[2][0] = C4Piece::R;
+        position[2][1] = C4Piece::R;
+        position[3][0] = C4Piece::R;
+        position[3][1] = C4Piece::B;
+        position[3][2] = C4Piece::R;
+        let board = C4Board::new_from(position, C4Piece::R);
+        println!("{}",board.to_string());
+        assert_eq!(find_best_move(&board, 6), Some(4));
+    }
+
+    #[test]
+    fn test_block_horizontal_position() {
+        let mut position = vec![vec![C4Piece::E; NUM_ROWS]; NUM_COLUMNS];
+        position[0][0] = C4Piece::B;
+        position[1][0] = C4Piece::B;
+        position[2][0] = C4Piece::B;
+        position[4][0] = C4Piece::R;
+        position[0][1] = C4Piece::R;
+        let board = C4Board::new_from(position, C4Piece::R);
+        assert_eq!(find_best_move(&board, 6), Some(3));
+    }
+
+
+    #[test]
+    fn test_block_vertical_position() {
+        let mut position = vec![vec![C4Piece::E; NUM_ROWS]; NUM_COLUMNS];
+        position[1][0] = C4Piece::B;
+        position[1][1] = C4Piece::B;
+        position[1][2] = C4Piece::B;
+        position[2][0] = C4Piece::R;
+        position[3][0] = C4Piece::R;
+        let board = C4Board::new_from(position, C4Piece::R);
+        assert_eq!(find_best_move(&board, 6), Some(1));
+    }
+
+    #[test]
+    fn test_block_diagonal_position() {
+        let mut position = vec![vec![C4Piece::E; NUM_ROWS]; NUM_COLUMNS];
+        position[0][0] = C4Piece::B;
+        position[1][1] = C4Piece::B;
+        position[2][2] = C4Piece::B;
+        position[1][0] = C4Piece::R;
+        position[2][0] = C4Piece::R;
+        position[2][1] = C4Piece::R;
+        position[3][0] = C4Piece::R;
+        position[3][1] = C4Piece::B;
+        position[3][2] = C4Piece::R;
+        position[4][0] = C4Piece::B;
+        let board = C4Board::new_from(position, C4Piece::R);
+        println!("{}",board.to_string());
+        assert_eq!(find_best_move(&board, 6), Some(3));
+    }
+}
