@@ -18,5 +18,8 @@ use chapter8::game_ai;
 
 fn main() {
     let mut board = C4Board::new();
-    game_ai::play(&mut board, "Enter a legal column (0-6):", 6);
+    // Solution to exercise 8.3:
+    // game_ai::play(&mut board, "Enter a legal column (0-6):", 6);
+    // Solution to exercise 8.4:
+    game_ai::play_alone(&mut board, 6);
 }

@@ -67,3 +67,26 @@ pub fn play<B,P>(board: &mut B, prompt: &str, depth: usize)
         }
     }    
 }
+
+// May not be the most interesting solution to ex. 8.4 because there is no randomness
+pub fn play_alone<B,P>(board: &mut B, depth: usize)
+    where
+        P: Piece,
+        B: Board<P,usize> + Sized + std::string::ToString
+{
+    let mut player_no: usize = 1;
+    loop {
+        let player_move = find_best_move(board, depth).expect("Cannot find best move!");
+        println!("Player {player_no} move is {player_move}.");
+        *board = board.do_move(player_move);
+        println!("{}", board.to_string());
+        if board.is_win() {
+            println!("Player {player_no} wins!");
+            break;
+        } else if board.is_draw() {
+            println!("Draw!");
+            break;
+        }
+        player_no = 3 - player_no;
+    }    
+}
