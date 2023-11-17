@@ -13,48 +13,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter8::board::Board;
 use chapter8::connectfour::C4Board;
-use chapter8::minimax::find_best_move;
-use std::io;
-
-fn get_player_move(board: &C4Board) -> usize {
-    let mut player_move: usize = 100;
-    while !board.legal_moves().contains(&player_move) {
-        let mut input = String::new();
-        println!("Enter a legal column (0-6):");
-        io::stdin()
-            .read_line(&mut input)
-            .expect("Error reading your input.");
-        player_move = input.trim().parse().expect("Enter a legal column (0-6)!");
-        if board.legal_moves().contains(&player_move) {}
-    }
-    player_move
-}
+use chapter8::game_ai;
 
 fn main() {
     let mut board = C4Board::new();
-    loop {
-        let human_move: usize = get_player_move(&board);
-        board = board.do_move(human_move);
-        println!("{}", board.to_string());
-        if board.is_win() {
-            println!("Human wins!");
-            break;
-        } else if board.is_draw() {
-            println!("Draw!");
-            break;
-        }
-        let computer_move: usize = find_best_move(&board, 6).expect("Cannot find best move!");
-        println!("The computer move is {}.", computer_move);
-        board = board.do_move(computer_move);
-        println!("{}", board.to_string());
-        if board.is_win() {
-            println!("Computer wins!");
-            break;
-        } else if board.is_draw() {
-            println!("Draw!");
-            break;
-        }
-    }
+    game_ai::play(&mut board, "Enter a legal column (0-6):", 6);
 }

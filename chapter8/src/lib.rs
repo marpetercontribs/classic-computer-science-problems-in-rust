@@ -18,3 +18,4 @@ pub mod board;
 pub mod connectfour;
 pub mod minimax;
 pub mod tictactoe;
+pub mod game_ai;
