@@ -17,6 +17,7 @@
 use rand::{thread_rng, Rng};
 use std::collections::HashMap;
 use std::collections::HashSet;
+use std::rc::Rc;
 
 type Grid = Vec<Vec<char>>;
 
@@ -112,7 +113,7 @@ impl WordSearchConstraint {
 }
 
 impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
-    fn satisfied(&self, assignment: &HashMap<String, Vec<GridLocation>>) -> bool {
+    fn satisfied(&self, assignment: &HashMap<Rc<String>, Vec<GridLocation>>) -> bool {
         let all_locations: Vec<&GridLocation> = assignment.values().flatten().collect();
         let deduplicated_locations: HashSet<&GridLocation> =
             HashSet::from_iter(all_locations.iter().cloned());

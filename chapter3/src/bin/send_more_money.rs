@@ -15,6 +15,7 @@
 // limitations under the License.
 use csp;
 use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
 
 #[derive(Clone)]
 struct SendMoreMoneyConstraint {
@@ -28,7 +29,7 @@ impl SendMoreMoneyConstraint {
 }
 
 impl csp::Constraint<char, u16> for SendMoreMoneyConstraint {
-    fn satisfied(&self, assignment: &HashMap<char, u16>) -> bool {
+    fn satisfied(&self, assignment: &HashMap<Rc<char>, u16>) -> bool {
         let assignment_values: HashSet<&u16> = HashSet::from_iter(assignment.values());
         if assignment_values.len() < assignment.len() {
             // if there are duplicate values then it's not a solution

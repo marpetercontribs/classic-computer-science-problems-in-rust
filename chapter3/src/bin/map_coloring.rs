@@ -16,6 +16,7 @@
 
 use std::collections::HashMap;
 use std::fmt;
+use std::rc::Rc;
 
 // The original book uses simple strings for the variables (names), but using an enum
 // seems the better pattern and easier in Rust as String does not implement Copy
@@ -56,7 +57,7 @@ impl MapColoringConstraint {
 }
 
 impl csp::Constraint<Variable, String> for MapColoringConstraint {
-    fn satisfied(&self, assignment: &HashMap<Variable, String>) -> bool {
+    fn satisfied(&self, assignment: &HashMap<Rc<Variable>, String>) -> bool {
         // If either region is not in the assignment then it is not
         // yet possible for their colors to be conflicting
         if !assignment.contains_key(&self.region1) || !assignment.contains_key(&self.region2) {
