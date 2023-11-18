@@ -19,6 +19,7 @@ use csp;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
+use std::rc::Rc;
 
 #[derive(Hash, PartialEq, Eq, Clone)]
 struct CellLocation {
@@ -68,14 +69,13 @@ impl Puzzle {
             println!("");
         }
     }
-    fn update(&mut self, assignment: &HashMap<CellLocation, usize>) {
+    fn update(&mut self, assignment: &HashMap<Rc<CellLocation>, usize>) {
         for (cell_location, value) in assignment.iter() {
             self.grid[cell_location.row][cell_location.column] = *value;
         }
     }
 }
 
-#[derive(Clone)]
 struct SudokuConstraint {
     locations: Vec<CellLocation>,
     puzzle: Puzzle,
@@ -88,13 +88,13 @@ impl SudokuConstraint {
 }
 
 impl csp::Constraint<CellLocation, usize> for SudokuConstraint {
-    fn satisfied(&self, assignment: &HashMap<CellLocation, usize>) -> bool {
+    fn satisfied(&self, assignment: &HashMap<Rc<CellLocation>, usize>) -> bool {
         for cell_location in assignment.keys() {
-            let value = assignment.get(&cell_location);
+            let value = assignment.get(cell_location);
             // only other locations with the same value assigned have to be checked
             for checked_location in assignment
                 .keys()
-                .filter(|loc| &cell_location != loc && value == assignment.get(loc))
+                .filter(|loc| &cell_location != loc && value == assignment.get(*loc))
             {
                 // check if the other cell is in the same row or column
                 if cell_location.row == checked_location.row
@@ -141,7 +141,7 @@ fn main() {
     }
 
     let mut csp =
-        csp::CSP::<CellLocation, usize, SudokuConstraint>::new(locations.clone(), domains);
+        csp::CSP::<CellLocation, usize, SudokuConstraint>::new(domains);
     csp.add_constraint(SudokuConstraint::new(locations, puzzle.clone()));
 
     let solution = csp.backtracking_search();
