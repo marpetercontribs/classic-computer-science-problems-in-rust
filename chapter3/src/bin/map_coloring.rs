@@ -44,7 +44,6 @@ impl fmt::Debug for Variable {
     }
 }
 
-#[derive(Clone)]
 struct MapColoringConstraint {
     region1: Variable,
     region2: Variable,

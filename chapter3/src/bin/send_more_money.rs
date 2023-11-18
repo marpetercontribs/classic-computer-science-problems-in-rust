@@ -17,7 +17,6 @@ use csp;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
-#[derive(Clone)]
 struct SendMoreMoneyConstraint {
     letters: Vec<char>,
 }

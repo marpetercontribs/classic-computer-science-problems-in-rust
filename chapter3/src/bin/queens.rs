@@ -17,7 +17,6 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-#[derive(Clone)]
 struct QueensConstraint {
     columns: Vec<u8>,
 }

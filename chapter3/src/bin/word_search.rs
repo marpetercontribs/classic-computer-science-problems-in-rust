@@ -101,7 +101,6 @@ fn display_grid(grid: &Grid) {
     }
 }
 
-#[derive(Clone)]
 struct WordSearchConstraint {
     words: Vec<String>,
 }

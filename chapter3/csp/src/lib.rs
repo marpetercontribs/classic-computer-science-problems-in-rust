@@ -36,7 +36,7 @@ pub trait Constraint<V,D> {
     fn variables(&self) -> Vec<V>;
 }
 
-pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized + Clone> {
+pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized> {
     // Because each variable must have a domain, we can use the keys of the domains HashMap as "variables"
     //   to avoid having to copy each variable into an explicit vector of variables
     // variables: Vec<V>,
@@ -47,7 +47,7 @@ pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized + Clone> {
     constraints: HashMap<Rc<V>,Vec<Rc<C>>>
 }
 
-impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D,C> {
+impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized> CSP<V,D,C> {
     pub fn new(domains_in: HashMap<V,Vec<D>>) -> Self {
         let mut constraints = HashMap::<Rc<V>,Vec<Rc<C>>>::new();
         let mut domains = HashMap::<Rc<V>,Vec<D>>::new();
