@@ -139,8 +139,7 @@ fn main() {
         locations.insert(word.clone(), generate_domain(word, &grid));
     }
 
-    let mut csp =
-        csp::CSP::<String, Vec<GridLocation>, WordSearchConstraint>::new(locations);
+    let mut csp = csp::CSP::<String, Vec<GridLocation>, WordSearchConstraint>::new(locations);
     csp.add_constraint(WordSearchConstraint::new(words));
     let solution = csp.backtracking_search();
     match solution {
