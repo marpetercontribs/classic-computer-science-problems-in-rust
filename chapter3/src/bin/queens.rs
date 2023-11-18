@@ -30,13 +30,17 @@ impl QueensConstraint {
 impl csp::Constraint<u8, u8> for QueensConstraint {
     fn satisfied(&self, assignment: &HashMap<Rc<u8>, u8>) -> bool {
         for (queen1_column, queen1_row) in assignment.iter() {
-            for queen2_column in (queen1_column.as_ref() + 1)..(self.columns.len() + 1).try_into().unwrap() {
+            for queen2_column in
+                (queen1_column.as_ref() + 1)..(self.columns.len() + 1).try_into().unwrap()
+            {
                 if let Some(queen2_row) = assignment.get(&queen2_column) {
                     if queen1_row == queen2_row {
                         // same row
                         return false;
                     }
-                    if queen2_column.abs_diff(*queen1_column.as_ref()) == queen1_row.abs_diff(*queen2_row) {
+                    if queen2_column.abs_diff(*queen1_column.as_ref())
+                        == queen1_row.abs_diff(*queen2_row)
+                    {
                         // same diagonal
                         return false;
                     }
