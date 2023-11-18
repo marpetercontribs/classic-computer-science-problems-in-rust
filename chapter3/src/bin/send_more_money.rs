@@ -15,8 +15,8 @@
 // limitations under the License.
 use csp;
 use std::collections::{HashMap, HashSet};
+use std::rc::Rc;
 
-#[derive(Clone)]
 struct SendMoreMoneyConstraint {
     letters: Vec<char>,
 }
@@ -28,7 +28,7 @@ impl SendMoreMoneyConstraint {
 }
 
 impl csp::Constraint<char, u16> for SendMoreMoneyConstraint {
-    fn satisfied(&self, assignment: &HashMap<char, u16>) -> bool {
+    fn satisfied(&self, assignment: &HashMap<Rc<char>, u16>) -> bool {
         let assignment_values: HashSet<&u16> = HashSet::from_iter(assignment.values());
         if assignment_values.len() < assignment.len() {
             // if there are duplicate values then it's not a solution
@@ -66,7 +66,7 @@ fn main() {
     *m_digits = vec![1]; // so we don't get answers starting with a 0
 
     let mut csp =
-        csp::CSP::<char, u16, SendMoreMoneyConstraint>::new(letters.clone(), possible_digits);
+        csp::CSP::<char, u16, SendMoreMoneyConstraint>::new(possible_digits);
     csp.add_constraint(SendMoreMoneyConstraint::new(letters));
     let solution = csp.backtracking_search();
     match solution {

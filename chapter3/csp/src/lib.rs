@@ -16,6 +16,7 @@
 
 use std::collections::HashMap;
 use std::hash::Hash;
+use std::rc::Rc;
 
 // Rust doesn't have abstract classes or method overloading like usual OO languages
 // But structures and traits, where traits cannot hold any data
@@ -31,46 +32,51 @@ use std::hash::Hash;
 // Constraints held by the CSP are of the same "subtype" --> parameterize the trait
  
 pub trait Constraint<V,D> {
-    fn satisfied(&self, assignment: &HashMap<V, D>) -> bool;
+    fn satisfied(&self, assignment: &HashMap<Rc<V>, D>) -> bool;
     fn variables(&self) -> Vec<V>;
 }
 
-pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized + Clone> {
-    variables: Vec<V>,
-    domains:   HashMap<V,Vec<D>>,
-    constraints: HashMap<V,Vec<C>>
+pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized> {
+    // Because each variable must have a domain, we can use the keys of the domains HashMap as "variables"
+    //   to avoid having to copy each variable into an explicit vector of variables
+    // variables: Vec<V>,
+    // The variables used as keys in domains and constraints are the same, and the same constraint is
+    //   frequently shared among several variables,
+    //   so use Reference Counting to avoid copying
+    domains:   HashMap<Rc<V>,Vec<D>>,
+    constraints: HashMap<Rc<V>,Vec<Rc<C>>>
 }
 
-impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D,C> {
-    pub fn new(variables: Vec<V>, domains: HashMap<V,Vec<D>>) -> Self {
-        let mut constraints = HashMap::<V,Vec<C>>::new();
-        for variable in &variables {
-            constraints.insert((*variable).clone(),Vec::<C>::new());
-            if !domains.contains_key(variable) {
-                panic!("Every variable should have a domain assigned to it.");
-            }
+impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized> CSP<V,D,C> {
+    pub fn new(domains_in: HashMap<V,Vec<D>>) -> Self {
+        let mut constraints = HashMap::<Rc<V>,Vec<Rc<C>>>::new();
+        let mut domains = HashMap::<Rc<V>,Vec<D>>::new();
+        for (variable, domain) in domains_in {
+            let rc_variable = Rc::new(variable);
+            domains.insert(Rc::clone(&rc_variable), domain);
+            constraints.insert(Rc::clone(&rc_variable),Vec::<Rc<C>>::new());
         }
         CSP {
-            variables,
             domains,
             constraints
         }
     }
 
     pub fn add_constraint(&mut self, constraint: C ) {
-        for variable in &constraint.variables() {
-            if !self.variables.contains(&variable) {
+        let rc_constraint = Rc::new(constraint);
+        for variable in &rc_constraint.variables() {
+            if !self.domains.contains_key(variable) {
                 panic!("Variable in constraint not in CSP");
             } else {
-                let constraints_for_var = self.constraints.get_mut(&variable).expect("Variable in constraint not in CSP");
-                constraints_for_var.push(constraint.clone());
+                let constraints_for_var = self.constraints.get_mut(variable).expect("Variable in constraint not in CSP");
+                constraints_for_var.push(Rc::clone(&rc_constraint));
             }
         }
     }
 
     // Check if the value assignment is consistent by checking all constraints
     // for the given variable against it
-    pub fn is_consistent(&self, variable: &V, assignment: &HashMap<V, D> ) -> bool {
+    pub fn is_consistent(&self, variable: &V, assignment: &HashMap<Rc<V>, D> ) -> bool {
         if let Some(constraint_vec) = self.constraints.get(variable) {
             for constraint in constraint_vec {
                 if !constraint.satisfied(assignment) {
@@ -81,22 +87,22 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D
         true
     }
 
-    pub fn backtracking_search(&self) -> Option<HashMap<V, D>> {
-        self.internal_backtracking_search(HashMap::<V,D>::new())
+    pub fn backtracking_search(&self) -> Option<HashMap<Rc<V>, D>> {
+        self.internal_backtracking_search(HashMap::<Rc<V>,D>::new())
     }
-    fn internal_backtracking_search(&self, assignment: HashMap<V, D> ) -> Option<HashMap<V, D>> {
+    fn internal_backtracking_search(&self, assignment: HashMap<Rc<V>, D> ) -> Option<HashMap<Rc<V>, D>> {
         // assignment is complete if every variable is assigned (our base case)
-        if assignment.len() == self.variables.len() {
+        if assignment.len() == self.domains.len() {
             return Some(assignment);
         }
         // get all variables in the CSP but not in the assignment
-        let unassigned_vars: Vec<&V> = self.variables.iter().filter( |var| !assignment.contains_key(&var) ).collect();
+        let unassigned_vars: Vec<&Rc<V>> = self.domains.keys().filter( |var| !assignment.contains_key(*var) ).collect();
         // get every possible domain value of the first unassigned variable
         let first = unassigned_vars[0];
         if let Some(values) = self.domains.get(first) {
             for value in values {
                 let mut local_assignment = assignment.clone();
-                local_assignment.insert((*first).clone(),(*value).clone());
+                local_assignment.insert(Rc::clone(first),(*value).clone());
                 // if we're still consistent, we recurse (continue)
                 if self.is_consistent(first, &local_assignment) {
                     let result = self.internal_backtracking_search(local_assignment);
