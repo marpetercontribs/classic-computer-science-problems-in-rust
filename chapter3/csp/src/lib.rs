@@ -40,20 +40,21 @@ pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized + Clone> {
     // Because each variable must have a domain, we can use the keys of the domains HashMap as "variables"
     //   to avoid having to copy each variable into an explicit vector of variables
     // variables: Vec<V>,
-    // The variables used as keys in domains and constraints are the same,
-    //   so try to use Reference Counting to avoid copying
+    // The variables used as keys in domains and constraints are the same, and the same constraint is
+    //   frequently shared among several variables,
+    //   so use Reference Counting to avoid copying
     domains:   HashMap<Rc<V>,Vec<D>>,
-    constraints: HashMap<Rc<V>,Vec<C>>
+    constraints: HashMap<Rc<V>,Vec<Rc<C>>>
 }
 
 impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D,C> {
     pub fn new(domains_in: HashMap<V,Vec<D>>) -> Self {
-        let mut constraints = HashMap::<Rc<V>,Vec<C>>::new();
+        let mut constraints = HashMap::<Rc<V>,Vec<Rc<C>>>::new();
         let mut domains = HashMap::<Rc<V>,Vec<D>>::new();
-        for (variable, domain) in domains_in.clone().drain() {
+        for (variable, domain) in domains_in {
             let rc_variable = Rc::new(variable);
             domains.insert(Rc::clone(&rc_variable), domain);
-            constraints.insert(Rc::clone(&rc_variable),Vec::<C>::new());
+            constraints.insert(Rc::clone(&rc_variable),Vec::<Rc<C>>::new());
         }
         CSP {
             domains,
@@ -62,12 +63,13 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D
     }
 
     pub fn add_constraint(&mut self, constraint: C ) {
-        for variable in &constraint.variables() {
+        let rc_constraint = Rc::new(constraint);
+        for variable in &rc_constraint.variables() {
             if !self.domains.contains_key(variable) {
                 panic!("Variable in constraint not in CSP");
             } else {
                 let constraints_for_var = self.constraints.get_mut(variable).expect("Variable in constraint not in CSP");
-                constraints_for_var.push(constraint.clone());
+                constraints_for_var.push(Rc::clone(&rc_constraint));
             }
         }
     }
