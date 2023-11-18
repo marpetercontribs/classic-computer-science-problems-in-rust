@@ -90,7 +90,7 @@ fn main() {
             ],
         );
     }
-    let mut csp = csp::CSP::<Variable, String, MapColoringConstraint>::new(variables, domains);
+    let mut csp = csp::CSP::<Variable, String, MapColoringConstraint>::new(domains);
     csp.add_constraint(MapColoringConstraint::new(
         Variable::WesternAustralia,
         Variable::NorthernTerritory,

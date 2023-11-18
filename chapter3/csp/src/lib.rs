@@ -36,22 +36,20 @@ pub trait Constraint<V,D> {
 }
 
 pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized + Clone> {
-    variables: Vec<V>,
+    // Because each variable must have a domain, we can use the keys of the domains HashMap as "variables"
+    //   to avoid having to copy each variable into an explicit vector of variables
+    // variables: Vec<V>,
     domains:   HashMap<V,Vec<D>>,
     constraints: HashMap<V,Vec<C>>
 }
 
 impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D,C> {
-    pub fn new(variables: Vec<V>, domains: HashMap<V,Vec<D>>) -> Self {
+    pub fn new(domains: HashMap<V,Vec<D>>) -> Self {
         let mut constraints = HashMap::<V,Vec<C>>::new();
-        for variable in &variables {
+        for variable in domains.keys() {
             constraints.insert((*variable).clone(),Vec::<C>::new());
-            if !domains.contains_key(variable) {
-                panic!("Every variable should have a domain assigned to it.");
-            }
         }
         CSP {
-            variables,
             domains,
             constraints
         }
@@ -59,7 +57,7 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D
 
     pub fn add_constraint(&mut self, constraint: C ) {
         for variable in &constraint.variables() {
-            if !self.variables.contains(&variable) {
+            if !self.domains.contains_key(&variable) {
                 panic!("Variable in constraint not in CSP");
             } else {
                 let constraints_for_var = self.constraints.get_mut(&variable).expect("Variable in constraint not in CSP");
@@ -86,11 +84,11 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized + Clone> CSP<V,D
     }
     fn internal_backtracking_search(&self, assignment: HashMap<V, D> ) -> Option<HashMap<V, D>> {
         // assignment is complete if every variable is assigned (our base case)
-        if assignment.len() == self.variables.len() {
+        if assignment.len() == self.domains.len() {
             return Some(assignment);
         }
         // get all variables in the CSP but not in the assignment
-        let unassigned_vars: Vec<&V> = self.variables.iter().filter( |var| !assignment.contains_key(&var) ).collect();
+        let unassigned_vars: Vec<&V> = self.domains.keys().filter( |var| !assignment.contains_key(&var) ).collect();
         // get every possible domain value of the first unassigned variable
         let first = unassigned_vars[0];
         if let Some(values) = self.domains.get(first) {

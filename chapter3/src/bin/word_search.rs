@@ -140,7 +140,7 @@ fn main() {
     }
 
     let mut csp =
-        csp::CSP::<String, Vec<GridLocation>, WordSearchConstraint>::new(words.clone(), locations);
+        csp::CSP::<String, Vec<GridLocation>, WordSearchConstraint>::new(locations);
     csp.add_constraint(WordSearchConstraint::new(words));
     let solution = csp.backtracking_search();
     match solution {

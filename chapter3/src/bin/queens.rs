@@ -57,7 +57,7 @@ fn main() {
         rows.insert(*column, Vec::from([1, 2, 3, 4, 5, 6, 7, 8]));
     }
 
-    let mut csp = csp::CSP::<u8, u8, QueensConstraint>::new(columns.clone(), rows);
+    let mut csp = csp::CSP::<u8, u8, QueensConstraint>::new(rows);
     csp.add_constraint(QueensConstraint::new(columns));
     let solution = csp.backtracking_search();
     match solution {
