@@ -15,6 +15,7 @@
 // limitations under the License.
 use std::fmt;
 use std::iter::zip;
+use std::fs::File;
 
 pub trait DataPoint: Clone {
     fn originals(&self) -> Vec<f64>;
@@ -43,6 +44,18 @@ impl SimpleDataPoint {
             coordinates: initials.clone(),
             num_dimensions: initials.len(),
         }
+    }
+    pub fn from_file(file_name: &str) -> Vec<SimpleDataPoint> {
+        let file = File::open(file_name).expect("Cannot read file");
+        let mut rdr = csv::ReaderBuilder::new()
+            .has_headers(false)
+            .from_reader(file);
+        let mut result = Vec::<SimpleDataPoint>::new();
+        for record in rdr.deserialize::<Vec<f64>>() {
+            let line: Vec<f64> = record.expect("Could not parse a line in the csv file");
+            result.push(SimpleDataPoint::new(line));
+        }
+        result
     }
 }
 impl fmt::Debug for SimpleDataPoint {

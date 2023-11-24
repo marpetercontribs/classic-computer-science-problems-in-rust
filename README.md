@@ -33,7 +33,7 @@ Exercises completed:
     - [ ] 2. Extend CSP of chapter 3 by support for genetic algorithm
     - [ ] 3. Create a BitString that implements Chromosome and use it to solve 5.3
 - Chapter 6
-    - [ ] 1. Add support for importing DataPoints from a csv file
+    - [X] 1. Add support for importing DataPoints from a csv file
     - [ ] 2. Add function that generates a visualization of the (2D) points and clusters
     - [ ] 3. Add constructor for KMeans that allows specifying initial centroids
     - [ ] 4. Research and implement the kmeans++ algorithm

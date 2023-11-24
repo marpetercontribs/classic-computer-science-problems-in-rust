@@ -175,4 +175,14 @@ mod tests {
             println!("Cluster {cluster_no}: {:?}", cluster.points);
         }
     }
+
+    #[test]
+    fn test_from_file() {
+        let points: Vec<SimpleDataPoint> = SimpleDataPoint::from_file("src/datapoints.csv");
+        let mut kmeans_test: KMeans<SimpleDataPoint> = KMeans::new(2, &points);
+        let test_clusters = kmeans_test.run(100);
+        for (cluster_no, cluster) in test_clusters.iter().enumerate() {
+            println!("Cluster {cluster_no}: {:?}", cluster.points);
+        }
+    }
 }
