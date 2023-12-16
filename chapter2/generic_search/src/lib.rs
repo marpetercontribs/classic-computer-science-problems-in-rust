@@ -107,7 +107,9 @@ pub fn node_to_path<T: PartialOrd + Eq + Copy>(node: &Node<T>) -> Vec<T> {
     path.into_iter().rev().collect()
 }
 
-pub fn dfs<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
+pub fn dfs<T: PartialOrd + Copy + Eq + Hash>
+    (initial: T, goal_test: impl Fn(&T) -> bool, successors: impl Fn(&T) -> Vec<T>)
+    -> Option<Rc<Node<T>>> {
     // frontier is where we've yet to go
     let mut frontier = Vec::<Rc<Node<T>>>::new();
     let mut explored = HashSet::<T>::new();
@@ -130,7 +132,9 @@ pub fn dfs<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Ve
     None // went through everything and never found goal
 }
 
-pub fn bfs<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
+pub fn bfs<T: PartialOrd + Copy + Eq + Hash>
+    (initial: T, goal_test: impl Fn(&T) -> bool, successors: impl Fn(&T) -> Vec<T>)
+    -> Option<Rc<Node<T>>> {
     // frontier is where we've yet to go
     let mut frontier = VecDeque::<Rc<Node<T>>>::new();
     let mut explored = HashSet::<T>::new();
@@ -153,8 +157,9 @@ pub fn bfs<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Ve
     None // went through everything and never found goal
 }
 
-pub fn astar<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>, H: Fn(&T) -> f64>
-    (initial: T, goal_test: GT, successors: S, heuristic: H) -> Option<Rc<Node<T>>> {
+pub fn astar<T: PartialOrd + Copy + Eq + Hash>
+    (initial: T, goal_test: impl Fn(&T) -> bool, successors: impl Fn(&T) -> Vec<T>, heuristic: impl Fn(&T) -> f64)
+    -> Option<Rc<Node<T>>> {
     // frontier is where we've yet to go
     let mut frontier = BinaryHeap::<Rc<Node<T>>>::new();
     let mut explored = HashMap::<T,f64>::new();

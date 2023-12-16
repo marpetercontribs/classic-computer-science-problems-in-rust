@@ -13,6 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+use std::cmp::Ordering;
 #[derive(PartialEq, PartialOrd, Eq, Ord)]
 enum Nucleotide {
     A,
@@ -63,14 +64,13 @@ fn linear_contains(gene: &Gene, key_codon: &Codon) -> bool {
 fn binary_contains(gene: &Gene, key_codon: &Codon) -> bool {
     let mut low: usize = 0;
     let mut high: usize = gene.len() - 1;
+
     while low <= high {
         let mid = (low + high) / 2;
-        if gene[mid] < *key_codon {
-            low = mid + 1;
-        } else if gene[mid] > *key_codon {
-            high = mid - 1;
-        } else {
-            return true;
+        match gene[mid].cmp(key_codon) {
+            Ordering::Greater => high = mid - 1,
+            Ordering::Less => low = mid + 1,
+            Ordering::Equal => return true,
         }
     }
     false
