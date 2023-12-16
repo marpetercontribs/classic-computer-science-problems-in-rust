@@ -30,7 +30,7 @@ pub fn linear_contains<'a, T: 'a + PartialEq>( iterable: impl IntoIterator<Item 
     false
 }
 
-pub fn binary_contains<'a, T: 'a + PartialOrd>( list: &Vec<T>, key: &T) -> bool {
+pub fn binary_contains<T: PartialOrd>( list: &[T], key: &T) -> bool {
     let mut low: usize = 0;
     let mut high: usize = list.len() - 1;
     while low <= high {
@@ -53,7 +53,7 @@ pub fn binary_contains<'a, T: 'a + PartialOrd>( list: &Vec<T>, key: &T) -> bool 
 #[derive(Clone)]
 pub struct Node<T: PartialEq + Eq + Clone> {
     state: T,
-    parent: Option<Rc<Node<T>>>, // indirection because of recursive type definition
+    parent: Option<Rc<Node<T>>>, // several children could reference the same parent -> Rc<_>
     cost: f64, // Rust's f64 does not implement trait Eq!
     heuristic: f64,
 }
@@ -74,11 +74,10 @@ impl<T: PartialEq + Eq + Clone> Node<T> {
             None => Node { state, parent: None, cost, heuristic},
             Some(parent) => Node { state, parent: Some(Rc::clone(&parent)), cost, heuristic}
         }
-
     }
 }
 
-impl<'a, T: PartialEq + Eq + Clone> Ord for Node<T> {
+impl<T: PartialEq + Eq + Clone> Ord for Node<T> {
     fn cmp(&self, other: &Self) -> Ordering {
         let difference = (self.cost + self.heuristic) - (&other.cost + &other.heuristic);
         if difference < -0.000001_f64 {
@@ -98,7 +97,7 @@ impl<'a, T: PartialEq + Eq + Clone> PartialOrd for Node<T> {
 }
 
 pub fn node_to_path<T: PartialOrd + Eq + Copy>(node: &Node<T>) -> Vec<T> {
-    let mut path =Vec::<T>::new();
+    let mut path = Vec::<T>::new();
     let mut current_node = node;
     path.push(current_node.state);
     while let Some(parent) = &current_node.parent {
@@ -108,7 +107,7 @@ pub fn node_to_path<T: PartialOrd + Eq + Copy>(node: &Node<T>) -> Vec<T> {
     path.into_iter().rev().collect()
 }
 
-pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
+pub fn dfs<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
     // frontier is where we've yet to go
     let mut frontier = Vec::<Rc<Node<T>>>::new();
     let mut explored = HashSet::<T>::new();
@@ -131,7 +130,7 @@ pub fn dfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
     None // went through everything and never found goal
 }
 
-pub fn bfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
+pub fn bfs<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>>(initial: T, goal_test: GT, successors: S) -> Option<Rc<Node<T>>> {
     // frontier is where we've yet to go
     let mut frontier = VecDeque::<Rc<Node<T>>>::new();
     let mut explored = HashSet::<T>::new();
@@ -154,7 +153,7 @@ pub fn bfs<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -
     None // went through everything and never found goal
 }
 
-pub fn astar<'a, T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>, H: Fn(&T) -> f64>
+pub fn astar<T: PartialOrd + Copy + Eq + Hash, GT: Fn(&T) -> bool, S: Fn(&T) -> Vec<T>, H: Fn(&T) -> f64>
     (initial: T, goal_test: GT, successors: S, heuristic: H) -> Option<Rc<Node<T>>> {
     // frontier is where we've yet to go
     let mut frontier = BinaryHeap::<Rc<Node<T>>>::new();
