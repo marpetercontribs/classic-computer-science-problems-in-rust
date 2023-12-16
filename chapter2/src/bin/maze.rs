@@ -13,7 +13,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use generic_search;
 use rand::{thread_rng, Rng};
 
 #[derive(PartialEq)]
@@ -177,7 +176,7 @@ impl ToString for Maze {
 
 fn main() {
     let mut maze = Maze::default_new();
-    let solution1 = crate::generic_search::dfs(
+    let solution1 = generic_search::dfs(
         maze.start,
         |ml: &MazeLocation| maze.goal_test(ml),
         |ml: &MazeLocation| maze.successors(ml),

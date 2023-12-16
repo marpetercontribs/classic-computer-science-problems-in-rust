@@ -39,7 +39,9 @@ impl MCState {
         }
     }
     fn goal_test(&self) -> bool {
-        self.is_legal() && self.east_missionaries == MAX_NUM_MISSIONARIES && self.east_cannibals == MAX_NUM_CANNIBALS
+        self.is_legal()
+            && self.east_missionaries == MAX_NUM_MISSIONARIES
+            && self.east_cannibals == MAX_NUM_CANNIBALS
     }
     fn is_legal(&self) -> bool {
         if self.west_missionaries > 0 && self.west_missionaries < self.west_cannibals {

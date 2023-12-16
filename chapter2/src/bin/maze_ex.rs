@@ -14,7 +14,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use generic_search;
 use rand::{thread_rng, Rng};
 
 #[derive(PartialEq)]
@@ -142,7 +141,7 @@ fn main() {
 
     for _ in 0..runs {
         let maze = Maze::default_new();
-        let (solution1, explored, considered) = crate::generic_search::dfs_counting(
+        let (solution1, explored, considered) = generic_search::dfs_counting(
             maze.start,
             |ml: &MazeLocation| maze.goal_test(ml),
             |ml: &MazeLocation| maze.successors(ml),
