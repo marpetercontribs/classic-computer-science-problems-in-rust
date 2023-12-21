@@ -42,7 +42,7 @@ impl<P: DataPoint> KMeans<P> {
     pub fn new(k: usize, points: &Vec<P>) -> Self {
         let mut instance = KMeans {
             points: points.clone(),
-            clusters: Vec::<Cluster<P>>::new(),
+            clusters: Vec::<Cluster<P>>::with_capacity(k),
         };
         instance.z_score_normalize();
         for _ in 0..k {
@@ -68,9 +68,9 @@ impl<P: DataPoint> KMeans<P> {
     }
 
     fn z_score_normalize(&mut self) {
-        let mut z_scored_points: Vec<Vec<f64>> = Vec::new();
+        let mut z_scored_points: Vec<Vec<f64>> = Vec::with_capacity(self.points.len());
         for _ in self.points.iter() {
-            z_scored_points.push(Vec::<f64>::new());
+            z_scored_points.push(Vec::<f64>::with_capacity(self.points[0].num_dimensions()));
         }
         for dimension in 0..self.points[0].num_dimensions() {
             let dimension_values = self.dimension_slice(dimension);
