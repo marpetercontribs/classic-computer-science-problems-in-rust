@@ -33,7 +33,7 @@ impl Network {
         if layer_structure.len() < 3 {
             panic!("Error: There should be at least 3 layers (1 input, 1 hidden, 1 output)");
         }
-        let mut layers = Vec::<Rc<RefCell<Layer>>>::new();
+        let mut layers = Vec::<Rc<RefCell<Layer>>>::with_capacity(layer_structure.len());
         let input_layer = Layer::new(
             None,
             layer_structure[0],

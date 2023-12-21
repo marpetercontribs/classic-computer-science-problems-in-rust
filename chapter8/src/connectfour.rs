@@ -52,7 +52,7 @@ fn generate_segments(
     // generate the vertical segments
     for col in 0..num_columns {
         for row in 0..=(num_rows - segment_length) {
-            let mut segment = Vec::<(usize, usize)>::new();
+            let mut segment = Vec::<(usize, usize)>::with_capacity(segment_length);
             for i in 0..segment_length {
                 segment.push((col, row + i));
             }
@@ -62,7 +62,7 @@ fn generate_segments(
     // generate the horizontal segments
     for col in 0..=(num_columns - segment_length) {
         for row in 0..num_rows {
-            let mut segment = Vec::<(usize, usize)>::new();
+            let mut segment = Vec::<(usize, usize)>::with_capacity(segment_length);
             for i in 0..segment_length {
                 segment.push((col + i, row));
             }
@@ -72,7 +72,7 @@ fn generate_segments(
     // generate the bottom left to top right diagonal segments
     for col in 0..=(num_columns - segment_length) {
         for row in 0..=(num_rows - segment_length) {
-            let mut segment = Vec::<(usize, usize)>::new();
+            let mut segment = Vec::<(usize, usize)>::with_capacity(segment_length);
             for i in 0..segment_length {
                 segment.push((col + i, row + i));
             }
@@ -82,7 +82,7 @@ fn generate_segments(
     // generate the top left to bottom right diagonal segments
     for col in 0..=(num_columns - segment_length) {
         for row in (segment_length - 1)..num_rows {
-            let mut segment = Vec::<(usize, usize)>::new();
+            let mut segment = Vec::<(usize, usize)>::with_capacity(segment_length);
             for i in 0..segment_length {
                 segment.push((col + i, row - i));
             }

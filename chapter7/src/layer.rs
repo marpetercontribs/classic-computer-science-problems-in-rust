@@ -34,7 +34,7 @@ impl Layer {
         activation_function: Rc<dyn Fn(f64) -> f64>,
         activation_function_derivative: Rc<dyn Fn(f64) -> f64>,
     ) -> Self {
-        let mut neurons = Vec::<Neuron>::new();
+        let mut neurons = Vec::<Neuron>::with_capacity(num_neurons);
         for _ in 0..num_neurons {
             let randon_weights: Vec<f64> = previous_layer.as_ref().map_or_else(
                 Vec::<f64>::new,
