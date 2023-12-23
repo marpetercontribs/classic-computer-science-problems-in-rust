@@ -29,7 +29,7 @@ Exercises completed:
     - [X] 2. Add support for di(rected) graphs
     - [ ] 3. Solve the Seven Bridges of Koenigsberg problem
 - Chapter 5
-    - [ ] 1. Add support for improved Tournament selection
+    - [X] 1. Add support for improved Tournament selection
     - [ ] 2. Extend CSP of chapter 3 by support for genetic algorithm
     - [ ] 3. Create a BitString that implements Chromosome and use it to solve 5.3
 - Chapter 6
@@ -40,7 +40,7 @@ Exercises completed:
 - Chapter 7
     - [ ] 1. Use the chapter's framework to classify another dataset
     - [ ] 2. Try a different activation function
-    - [ ] 3. Solve this chapter's problems using a widely framework such as TensorFlow
+    - [ ] 3. Solve this chapter's problems using a widely used framework such as TensorFlow
     - [ ] 4. Rewrite Network, Layer and Neuron using a 3rd-party library optimizing numerical computations
 - Chapter 8
     - [X] 1. Add unit tests to tictactoe to verify that methods get_legal_moves, is_win and is_draw are correct

@@ -31,6 +31,7 @@ use rand::{random, thread_rng};
 pub enum SelectionType {
     Roulette,
     Tournament,
+    ImprovedTournament,
 }
 
 pub struct GeneticAlgorithm<C: Chromosome> {
@@ -55,9 +56,14 @@ impl<C: Chromosome> GeneticAlgorithm<C> {
         }
     }
 
-    fn pick_roulette(&self, wheel: Vec<f64>) -> (C, C) {
-        let mut picks: Vec<C> = Vec::<C>::new();
-        for _ in 0..2 {
+    fn pick_roulette(&self) -> (C, C) {
+        let total_fitness: f64 = self.population.iter().map(|c| c.fitness()).sum();
+        let wheel: Vec<f64> = self.population
+            .iter()
+            .map(|c| c.fitness() / total_fitness)
+            .collect();
+        let mut picks: Vec<C> = Vec::<C>::with_capacity(2);
+        while picks.len() < 2 {
             let mut pick = random::<f64>();
             for (i, value) in wheel.iter().enumerate() {
                 pick -= value;
@@ -71,27 +77,40 @@ impl<C: Chromosome> GeneticAlgorithm<C> {
     }
 
     fn pick_tournament(&self, num_players: usize) -> (C, C) {
+        let mut picks = self.pick_random_subset(num_players);
+        picks.sort_by(|a, b| b.fitness().partial_cmp(&a.fitness()).unwrap());
+        (picks[0].clone(), picks[1].clone())
+    }
+
+    fn pick_tournament_improved(&self, num_players: usize) -> (C, C) {
+        let mut picks = self.pick_random_subset(num_players);
+        picks.sort_by(|a, b| b.fitness().partial_cmp(&a.fitness()).unwrap());
+        let total: f64 = picks.iter().take(3).map(|c| c.fitness()).sum();
+        let first_two: f64 = (picks[0].fitness() + picks[1].fitness()) / total;
+        let random = random::<f64>();
+        if random < first_two {
+            return (picks[0].clone(), picks[1].clone());
+        } else {
+            return (picks[1].clone(), picks[2].clone());
+        }
+    }
+
+    fn pick_random_subset(&self, num_players: usize) -> Vec<C> {
         let mut picks: Vec<C> = self.population.clone();
         picks.shuffle(&mut thread_rng());
         picks.truncate(num_players);
-        picks.sort_by(|a, b| b.fitness().partial_cmp(&a.fitness()).unwrap());
-        (picks[0].clone(), picks[1].clone())
+        picks
     }
 
     fn reproduce_and_replace(&mut self) {
         let mut next_population: Vec<C> = Vec::<C>::new();
         while next_population.len() < self.population.len() {
             let (parent1, parent2): (C, C) = match self.selection_type {
-                SelectionType::Roulette => {
-                    let total_fitness: f64 = self.population.iter().map(|c| c.fitness()).sum();
-                    let wheel: Vec<f64> = self
-                        .population
-                        .iter()
-                        .map(|c| c.fitness() / total_fitness)
-                        .collect();
-                    self.pick_roulette(wheel)
-                }
+                SelectionType::Roulette => self.pick_roulette(),
                 SelectionType::Tournament => self.pick_tournament(self.population.len() / 2),
+                SelectionType::ImprovedTournament => {
+                    self.pick_tournament_improved(self.population.len() / 2)
+                }
             };
             if random::<f64>() < self.crossover_chance {
                 let (parent1, parent2) = parent1.crossover(&parent2);

@@ -80,7 +80,7 @@ fn main() {
         initial_population.push(SimpleEquation::random_instance());
     }
     let mut ga: GeneticAlgorithm<SimpleEquation> =
-        GeneticAlgorithm::new(initial_population, 0.1, 0.7, SelectionType::Tournament);
+        GeneticAlgorithm::new(initial_population, 0.1, 0.7, SelectionType::ImprovedTournament);
     let result: SimpleEquation = ga.run(100, 13.0);
     println!("{}", result.to_string());
 }
