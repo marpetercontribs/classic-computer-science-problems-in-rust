@@ -20,11 +20,12 @@ use std::rc::Rc;
 struct MapColoringConstraint {
     region1: &'static str,
     region2: &'static str,
+    variables: Vec<&'static str>
 }
 
 impl MapColoringConstraint {
     fn new(region1: &'static str, region2: &'static str) -> Self {
-        MapColoringConstraint {region1, region2}
+        MapColoringConstraint {region1, region2, variables: vec![region1, region2]}
     }
 }
 
@@ -37,8 +38,8 @@ impl csp::Constraint<&str, &str> for MapColoringConstraint {
         }
         assignment.get(&self.region1).unwrap() != assignment.get(&self.region2).unwrap()
     }
-    fn variables(&self) -> Vec<&'static str> {
-        vec![self.region1, self.region2]
+    fn variables<'a>(&'a self) -> &'a Vec<&'static str> {
+        &self.variables
     }
 }
 

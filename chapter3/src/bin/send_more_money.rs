@@ -51,8 +51,8 @@ impl csp::Constraint<char, u16> for SendMoreMoneyConstraint {
         true // no conflict
     }
 
-    fn variables(&self) -> Vec<char> {
-        self.letters.clone()
+    fn variables<'a>(&'a self) -> &'a Vec<char> {
+        &self.letters
     }
 }
 
