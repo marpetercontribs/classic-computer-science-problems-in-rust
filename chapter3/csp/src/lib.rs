@@ -33,7 +33,7 @@ use std::rc::Rc;
  
 pub trait Constraint<V,D> {
     fn satisfied(&self, assignment: &HashMap<Rc<V>, D>) -> bool;
-    fn variables(&self) -> Vec<V>;
+    fn variables<'a>(&'a self) -> &'a Vec<V>;
 }
 
 pub struct CSP<V: Eq + Hash,D: Clone, C: Constraint<V,D> + Sized> {
@@ -64,7 +64,7 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V,D> + Sized> CSP<V,D,C> {
 
     pub fn add_constraint(&mut self, constraint: C ) {
         let rc_constraint = Rc::new(constraint);
-        for variable in &rc_constraint.variables() {
+        for variable in rc_constraint.variables() {
             if !self.domains.contains_key(variable) {
                 panic!("Variable in constraint not in CSP");
             } else {

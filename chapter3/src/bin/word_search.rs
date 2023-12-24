@@ -118,8 +118,8 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
             HashSet::from_iter(all_locations.iter().cloned());
         all_locations.len() == deduplicated_locations.len()
     }
-    fn variables(&self) -> Vec<String> {
-        self.words.clone()
+    fn variables<'a>(&'a self) -> &'a Vec<String> {
+        &self.words
     }
 }
 
