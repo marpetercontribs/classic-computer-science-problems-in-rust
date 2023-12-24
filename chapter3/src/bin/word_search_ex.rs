@@ -179,8 +179,8 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
         }
         true
     }
-    fn variables(&self) -> Vec<String> {
-        self.words.clone()
+    fn variables<'a>(&'a self) -> &'a Vec<String> {
+        &self.words
     }
 }
 
