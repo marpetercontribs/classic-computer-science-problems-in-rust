@@ -1,5 +1,6 @@
 [package]
 name = "chapter5"
+default-run = "chapter5"
 version = "0.1.0"
 edition = "2021"
 
