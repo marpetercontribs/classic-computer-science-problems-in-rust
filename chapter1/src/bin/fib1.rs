@@ -21,3 +21,4 @@ fn fib1(n: usize) -> usize {
 fn main() {
     println!("{}", fib1(5));
 }
+// Note that this example is purposefully wrong

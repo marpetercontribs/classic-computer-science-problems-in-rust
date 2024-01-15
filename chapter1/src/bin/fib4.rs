@@ -17,6 +17,7 @@
 
 use memoize::memoize;
 
+// The following line required dependency memoize in Cargo.toml
 #[memoize]
 
 pub fn fib4(n: usize) -> usize {
