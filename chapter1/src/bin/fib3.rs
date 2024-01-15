@@ -38,7 +38,9 @@ impl Fib3 {
 }
 
 fn main() {
-    let mut fib = Fib3::new(); // How to adjust code to avoid `mut` here?
+    let mut fib = Fib3::new();
+    // Note the need for `mut` here, because the get method changes the state of Fib3.
+    // To avoid this, the HashMap could be wrapped inside a std::rc::RefCell.
     println!("{}", fib.get(5));
     println!("{}", fib.get(50));
 }

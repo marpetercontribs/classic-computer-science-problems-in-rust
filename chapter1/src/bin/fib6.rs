@@ -52,7 +52,7 @@ pub fn fib6(n: usize) -> FibonacciGenerator {
 }
 
 fn main() {
-    for i in fib6(50) {
+    for i in fib6(51) {
         println!("{}", i);
     }
 }
