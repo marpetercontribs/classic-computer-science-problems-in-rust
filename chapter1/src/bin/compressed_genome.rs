@@ -26,32 +26,59 @@ impl CompressedGenome {
         }
     }
     fn compress(genome: &str) -> Vec<bool> {
-        let mut result = Vec::new();
         let upper_genome = genome.to_ascii_uppercase();
+        // imperative version
+        let mut result = Vec::new();
         for nucleotide in upper_genome.chars() {
             match nucleotide {
                 'A' => {
                     result.push(false);
                     result.push(false);
-                }
+                },
                 'C' => {
                     result.push(false);
                     result.push(true);
-                }
+                },
                 'G' => {
                     result.push(true);
                     result.push(false);
-                }
+                },
                 'T' => {
                     result.push(true);
                     result.push(true);
-                }
+                },
                 _ => panic!("Invalid nucleotide:{}", nucleotide),
             }
         }
         result
+        // more functional version
+        // upper_genome
+        //     .chars()
+        //     .fold(Vec::new(), |mut result, nucleotide| {
+        //         match nucleotide {
+        //             'A' => {
+        //                 result.push(false);
+        //                 result.push(false);
+        //             }
+        //             'C' => {
+        //                 result.push(false);
+        //                 result.push(true);
+        //             }
+        //             'G' => {
+        //                 result.push(true);
+        //                 result.push(false);
+        //             }
+        //             'T' => {
+        //                 result.push(true);
+        //                 result.push(true);
+        //             }
+        //             _ => panic!("Invalid nucleotide:{}", nucleotide),
+        //         }
+        //         result
+        //     })
     }
     fn decompress(&self) -> String {
+        // imperative version
         let mut genome = String::new();
         for index in 0..(self.bits.len() / 2) {
             let nucleotide: u8 = (if self.bits[2 * index] { 1 } else { 0 }) * 2
@@ -65,6 +92,22 @@ impl CompressedGenome {
             }
         }
         genome
+        // more functional version
+        // (0..(self.bits.len() / 2))
+        //     .map(|index| {
+        //         (if self.bits[2 * index] { 1 } else { 0 }) * 2
+        //             + (if self.bits[2 * index + 1] { 1 } else { 0 })
+        //     })
+        //     .fold(String::new(), |mut genome, nucleotide| {
+        //         match nucleotide {
+        //             0b00 => genome.push('A'),
+        //             0b01 => genome.push('C'),
+        //             0b10 => genome.push('G'),
+        //             0b11 => genome.push('T'),
+        //             _ => panic!("Invalid nucleotide:{}", nucleotide),
+        //         }
+        //         genome
+        //     })
     }
 }
 
