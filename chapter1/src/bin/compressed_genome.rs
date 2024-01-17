@@ -29,20 +29,24 @@ impl CompressedGenome {
         let mut result = Vec::new();
         let upper_genome = genome.to_ascii_uppercase();
         for nucleotide in upper_genome.chars() {
-            if nucleotide == 'A' {
-                result.push(false);
-                result.push(false);
-            } else if nucleotide == 'C' {
-                result.push(false);
-                result.push(true);
-            } else if nucleotide == 'G' {
-                result.push(true);
-                result.push(false);
-            } else if nucleotide == 'T' {
-                result.push(true);
-                result.push(true);
-            } else {
-                panic!("Invalid nucleotide:{}", nucleotide);
+            match nucleotide {
+                'A' => {
+                    result.push(false);
+                    result.push(false);
+                }
+                'C' => {
+                    result.push(false);
+                    result.push(true);
+                }
+                'G' => {
+                    result.push(true);
+                    result.push(false);
+                }
+                'T' => {
+                    result.push(true);
+                    result.push(true);
+                }
+                _ => panic!("Invalid nucleotide:{}", nucleotide),
             }
         }
         result
@@ -52,16 +56,12 @@ impl CompressedGenome {
         for index in 0..(self.bits.len() / 2) {
             let nucleotide: u8 = (if self.bits[2 * index] { 1 } else { 0 }) * 2
                 + (if self.bits[2 * index + 1] { 1 } else { 0 });
-            if nucleotide == 0b00 {
-                genome.push('A');
-            } else if nucleotide == 0b01 {
-                genome.push('C');
-            } else if nucleotide == 0b10 {
-                genome.push('G');
-            } else if nucleotide == 0b11 {
-                genome.push('T');
-            } else {
-                panic!("Invalid nucleotide:{}", nucleotide);
+            match nucleotide {
+                0b00 => genome.push('A'),
+                0b01 => genome.push('C'),
+                0b10 => genome.push('G'),
+                0b11 => genome.push('T'),
+                _ => panic!("Invalid nucleotide:{}", nucleotide),
             }
         }
         genome

@@ -19,7 +19,7 @@ pub fn fib5(n: usize) -> usize {
         n
     } else {
         let (mut last, mut next) = (0, 1);
-        (1..n).for_each( |_| (last, next) = (next, last + next) );
+        (1..n).for_each(|_| (last, next) = (next, last + next));
         next
     }
 }
