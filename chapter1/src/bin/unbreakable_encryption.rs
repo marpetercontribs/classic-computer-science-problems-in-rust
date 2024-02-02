@@ -26,7 +26,7 @@ fn random_key(length: usize) -> Vec<u8> {
 fn encrypt(original: &str) -> (Vec<u8>, Vec<u8>) {
     let original_bytes = original.as_bytes().to_vec();
     let key = random_key(original_bytes.len());
-    let mut encrypted = Vec::<u8>::new();
+    let mut encrypted = Vec::<u8>::with_capacity(original_bytes.len());
     for index in 0..original_bytes.len() {
         encrypted.push(key[index] ^ original_bytes[index]);
     }
@@ -34,7 +34,7 @@ fn encrypt(original: &str) -> (Vec<u8>, Vec<u8>) {
 }
 
 fn decrypt(key1: &Vec<u8>, key2: &[u8]) -> String {
-    let mut decrypted = Vec::<u8>::new();
+    let mut decrypted = Vec::<u8>::with_capacity(key1.len());
     for index in 0..key1.len() {
         decrypted.push(key1[index] ^ key2[index]);
     }
