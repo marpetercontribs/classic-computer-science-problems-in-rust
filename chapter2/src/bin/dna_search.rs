@@ -26,7 +26,7 @@ type Codon = (Nucleotide, Nucleotide, Nucleotide);
 type Gene = Vec<Codon>;
 
 // Is there a more elegant / idiomatic way for the following?
-fn byte_to_nucleotide(byte: u8) -> Nucleotide {
+fn byte_to_nucleotide(byte: &u8) -> Nucleotide {
     match byte {
         b'A' => Nucleotide::A,
         b'C' => Nucleotide::C,
@@ -40,11 +40,11 @@ fn string_to_gene(gene_string: &str) -> Gene {
     let mut gene = Gene::new();
     let gene_bytes = gene_string.as_bytes();
     for index in (0..gene_bytes.len()).step_by(3) {
-        if index + 2 < gene_string.len() {
+        if index + 2 < gene_bytes.len() {
             let codon = (
-                byte_to_nucleotide(gene_bytes[index]),
-                byte_to_nucleotide(gene_bytes[index + 1]),
-                byte_to_nucleotide(gene_bytes[index + 2]),
+                byte_to_nucleotide(&gene_bytes[index]),
+                byte_to_nucleotide(&gene_bytes[index + 1]),
+                byte_to_nucleotide(&gene_bytes[index + 2]),
             );
             gene.push(codon);
         }
@@ -53,6 +53,8 @@ fn string_to_gene(gene_string: &str) -> Gene {
 }
 
 fn linear_contains(gene: &Gene, key_codon: &Codon) -> bool {
+    // The following using the built-in Iterator method any would work as well, of course:
+    // gene.iter().any( |codon| codon == key_codon )
     for codon in gene {
         if codon == key_codon {
             return true;
