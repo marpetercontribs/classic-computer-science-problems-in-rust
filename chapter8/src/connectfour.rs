@@ -113,16 +113,19 @@ impl C4Board {
         }
     }
     fn new_from(positions: Vec<Vec<C4Piece>>, turn: C4Piece) -> Self {
-        let mut column_level: Vec<usize> = Vec::new();
-        for column in positions.iter() {
-            column_level.push(column.iter().fold(0, |count, p| {
-                if *p == C4Piece::B || *p == C4Piece::R {
-                    count + 1
-                } else {
-                    count
-                }
-            }));
-        }
+        let column_level =
+            positions
+                .iter()
+                .fold(Vec::with_capacity(positions.len()), |mut vec, column| {
+                    vec.push(column.iter().fold(0, |count, p| {
+                        if *p == C4Piece::B || *p == C4Piece::R {
+                            count + 1
+                        } else {
+                            count
+                        }
+                    }));
+                    vec
+                });
         C4Board {
             positions,
             column_level,
@@ -130,16 +133,18 @@ impl C4Board {
         }
     }
     fn count_segment(&self, segment: &[(usize, usize)]) -> (usize, usize) {
-        let mut black_count: usize = 0;
-        let mut red_count: usize = 0;
-        for (column, row) in segment.iter() {
-            if self.positions[*column][*row] == C4Piece::B {
-                black_count += 1;
-            } else if self.positions[*column][*row] == C4Piece::R {
-                red_count += 1;
-            }
-        }
-        (black_count, red_count)
+        segment.iter().fold(
+            (0_usize, 0_usize),
+            |(black_count, red_count), (column, row)| {
+                if self.positions[*column][*row] == C4Piece::B {
+                    (black_count + 1, red_count)
+                } else if self.positions[*column][*row] == C4Piece::R {
+                    (black_count, red_count + 1)
+                } else {
+                    (black_count, red_count)
+                }
+            },
+        )
     }
     fn evaluate_segment(&self, segment: &[(usize, usize)], player: &C4Piece) -> f64 {
         let (black_count, red_count) = self.count_segment(segment);
@@ -199,11 +204,9 @@ impl Board<C4Piece, usize> for C4Board {
         false
     }
     fn evaluate(&self, player: &C4Piece) -> f64 {
-        let mut total = 0_f64;
-        for segment in SEGMENTS.iter() {
-            total += self.evaluate_segment(segment, player);
-        }
-        total
+        SEGMENTS.iter().fold(0_f64, |total, segment| {
+            total + self.evaluate_segment(segment, player)
+        })
     }
 }
 
