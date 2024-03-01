@@ -40,8 +40,8 @@ impl SimpleDataPoint {
     pub fn new(initials: Vec<f64>) -> Self {
         SimpleDataPoint {
             originals: initials.clone(),
-            coordinates: initials.clone(),
             num_dimensions: initials.len(),
+            coordinates: initials,
         }
     }
 }

@@ -51,7 +51,7 @@ impl Statistics {
     }
     pub fn zscore(values: &[f64]) -> Vec<f64> {
         let stats = Statistics::new(values);
-        let result = values
+        values
             .iter()
             .map(|value| {
                 if stats.std != 0.0 {
@@ -60,7 +60,6 @@ impl Statistics {
                     0.0
                 }
             })
-            .collect();
-        result
+            .collect()
     }
 }
