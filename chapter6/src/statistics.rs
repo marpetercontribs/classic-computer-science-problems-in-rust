@@ -27,13 +27,11 @@ impl Statistics {
         let min = values
             .iter()
             .min_by(|a, b| a.partial_cmp(b).unwrap())
-            .unwrap()
-            .clone();
+            .unwrap();
         let max = values
             .iter()
             .max_by(|a, b| a.partial_cmp(b).unwrap())
-            .unwrap()
-            .clone();
+            .unwrap();
         let sum: f64 = values.iter().sum();
         let mean = sum / (values.len() as f64); // use crate conv instead?
         let variance: f64 = values
@@ -42,8 +40,8 @@ impl Statistics {
             .sum::<f64>()
             / (values.len() as f64); // use crate conv instead?
         Statistics {
-            max,
-            min,
+            max: *max,
+            min: *min,
             sum,
             mean,
             std: variance.sqrt(),

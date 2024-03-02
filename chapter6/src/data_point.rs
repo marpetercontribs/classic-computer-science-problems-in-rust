@@ -77,10 +77,4 @@ impl DataPoint for SimpleDataPoint {
     fn num_dimensions(&self) -> usize {
         self.num_dimensions
     }
-    // fn distance<P: DataPoint>(&self, other: &P) -> f64 {
-    //     let combined: f64 = zip(self.coordinates.iter(), other.coordinates().iter())
-    //         .map(|(x, y)| (x - y) * (x - y))
-    //         .sum();
-    //     combined.sqrt()
-    // }
 }

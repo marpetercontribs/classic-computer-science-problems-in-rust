@@ -26,9 +26,9 @@ pub struct Cluster<P: DataPoint> {
     centroid: SimpleDataPoint,
 }
 impl<P: DataPoint> Cluster<P> {
-    fn new(points: &Vec<P>, centroid: SimpleDataPoint) -> Self {
+    fn new(points: &[P], centroid: SimpleDataPoint) -> Self {
         Cluster {
-            points: points.clone(),
+            points: points.to_vec(),
             centroid,
         }
     }
@@ -41,7 +41,7 @@ pub struct KMeans<P: DataPoint> {
 impl<P: DataPoint> KMeans<P> {
     pub fn new(k: usize, points: Vec<P>) -> Self {
         let mut instance = KMeans {
-            points: points,
+            points,
             clusters: Vec::<Cluster<P>>::with_capacity(k),
         };
         instance.z_score_normalize();
@@ -79,8 +79,8 @@ impl<P: DataPoint> KMeans<P> {
                 z_scored_points[index].push(*zscore);
             }
         }
-        for index in 0..self.points.len() {
-            self.points[index].set_coordinates(z_scored_points[index].clone()); // calling the method would clone the coordinates, so not update them!
+        for (index, point) in self.points.iter_mut().enumerate() {
+            point.set_coordinates(z_scored_points[index].clone());
         }
     }
     fn centroids(&self) -> Vec<SimpleDataPoint> {
@@ -123,7 +123,7 @@ impl<P: DataPoint> KMeans<P> {
             }
         }
     }
-    fn point_vecs_are_equal(this: &Vec<impl DataPoint>, that: &Vec<impl DataPoint>) -> bool {
+    fn point_vecs_are_equal(this: &[impl DataPoint], that: &[impl DataPoint]) -> bool {
         if this.len() != that.len() {
             return false;
         } else {
