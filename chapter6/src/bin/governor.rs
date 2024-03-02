@@ -118,7 +118,7 @@ fn main() {
         Governor::new(-107.30249, 55, "Wyoming"),
     ];
 
-    let mut kmeans: KMeans<Governor> = KMeans::new(2, &governors);
+    let mut kmeans: KMeans<Governor> = KMeans::new(2, governors);
     let clusters = kmeans.run(100);
     for (cluster_no, cluster) in clusters.iter().enumerate() {
         println!("Cluster {cluster_no}: {:?}", cluster.points);

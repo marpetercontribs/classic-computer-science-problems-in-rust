@@ -87,7 +87,14 @@ fn inner_alphabeta<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
     let mut beta = beta;
     if maximizing {
         for a_move in board.legal_moves().iter() {
-            let result = inner_alphabeta(&board.do_move(*a_move), false, original_player, max_depth - 1, alpha, beta);
+            let result = inner_alphabeta(
+                &board.do_move(*a_move),
+                false,
+                original_player,
+                max_depth - 1,
+                alpha,
+                beta,
+            );
             alpha = alpha.max(result);
             if beta <= alpha {
                 break;
@@ -96,7 +103,14 @@ fn inner_alphabeta<P: Piece, Move: Copy, B: Board<P, Move> + Sized>(
         alpha
     } else {
         for a_move in board.legal_moves().iter() {
-            let result = inner_alphabeta(&board.do_move(*a_move), true, original_player, max_depth - 1, alpha, beta);
+            let result = inner_alphabeta(
+                &board.do_move(*a_move),
+                true,
+                original_player,
+                max_depth - 1,
+                alpha,
+                beta,
+            );
             beta = beta.min(result);
             if beta <= alpha {
                 break;
