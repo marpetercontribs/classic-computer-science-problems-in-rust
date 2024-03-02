@@ -29,11 +29,7 @@ struct Album {
 
 impl fmt::Debug for Album {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        write!(
-            formatter,
-            "({}, {})",
-            self.name, self.year
-        )
+        write!(formatter, "({}, {})", self.name, self.year)
     }
 }
 
@@ -44,7 +40,7 @@ impl Album {
             year,
             original_length: length,
             original_tracks: tracks as f64,
-            length: length,
+            length,
             tracks: tracks as f64,
         }
     }
@@ -68,16 +64,21 @@ impl DataPoint for Album {
 
 fn main() {
     let albums = vec![
-		Album::new("Got to Be There", 1972, 35.45, 10),
-		Album::new("Ben", 1972, 31.31, 10),
-		Album::new("Music & Me", 1973, 32.09, 10),
-		Album::new("Forever, Michael", 1975, 33.36, 10),
-		Album::new("Off the Wall", 1979, 42.28, 10),
-		Album::new("Thriller", 1982, 42.19, 9),
-		Album::new("Bad", 1987, 48.16, 10),
-		Album::new("Dangerous", 1991, 77.03, 14),
-		Album::new("HIStory: Past, Present and Future, Book I", 1995, 148.58, 30),
-		Album::new("Invincible", 2001, 77.05, 16),
+        Album::new("Got to Be There", 1972, 35.45, 10),
+        Album::new("Ben", 1972, 31.31, 10),
+        Album::new("Music & Me", 1973, 32.09, 10),
+        Album::new("Forever, Michael", 1975, 33.36, 10),
+        Album::new("Off the Wall", 1979, 42.28, 10),
+        Album::new("Thriller", 1982, 42.19, 9),
+        Album::new("Bad", 1987, 48.16, 10),
+        Album::new("Dangerous", 1991, 77.03, 14),
+        Album::new(
+            "HIStory: Past, Present and Future, Book I",
+            1995,
+            148.58,
+            30,
+        ),
+        Album::new("Invincible", 2001, 77.05, 16),
     ];
     let mut kmeans: KMeans<Album> = KMeans::new(2, albums);
     let clusters = kmeans.run(100);
