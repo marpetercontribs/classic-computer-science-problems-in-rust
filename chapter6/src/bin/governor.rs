@@ -13,25 +13,24 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter6::data_point::DataPoint;
+use chapter6::data_point::{DataPoint,SimpleDataPoint};
 use chapter6::kmeans::KMeans;
 use std::fmt;
 
+// Instead of inheriting from [Simple]DataPoint, which Rust does not support, "decorate" SimpleDataPoint
 #[derive(Clone)]
 struct Governor {
-    original_longitude: f64,
-    original_age: f64,
-    longitude: f64,
-    age: f64,
     state: String,
+    data_point: SimpleDataPoint, // to hold [orgignal] longitude and [original] age
 }
 
 impl fmt::Debug for Governor {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        let originals = self.data_point.originals();
         write!(
             formatter,
             "{}: (longitude: {}, age: {})",
-            self.state, self.original_longitude, self.original_age
+            self.state, originals[0], originals[1],
         )
     }
 }
@@ -39,28 +38,24 @@ impl fmt::Debug for Governor {
 impl Governor {
     fn new(longitude: f64, age: usize, state: &str) -> Self {
         Governor {
-            original_longitude: longitude,
-            original_age: age as f64,
-            longitude,
-            age: age as f64,
             state: state.to_string(),
+            data_point: SimpleDataPoint::new(vec![longitude, age as f64]),
         }
     }
 }
 
 impl DataPoint for Governor {
     fn originals(&self) -> Vec<f64> {
-        vec![self.original_longitude, self.original_age]
+        self.data_point.originals()
     }
     fn coordinates(&self) -> Vec<f64> {
-        vec![self.longitude, self.age]
+        self.data_point.coordinates()
     }
     fn set_coordinates(&mut self, coordinates: Vec<f64>) {
-        self.longitude = coordinates[0];
-        self.age = coordinates[1];
+        self.data_point.set_coordinates(coordinates);
     }
     fn num_dimensions(&self) -> usize {
-        2
+        self.data_point.num_dimensions()
     }
 }
 

@@ -13,18 +13,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter6::data_point::DataPoint;
+use chapter6::data_point::{DataPoint,SimpleDataPoint};
 use chapter6::kmeans::KMeans;
 use std::fmt;
 
+// Instead of inheriting from [Simple]DataPoint, which Rust does not support, "decorate" SimpleDataPoint
 #[derive(Clone)]
 struct Album {
     name: String,
     year: usize,
-    original_length: f64,
-    original_tracks: f64,
-    length: f64,
-    tracks: f64,
+    data_point: SimpleDataPoint, // to hold [orgignal] length and [original] tracks
 }
 
 impl fmt::Debug for Album {
@@ -38,27 +36,23 @@ impl Album {
         Album {
             name: name.to_string(),
             year,
-            original_length: length,
-            original_tracks: tracks as f64,
-            length,
-            tracks: tracks as f64,
+            data_point: SimpleDataPoint::new(vec![length, tracks as f64]),
         }
     }
 }
 
 impl DataPoint for Album {
     fn originals(&self) -> Vec<f64> {
-        vec![self.original_length, self.original_tracks]
+        self.data_point.originals()
     }
     fn coordinates(&self) -> Vec<f64> {
-        vec![self.length, self.tracks]
+        self.data_point.coordinates()
     }
     fn set_coordinates(&mut self, coordinates: Vec<f64>) {
-        self.length = coordinates[0];
-        self.tracks = coordinates[1];
+        self.data_point.set_coordinates(coordinates);
     }
     fn num_dimensions(&self) -> usize {
-        2
+        self.data_point.num_dimensions()
     }
 }
 
