@@ -39,14 +39,14 @@ pub struct KMeans<P: DataPoint> {
     clusters: Vec<Cluster<P>>,
 }
 impl<P: DataPoint> KMeans<P> {
-    pub fn new(k: usize, points: &Vec<P>) -> Self {
+    pub fn new(k: usize, points: Vec<P>) -> Self {
         let mut instance = KMeans {
-            points: points.clone(),
+            points: points,
             clusters: Vec::<Cluster<P>>::with_capacity(k),
         };
         instance.z_score_normalize();
         for _ in 0..k {
-            let cluster = Cluster::<P>::new(points, instance.random_point());
+            let cluster = Cluster::<P>::new(&instance.points, instance.random_point());
             instance.clusters.push(cluster);
         }
         instance

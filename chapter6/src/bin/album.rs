@@ -79,7 +79,7 @@ fn main() {
 		Album::new("HIStory: Past, Present and Future, Book I", 1995, 148.58, 30),
 		Album::new("Invincible", 2001, 77.05, 16),
     ];
-    let mut kmeans: KMeans<Album> = KMeans::new(2, &albums);
+    let mut kmeans: KMeans<Album> = KMeans::new(2, albums);
     let clusters = kmeans.run(100);
     for (cluster_no, cluster) in clusters.iter().enumerate() {
         println!("Cluster {cluster_no}: {:?}", cluster.points);
