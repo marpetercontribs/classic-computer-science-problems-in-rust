@@ -169,7 +169,7 @@ mod tests {
         let point_2: SimpleDataPoint = SimpleDataPoint::new(vec![2.0, 2.0, 5.0]);
         let point_3: SimpleDataPoint = SimpleDataPoint::new(vec![3.0, 1.5, 2.5]);
         let mut kmeans_test: KMeans<SimpleDataPoint> =
-            KMeans::new(2, &vec![point_1, point_2, point_3]);
+            KMeans::new(2, vec![point_1, point_2, point_3]);
         let test_clusters = kmeans_test.run(100);
         for (cluster_no, cluster) in test_clusters.iter().enumerate() {
             println!("Cluster {cluster_no}: {:?}", cluster.points);
