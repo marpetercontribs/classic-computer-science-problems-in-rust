@@ -16,6 +16,14 @@
 use std::fmt;
 use std::iter::zip;
 
+// Rust does not support inheritance for structs, and traits cannot contain data.
+// Thus we cannot make the things to cluster inherit from a DataPoint struct
+// But all we need for the cluster coordinates is the ability to convert the things
+// to cluster into DataPoints
+// => Use a concrete implementation of DataPoint, not just a trait
+//    base Cluster and KMeans on things that implement Into<DataPoint>
+//    requires separating the "originals" from the "z_scored" coordinates
+
 pub trait DataPoint: Clone {
     fn originals(&self) -> Vec<f64>;
     fn coordinates(&self) -> Vec<f64>;

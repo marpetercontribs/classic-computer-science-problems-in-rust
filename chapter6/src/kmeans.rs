@@ -20,6 +20,14 @@ use crate::statistics::Statistics;
 
 use rand::{thread_rng, Rng};
 
+// Rust does not support inheritance for structs, and traits cannot contain data.
+// Thus we cannot make the things to cluster inherit from a DataPoint struct
+// But all we need for the cluster coordinates is the ability to convert the things
+// to cluster into DataPoints
+// => Use a concrete implementation of DataPoint, not just a trait
+//    base Cluster and KMeans on things that implement Into<DataPoint>
+//    requires separating the "originals" from the "z_scored" coordinates
+
 #[derive(Clone)]
 pub struct Cluster<P: DataPoint> {
     pub points: Vec<P>,
@@ -45,7 +53,7 @@ impl<P: DataPoint> KMeans<P> {
             points,
             clusters,
         };
-        instance.z_score_normalize(points);
+        instance.z_score_normalize();
         for _ in 0..k {
             let cluster = Cluster::<P>::new(&instance.points, instance.random_point());
             instance.clusters.push(cluster);
