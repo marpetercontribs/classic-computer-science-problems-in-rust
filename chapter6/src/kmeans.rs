@@ -40,11 +40,12 @@ pub struct KMeans<P: DataPoint> {
 }
 impl<P: DataPoint> KMeans<P> {
     pub fn new(k: usize, points: Vec<P>) -> Self {
+        let mut clusters = Vec::<Cluster<P>>::with_capacity(k);
         let mut instance = KMeans {
             points,
-            clusters: Vec::<Cluster<P>>::with_capacity(k),
+            clusters,
         };
-        instance.z_score_normalize();
+        instance.z_score_normalize(points);
         for _ in 0..k {
             let cluster = Cluster::<P>::new(&instance.points, instance.random_point());
             instance.clusters.push(cluster);
@@ -169,7 +170,7 @@ mod tests {
         let point_2: SimpleDataPoint = SimpleDataPoint::new(vec![2.0, 2.0, 5.0]);
         let point_3: SimpleDataPoint = SimpleDataPoint::new(vec![3.0, 1.5, 2.5]);
         let mut kmeans_test: KMeans<SimpleDataPoint> =
-            KMeans::new(2, &vec![point_1, point_2, point_3]);
+            KMeans::new(2, vec![point_1, point_2, point_3]);
         let test_clusters = kmeans_test.run(100);
         for (cluster_no, cluster) in test_clusters.iter().enumerate() {
             println!("Cluster {cluster_no}: {:?}", cluster.points);
