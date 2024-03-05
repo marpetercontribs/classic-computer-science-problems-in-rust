@@ -13,40 +13,39 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-
-use crate::data_point::DataPoint;
-use crate::data_point::SimpleDataPoint;
+use std::rc::Rc;
+use crate::data_point::{DataPoint,SimpleDataPoint};
 use crate::statistics::Statistics;
 
 use rand::{thread_rng, Rng};
 
 #[derive(Clone)]
 pub struct Cluster<P: DataPoint> {
-    pub points: Vec<P>,
+    pub points: Vec<Rc<P>>,    // to avoid copying the DataPoints for each cluster, use shareable references 
     centroid: SimpleDataPoint,
 }
 impl<P: DataPoint> Cluster<P> {
-    fn new(points: &[P], centroid: SimpleDataPoint) -> Self {
+    fn new(points: &[Rc<P>], centroid: SimpleDataPoint) -> Self {
         Cluster {
-            points: points.to_vec(),
+            points: points.to_vec(), // points.iter().map(|p| p.clone() ).collect(),
             centroid,
         }
     }
 }
 
 pub struct KMeans<P: DataPoint> {
-    points: Vec<P>,
+    points: Vec<Rc<P>>,       // to avoid copying the DataPoints for each cluster, shareable references must be used by KMeans as well
     clusters: Vec<Cluster<P>>,
 }
 impl<P: DataPoint> KMeans<P> {
     pub fn new(k: usize, points: Vec<P>) -> Self {
+        let z_scored_points = Self::z_score_normalize(&points);
         let mut instance = KMeans {
-            points,
+            points: z_scored_points.clone().into_iter().map(|p| Rc::new(p) ).collect(),
             clusters: Vec::<Cluster<P>>::with_capacity(k),
         };
-        instance.z_score_normalize();
         for _ in 0..k {
-            let cluster = Cluster::<P>::new(&instance.points, instance.random_point());
+            let cluster = Cluster::<P>::new(&instance.points, Self::random_point(&z_scored_points));
             instance.clusters.push(cluster);
         }
         instance
@@ -67,21 +66,25 @@ impl<P: DataPoint> KMeans<P> {
         self.clusters.clone()
     }
 
-    fn z_score_normalize(&mut self) {
-        let mut z_scored_points: Vec<Vec<f64>> = Vec::with_capacity(self.points.len());
-        for _ in self.points.iter() {
-            z_scored_points.push(Vec::<f64>::with_capacity(self.points[0].num_dimensions()));
+    fn z_score_normalize(points: &[P]) -> Vec<P> {
+        let mut z_scored_points: Vec<Vec<f64>> = Vec::with_capacity(points.len());
+        for _ in points.iter() {
+            z_scored_points.push(Vec::<f64>::with_capacity(points[0].num_dimensions()));
         }
-        for dimension in 0..self.points[0].num_dimensions() {
-            let dimension_values = self.dimension_slice(dimension);
+
+        let mut points = points.to_vec();
+
+        for dimension in 0..points[0].num_dimensions() {
+            let dimension_values = Self::dimension_slice(&points, dimension);
             let zscored_values = Statistics::zscore(&dimension_values);
             for (index, zscore) in zscored_values.iter().enumerate() {
                 z_scored_points[index].push(*zscore);
             }
         }
-        for (index, point) in self.points.iter_mut().enumerate() {
+        for (index, point) in points.iter_mut().enumerate() {
             point.set_coordinates(z_scored_points[index].clone());
         }
+        points
     }
     fn centroids(&self) -> Vec<SimpleDataPoint> {
         self.clusters
@@ -138,19 +141,19 @@ impl<P: DataPoint> KMeans<P> {
         }
         true
     }
-    fn random_point(&self) -> SimpleDataPoint {
+    fn random_point(points: &[P]) -> SimpleDataPoint {
         let mut rng = thread_rng();
         let mut initials = Vec::<f64>::new();
-        for dimension in 0..self.points[0].num_dimensions() {
-            let dimension_values = self.dimension_slice(dimension);
+        for dimension in 0..points[0].num_dimensions() {
+            let dimension_values = Self::dimension_slice(points, dimension);
             let stats = Statistics::new(&dimension_values);
             let random_value = rng.gen_range(stats.min..stats.max);
             initials.push(random_value);
         }
         SimpleDataPoint::new(initials)
     }
-    fn dimension_slice(&self, dimension: usize) -> Vec<f64> {
-        self.points
+    fn dimension_slice(points: &[P], dimension: usize) -> Vec<f64> {
+        points
             .iter()
             .map(|point| point.coordinates()[dimension])
             .collect()
