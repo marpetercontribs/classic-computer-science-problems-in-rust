@@ -41,6 +41,14 @@ impl Album {
     }
 }
 
+// Implemnting From<Album> for SimpleDataPoint automatically implements
+// trait Into<SimpleDataPoint> for Album
+impl From<Album> for SimpleDataPoint {
+    fn from(item: Album) -> Self {
+        item.data_point
+    }
+}
+
 impl DataPoint for Album {
     fn originals(&self) -> Vec<f64> {
         self.data_point.originals()

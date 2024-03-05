@@ -44,6 +44,14 @@ impl Governor {
     }
 }
 
+// Implemnting From<Governor> for SimpleDataPoint automatically implements
+// trait Into<SimpleDataPoint> for Governor
+impl From<Governor> for SimpleDataPoint {
+    fn from(item: Governor) -> Self {
+        item.data_point
+    }
+}
+
 impl DataPoint for Governor {
     fn originals(&self) -> Vec<f64> {
         self.data_point.originals()

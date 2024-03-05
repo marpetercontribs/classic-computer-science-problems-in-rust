@@ -44,6 +44,12 @@ pub struct SimpleDataPoint {
     num_dimensions: usize,
 }
 
+impl From<Vec<f64>> for SimpleDataPoint {
+    fn from(item: Vec<f64>) -> Self {
+        Self::new(item)
+    }
+}
+
 impl SimpleDataPoint {
     pub fn new(initials: Vec<f64>) -> Self {
         SimpleDataPoint {

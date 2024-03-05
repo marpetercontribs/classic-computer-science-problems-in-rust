@@ -27,6 +27,7 @@ use rand::{thread_rng, Rng};
 // => Use a concrete implementation of DataPoint, not just a trait
 //    base Cluster and KMeans on things that implement Into<DataPoint>
 //    requires separating the "originals" from the "z_scored" coordinates
+//    OR let the DataPoint remember its originals?
 
 #[derive(Clone)]
 pub struct Cluster<P: DataPoint> {
@@ -174,9 +175,9 @@ mod tests {
 
     #[test]
     fn main() {
-        let point_1: SimpleDataPoint = SimpleDataPoint::new(vec![2.0, 1.0, 1.0]);
-        let point_2: SimpleDataPoint = SimpleDataPoint::new(vec![2.0, 2.0, 5.0]);
-        let point_3: SimpleDataPoint = SimpleDataPoint::new(vec![3.0, 1.5, 2.5]);
+        let point_1: SimpleDataPoint = SimpleDataPoint::from(vec![2.0, 1.0, 1.0]);
+        let point_2: SimpleDataPoint = SimpleDataPoint::from(vec![2.0, 2.0, 5.0]);
+        let point_3: SimpleDataPoint = SimpleDataPoint::from(vec![3.0, 1.5, 2.5]);
         let mut kmeans_test: KMeans<SimpleDataPoint> =
             KMeans::new(2, vec![point_1, point_2, point_3]);
         let test_clusters = kmeans_test.run(100);
