@@ -13,15 +13,15 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use std::rc::Rc;
-use crate::data_point::{DataPoint,SimpleDataPoint};
+use crate::data_point::{DataPoint, SimpleDataPoint};
 use crate::statistics::Statistics;
+use std::rc::Rc;
 
 use rand::{thread_rng, Rng};
 
 #[derive(Clone)]
 pub struct Cluster<P: DataPoint> {
-    pub points: Vec<Rc<P>>,    // to avoid copying the DataPoints for each cluster, use shareable references 
+    pub points: Vec<Rc<P>>, // to avoid copying the DataPoints for each cluster, use shareable references
     centroid: SimpleDataPoint,
 }
 impl<P: DataPoint> Cluster<P> {
@@ -34,21 +34,23 @@ impl<P: DataPoint> Cluster<P> {
 }
 
 pub struct KMeans<P: DataPoint> {
-    points: Vec<Rc<P>>,       // to avoid copying the DataPoints for each cluster, shareable references must be used by KMeans as well
+    points: Vec<Rc<P>>, // to avoid copying the DataPoints for each cluster, shareable references must be used by KMeans as well
     clusters: Vec<Cluster<P>>,
 }
 impl<P: DataPoint> KMeans<P> {
     pub fn new(k: usize, points: Vec<P>) -> Self {
         let z_scored_points = Self::z_score_normalize(&points);
-        let mut instance = KMeans {
-            points: z_scored_points.clone().into_iter().map(|p| Rc::new(p) ).collect(),
-            clusters: Vec::<Cluster<P>>::with_capacity(k),
-        };
-        for _ in 0..k {
-            let cluster = Cluster::<P>::new(&instance.points, Self::random_point(&z_scored_points));
-            instance.clusters.push(cluster);
-        }
-        instance
+        let points: Vec<Rc<P>> = z_scored_points
+            .clone()
+            .into_iter()
+            .map(|p| Rc::new(p))
+            .collect();
+        let mut clusters = Vec::<Cluster<P>>::with_capacity(k);
+        (0..k).for_each(|_| {
+            let cluster = Cluster::<P>::new(&points, Self::random_point(&z_scored_points));
+            clusters.push(cluster);
+        });
+        KMeans { points, clusters }
     }
     pub fn run(&mut self, max_iterations: usize) -> Vec<Cluster<P>> {
         for iteration in 0..max_iterations {
@@ -67,20 +69,17 @@ impl<P: DataPoint> KMeans<P> {
     }
 
     fn z_score_normalize(points: &[P]) -> Vec<P> {
-        let mut z_scored_points: Vec<Vec<f64>> = Vec::with_capacity(points.len());
-        for _ in points.iter() {
-            z_scored_points.push(Vec::<f64>::with_capacity(points[0].num_dimensions()));
-        }
+        let num_dimensions = points[0].num_dimensions();
+        let mut z_scored_points = vec![Vec::<f64>::with_capacity(num_dimensions); points.len()];
 
-        let mut points = points.to_vec();
-
-        for dimension in 0..points[0].num_dimensions() {
-            let dimension_values = Self::dimension_slice(&points, dimension);
+        for dimension in 0..num_dimensions {
+            let dimension_values = Self::dimension_slice(points, dimension);
             let zscored_values = Statistics::zscore(&dimension_values);
             for (index, zscore) in zscored_values.iter().enumerate() {
                 z_scored_points[index].push(*zscore);
             }
         }
+        let mut points = points.to_vec();
         for (index, point) in points.iter_mut().enumerate() {
             point.set_coordinates(z_scored_points[index].clone());
         }
