@@ -25,23 +25,23 @@ use std::iter::zip;
 //    requires separating the "originals" from the "z_scored" coordinates
 
 #[derive(Clone)]
-pub struct SimpleDataPoint<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug>{
+pub struct DataPoint<P: Into<DataPoint<P>> + Clone + fmt::Debug> {
     pub original: P,
     pub coordinates: Vec<f64>,
     pub num_dimensions: usize,
 }
 
-impl From<Vec<f64>> for SimpleDataPoint<Vec<f64>> {
+impl From<Vec<f64>> for DataPoint<Vec<f64>> {
     fn from(item: Vec<f64>) -> Self {
         Self {
             num_dimensions: item.len(),
             original: item.clone(),
-            coordinates: item,             
+            coordinates: item,
         }
     }
 }
 
-impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> SimpleDataPoint<P> {
+impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> DataPoint<P> {
     pub fn original(&self) -> P {
         self.original.clone()
     }
@@ -54,7 +54,7 @@ impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> SimpleDataPoint<P> {
     pub fn num_dimensions(&self) -> usize {
         self.num_dimensions
     }
-    pub fn distance(&self, other: &SimpleDataPoint<Vec<f64>>) -> f64 {
+    pub fn distance(&self, other: &DataPoint<Vec<f64>>) -> f64 {
         let combined: f64 = zip(self.coordinates().iter(), other.coordinates().iter())
             .map(|(x, y)| (x - y) * (x - y))
             .sum();
@@ -62,7 +62,7 @@ impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> SimpleDataPoint<P> {
     }
 }
 
-impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> fmt::Debug for SimpleDataPoint<P> {
+impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> fmt::Debug for DataPoint<P> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         write!(formatter, "{:?}", self.original)
     }

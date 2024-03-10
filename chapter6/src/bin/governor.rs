@@ -13,11 +13,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter6::data_point::{SimpleDataPoint};
+use chapter6::data_point::DataPoint;
 use chapter6::kmeans::KMeans;
 use std::fmt;
 
-// Instead of inheriting from [Simple]DataPoint, which Rust does not support, "decorate" SimpleDataPoint
 #[derive(Clone)]
 struct Governor {
     state: String,
@@ -45,14 +44,14 @@ impl Governor {
     }
 }
 
-// Implemnting From<Governor> for SimpleDataPoint automatically implements
-// trait Into<SimpleDataPoint> for Governor
-impl From<Governor> for SimpleDataPoint<Governor> {
+// Implemnting From<Governor> for DataPoint automatically implements
+// trait Into<DataPoint> for Governor
+impl From<Governor> for DataPoint<Governor> {
     fn from(item: Governor) -> Self {
         Self {
             num_dimensions: 2,
             coordinates: vec![item.longitude, item.age as f64],
-            original: item,                    
+            original: item,
         }
     }
 }

@@ -13,11 +13,10 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter6::data_point::{SimpleDataPoint};
+use chapter6::data_point::DataPoint;
 use chapter6::kmeans::KMeans;
 use std::fmt;
 
-// Instead of inheriting from [Simple]DataPoint, which Rust does not support, "decorate" SimpleDataPoint
 #[derive(Clone)]
 struct Album {
     name: String,
@@ -43,9 +42,9 @@ impl Album {
     }
 }
 
-// Implemnting From<Album> for SimpleDataPoint automatically implements
-// trait Into<SimpleDataPoint> for Album
-impl From<Album> for SimpleDataPoint<Album> {
+// Implemnting From<Album> for DataPoint automatically implements
+// trait Into<DataPoint> for Album
+impl From<Album> for DataPoint<Album> {
     fn from(item: Album) -> Self {
         Self {
             num_dimensions: 2,
