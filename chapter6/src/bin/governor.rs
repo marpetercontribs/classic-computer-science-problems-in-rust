@@ -26,7 +26,7 @@ struct Governor {
 
 impl fmt::Debug for Governor {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        let originals = self.data_point.originals();
+        let originals = self.data_point.original();
         write!(
             formatter,
             "{}: (longitude: {}, age: {})",

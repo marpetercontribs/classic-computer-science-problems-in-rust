@@ -36,7 +36,7 @@ pub struct Cluster<P: DataPoint> {
 impl<P: DataPoint> Cluster<P> {
     fn new(points: &[Rc<P>], centroid: SimpleDataPoint<Vec<f64>>) -> Self {
         Cluster {
-            points: points.to_vec(), // points.iter().map(|p| p.clone() ).collect(),
+            points: points.to_vec(),
             centroid,
         }
     }

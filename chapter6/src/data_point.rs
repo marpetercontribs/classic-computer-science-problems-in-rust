@@ -38,7 +38,7 @@ pub trait DataPoint: Clone {
 
 #[derive(Clone)]
 pub struct SimpleDataPoint<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug>{
-    originals: P,
+    original: P,
     coordinates: Vec<f64>,
     num_dimensions: usize,
 }
@@ -52,7 +52,7 @@ impl From<Vec<f64>> for SimpleDataPoint<Vec<f64>> {
 impl SimpleDataPoint<Vec<f64>> {
     pub fn new(initials: Vec<f64>) -> Self {
         SimpleDataPoint {
-            originals: initials.clone(),
+            original: initials.clone(),
             num_dimensions: initials.len(),
             coordinates: initials,
         }
@@ -60,14 +60,14 @@ impl SimpleDataPoint<Vec<f64>> {
 }
 
 impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> SimpleDataPoint<P> {
-    pub fn originals(&self) -> P {
-        self.originals.clone()
+    pub fn original(&self) -> P {
+        self.original.clone()
     }
 }
 
 impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> fmt::Debug for SimpleDataPoint<P> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        write!(formatter, "{:?}", self.originals())
+        write!(formatter, "{:?}", self.original())
     }
 }
 
