@@ -59,7 +59,7 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> DataPoint<P> {
     pub fn num_dimensions(&self) -> usize {
         self.num_dimensions
     }
-    pub fn distance(&self, other: &DataPoint<Vec<f64>>) -> f64 {
+    pub fn distance<Q: Into<DataPoint<Q>> + Clone + fmt::Debug>(&self, other: &DataPoint<Q>) -> f64 {
         let combined: f64 = zip(self.coordinates().iter(), other.coordinates().iter())
             .map(|(x, y)| (x - y) * (x - y))
             .sum();

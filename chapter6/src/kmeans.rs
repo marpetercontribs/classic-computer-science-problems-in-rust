@@ -75,20 +75,19 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
 
     fn z_score_normalize(points: Vec<P>) -> Vec<DataPoint<P>> {
         // Convert the things to cluster into DataPoints
-        let points: Vec<DataPoint<P>> = points.into_iter().map(|p| p.into()).collect();
+        let mut points: Vec<DataPoint<P>> = points.into_iter().map(|p| p.into()).collect();
         let num_dimensions = points[0].num_dimensions();
         let mut z_scored_points = vec![Vec::<f64>::with_capacity(num_dimensions); points.len()];
 
         for dimension in 0..num_dimensions {
             let dimension_values = Self::dimension_slice(&points, dimension);
             let zscored_values = Statistics::zscore(&dimension_values);
-            for (index, zscore) in zscored_values.iter().enumerate() {
-                z_scored_points[index].push(*zscore);
+            for (z_scored_point, z_score) in z_scored_points.iter_mut().zip(zscored_values.into_iter()) {
+                z_scored_point.push(z_score);
             }
         }
-        let mut points = points.to_vec();
-        for (index, point) in points.iter_mut().enumerate() {
-            point.set_coordinates(z_scored_points[index].clone());
+        for (point, z_scored) in points.iter_mut().zip(z_scored_points.into_iter()) {
+            point.set_coordinates(z_scored);
         }
         points
     }
