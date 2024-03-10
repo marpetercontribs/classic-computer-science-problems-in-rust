@@ -49,10 +49,8 @@ pub struct KMeans<P: Into<DataPoint<P>> + Clone + fmt::Debug> {
 }
 impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
     pub fn new(k: usize, points: Vec<P>) -> Self {
-        // Convert the things to cluster into DataPoints
-        let points: Vec<DataPoint<P>> = points.into_iter().map(|p| p.into()).collect();
         //
-        let z_scored_points = Self::z_score_normalize(&points);
+        let z_scored_points = Self::z_score_normalize(points);
         let points: Vec<Rc<DataPoint<P>>> = z_scored_points
             .clone()
             .into_iter()
@@ -81,12 +79,14 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
         self.clusters.clone()
     }
 
-    fn z_score_normalize(points: &[DataPoint<P>]) -> Vec<DataPoint<P>> {
+    fn z_score_normalize(points: Vec<P>) -> Vec<DataPoint<P>> {
+        // Convert the things to cluster into DataPoints
+        let points: Vec<DataPoint<P>> = points.into_iter().map(|p| p.into()).collect();
         let num_dimensions = points[0].num_dimensions();
         let mut z_scored_points = vec![Vec::<f64>::with_capacity(num_dimensions); points.len()];
 
         for dimension in 0..num_dimensions {
-            let dimension_values = Self::dimension_slice(points, dimension);
+            let dimension_values = Self::dimension_slice(&points, dimension);
             let zscored_values = Statistics::zscore(&dimension_values);
             for (index, zscore) in zscored_values.iter().enumerate() {
                 z_scored_points[index].push(*zscore);

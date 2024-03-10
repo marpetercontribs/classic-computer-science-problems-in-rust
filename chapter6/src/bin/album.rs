@@ -46,11 +46,12 @@ impl Album {
 // trait Into<DataPoint> for Album
 impl From<Album> for DataPoint<Album> {
     fn from(item: Album) -> Self {
-        Self {
-            num_dimensions: 2,
-            coordinates: vec![item.length, item.tracks as f64],
-            original: item,
-        }
+        DataPoint::<Album>::new(2,vec![item.length, item.tracks as f64], item)
+        // Self {
+        //     num_dimensions: 2,
+        //     coordinates: vec![item.length, item.tracks as f64],
+        //     original: item,
+        // }
     }
 }
 

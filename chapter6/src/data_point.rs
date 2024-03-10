@@ -26,9 +26,9 @@ use std::iter::zip;
 
 #[derive(Clone)]
 pub struct DataPoint<P: Into<DataPoint<P>> + Clone + fmt::Debug> {
-    pub original: P,
-    pub coordinates: Vec<f64>,
-    pub num_dimensions: usize,
+    original: P,
+    coordinates: Vec<f64>,
+    num_dimensions: usize,
 }
 
 impl From<Vec<f64>> for DataPoint<Vec<f64>> {
@@ -42,8 +42,12 @@ impl From<Vec<f64>> for DataPoint<Vec<f64>> {
 }
 
 impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> DataPoint<P> {
-    pub fn original(&self) -> P {
-        self.original.clone()
+    pub fn new(num_dimensions: usize, coordinates: Vec<f64>, original: P) -> Self {
+        Self {
+            original,
+            coordinates,
+            num_dimensions
+        }
     }
     pub fn coordinates(&self) -> Vec<f64> {
         self.coordinates.clone()
