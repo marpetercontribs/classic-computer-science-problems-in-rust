@@ -50,8 +50,8 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> DataPoint<P> {
             num_dimensions,
         }
     }
-    pub fn coordinates(&self) -> Vec<f64> {
-        self.coordinates.clone()
+    pub fn coordinates(&self) -> &Vec<f64> {
+        &self.coordinates
     }
     pub fn set_coordinates(&mut self, coordinates: Vec<f64>) {
         self.coordinates = coordinates;

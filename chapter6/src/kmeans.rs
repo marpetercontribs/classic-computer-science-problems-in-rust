@@ -57,7 +57,7 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
         });
         KMeans { points, clusters }
     }
-    pub fn run(&mut self, max_iterations: usize) -> Vec<Cluster<P>> {
+    pub fn run(&mut self, max_iterations: usize) -> &[Cluster<P>] {
         for iteration in 0..max_iterations {
             for cluster in self.clusters.iter_mut() {
                 cluster.points.clear();
@@ -67,10 +67,10 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
             self.generate_centroids();
             if Self::coordinates_are_equal(&old_centroids, &self.centroids()) {
                 println!("Converged after {iteration} iterations.");
-                return self.clusters.clone();
+                return &self.clusters;
             }
         }
-        self.clusters.clone()
+        &self.clusters
     }
 
     fn z_score_normalize(points: Vec<P>) -> Vec<DataPoint<P>> {
