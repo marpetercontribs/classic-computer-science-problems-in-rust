@@ -15,6 +15,7 @@
 // limitations under the License.
 use crate::data_point::{DataPoint, SimpleDataPoint};
 use crate::statistics::Statistics;
+use std::fmt;
 use std::rc::Rc;
 
 use rand::{thread_rng, Rng};
@@ -29,12 +30,12 @@ use rand::{thread_rng, Rng};
 //    OR let the DataPoint remember its originals?
 
 #[derive(Clone)]
-pub struct Cluster<P: DataPoint> {
-    pub points: Vec<Rc<P>>, // to avoid copying the DataPoints for each cluster, use shareable references
+pub struct Cluster<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> {
+    pub points: Vec<Rc<SimpleDataPoint<P>>>, // to avoid copying the DataPoints for each cluster, use shareable references
     centroid: SimpleDataPoint<Vec<f64>>,
 }
-impl<P: DataPoint> Cluster<P> {
-    fn new(points: &[Rc<P>], centroid: SimpleDataPoint<Vec<f64>>) -> Self {
+impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> Cluster<P> {
+    fn new(points: &[Rc<SimpleDataPoint<P>>], centroid: SimpleDataPoint<Vec<f64>>) -> Self {
         Cluster {
             points: points.to_vec(),
             centroid,
@@ -42,14 +43,17 @@ impl<P: DataPoint> Cluster<P> {
     }
 }
 
-pub struct KMeans<P: DataPoint> {
-    points: Vec<Rc<P>>, // to avoid copying the DataPoints for each cluster, shareable references must be used by KMeans as well
+pub struct KMeans<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> {
+    points: Vec<Rc<SimpleDataPoint<P>>>, // to avoid copying the DataPoints for each cluster, shareable references must be used by KMeans as well
     clusters: Vec<Cluster<P>>,
 }
-impl<P: DataPoint> KMeans<P> {
+impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
     pub fn new(k: usize, points: Vec<P>) -> Self {
+        // Convert the things to cluster into DataPoints
+        let points: Vec<SimpleDataPoint<P>> = points.into_iter().map(|p| p.into() ).collect();
+        // 
         let z_scored_points = Self::z_score_normalize(&points);
-        let points: Vec<Rc<P>> = z_scored_points
+        let points: Vec<Rc<SimpleDataPoint<P>>> = z_scored_points
             .clone()
             .into_iter()
             .map(|p| Rc::new(p))
@@ -77,7 +81,7 @@ impl<P: DataPoint> KMeans<P> {
         self.clusters.clone()
     }
 
-    fn z_score_normalize(points: &[P]) -> Vec<P> {
+    fn z_score_normalize(points: &[SimpleDataPoint<P>]) -> Vec<SimpleDataPoint<P>> {
         let num_dimensions = points[0].num_dimensions();
         let mut z_scored_points = vec![Vec::<f64>::with_capacity(num_dimensions); points.len()];
 
@@ -149,7 +153,7 @@ impl<P: DataPoint> KMeans<P> {
         }
         true
     }
-    fn random_point(points: &[P]) -> SimpleDataPoint<Vec<f64>> {
+    fn random_point(points: &[SimpleDataPoint<P>]) -> SimpleDataPoint<Vec<f64>> {
         let mut rng = thread_rng();
         let mut initials = Vec::<f64>::new();
         for dimension in 0..points[0].num_dimensions() {
@@ -160,7 +164,7 @@ impl<P: DataPoint> KMeans<P> {
         }
         SimpleDataPoint::from(initials)
     }
-    fn dimension_slice(points: &[P], dimension: usize) -> Vec<f64> {
+    fn dimension_slice(points: &[SimpleDataPoint<P>], dimension: usize) -> Vec<f64> {
         points
             .iter()
             .map(|point| point.coordinates()[dimension])
@@ -176,10 +180,10 @@ mod tests {
 
     #[test]
     fn main() {
-        let point_1 = SimpleDataPoint::<_>::from(vec![2.0, 1.0, 1.0]);
-        let point_2 = SimpleDataPoint::<_>::from(vec![2.0, 2.0, 5.0]);
-        let point_3 = SimpleDataPoint::<_>::from(vec![3.0, 1.5, 2.5]);
-        let mut kmeans_test: KMeans<SimpleDataPoint<Vec<f64>>> =
+        let point_1 = vec![2.0, 1.0, 1.0];
+        let point_2 = vec![2.0, 2.0, 5.0];
+        let point_3 = vec![3.0, 1.5, 2.5];
+        let mut kmeans_test: KMeans<Vec<f64>> =
             KMeans::new(2, vec![point_1, point_2, point_3]);
         let test_clusters = kmeans_test.run(100);
         for (cluster_no, cluster) in test_clusters.iter().enumerate() {
