@@ -24,7 +24,6 @@ struct Album {
     year: usize,
     length: f64,
     tracks: usize,
-    data_point: SimpleDataPoint<Vec<f64>>,
 }
 
 impl fmt::Debug for Album {
@@ -40,7 +39,6 @@ impl Album {
             year,
             length,
             tracks,
-            data_point: SimpleDataPoint::<_>::from(vec![length, tracks as f64]),
         }
     }
 }
@@ -54,18 +52,6 @@ impl From<Album> for SimpleDataPoint<Album> {
             coordinates: vec![item.length, item.tracks as f64],
             original: item,
         }
-    }
-}
-
-impl DataPoint for Album {
-    fn coordinates(&self) -> Vec<f64> {
-        self.data_point.coordinates()
-    }
-    fn set_coordinates(&mut self, coordinates: Vec<f64>) {
-        self.data_point.set_coordinates(coordinates);
-    }
-    fn num_dimensions(&self) -> usize {
-        self.data_point.num_dimensions()
     }
 }
 

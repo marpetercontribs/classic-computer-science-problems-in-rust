@@ -23,7 +23,6 @@ struct Governor {
     state: String,
     longitude: f64,
     age: usize,
-    data_point: SimpleDataPoint<Vec<f64>>, // to hold [orgignal] longitude and [original] age
 }
 
 impl fmt::Debug for Governor {
@@ -42,7 +41,6 @@ impl Governor {
             state: state.to_string(),
             longitude,
             age,
-            data_point: SimpleDataPoint::<_>::from(vec![longitude, age as f64]),
         }
     }
 }
@@ -56,18 +54,6 @@ impl From<Governor> for SimpleDataPoint<Governor> {
             coordinates: vec![item.longitude, item.age as f64],
             original: item,                    
         }
-    }
-}
-
-impl DataPoint for Governor {
-    fn coordinates(&self) -> Vec<f64> {
-        self.data_point.coordinates()
-    }
-    fn set_coordinates(&mut self, coordinates: Vec<f64>) {
-        self.data_point.set_coordinates(coordinates);
-    }
-    fn num_dimensions(&self) -> usize {
-        self.data_point.num_dimensions()
     }
 }
 
