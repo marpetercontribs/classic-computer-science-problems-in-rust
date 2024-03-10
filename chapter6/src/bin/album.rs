@@ -13,16 +13,16 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter6::data_point::{DataPoint, SimpleDataPoint};
+use chapter6::data_point::DataPoint;
 use chapter6::kmeans::KMeans;
 use std::fmt;
 
-// Instead of inheriting from [Simple]DataPoint, which Rust does not support, "decorate" SimpleDataPoint
 #[derive(Clone)]
 struct Album {
     name: String,
     year: usize,
-    data_point: SimpleDataPoint, // to hold [orgignal] length and [original] tracks
+    length: f64,
+    tracks: usize,
 }
 
 impl fmt::Debug for Album {
@@ -36,23 +36,17 @@ impl Album {
         Album {
             name: name.to_string(),
             year,
-            data_point: SimpleDataPoint::new(vec![length, tracks as f64]),
+            length,
+            tracks,
         }
     }
 }
 
-impl DataPoint for Album {
-    fn originals(&self) -> Vec<f64> {
-        self.data_point.originals()
-    }
-    fn coordinates(&self) -> Vec<f64> {
-        self.data_point.coordinates()
-    }
-    fn set_coordinates(&mut self, coordinates: Vec<f64>) {
-        self.data_point.set_coordinates(coordinates);
-    }
-    fn num_dimensions(&self) -> usize {
-        self.data_point.num_dimensions()
+// Implemnting From<Album> for DataPoint automatically implements
+// trait Into<DataPoint> for Album
+impl From<Album> for DataPoint<Album> {
+    fn from(item: Album) -> Self {
+        DataPoint::<Album>::new(2, vec![item.length, item.tracks as f64], item)
     }
 }
 

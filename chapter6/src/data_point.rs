@@ -16,12 +16,50 @@
 use std::fmt;
 use std::iter::zip;
 
-pub trait DataPoint: Clone {
-    fn originals(&self) -> Vec<f64>;
-    fn coordinates(&self) -> Vec<f64>;
-    fn set_coordinates(&mut self, coordinates: Vec<f64>);
-    fn num_dimensions(&self) -> usize;
-    fn distance<P: DataPoint>(&self, other: &P) -> f64 {
+// Rust does not support inheritance for structs, and traits cannot contain data.
+// Thus we cannot make the things to cluster inherit from a DataPoint struct
+// But all we need for the cluster coordinates is the ability to convert the things
+// to cluster into DataPoints
+// => Use a concrete implementation of DataPoint, not just a trait
+//    base Cluster and KMeans on things that implement Into<DataPoint>
+//    requires letting DataPoint "remember" the thing it was created from
+//    alternative would be separating the "originals" from the "z_scored" coordinates in KMeans
+
+#[derive(Clone)]
+pub struct DataPoint<P: Into<DataPoint<P>> + Clone + fmt::Debug> {
+    original: P,
+    coordinates: Vec<f64>,
+    num_dimensions: usize,
+}
+
+impl From<Vec<f64>> for DataPoint<Vec<f64>> {
+    fn from(item: Vec<f64>) -> Self {
+        Self {
+            num_dimensions: item.len(),
+            original: item.clone(),
+            coordinates: item,
+        }
+    }
+}
+
+impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> DataPoint<P> {
+    pub fn new(num_dimensions: usize, coordinates: Vec<f64>, original: P) -> Self {
+        Self {
+            original,
+            coordinates,
+            num_dimensions,
+        }
+    }
+    pub fn coordinates(&self) -> &Vec<f64> {
+        &self.coordinates
+    }
+    pub fn set_coordinates(&mut self, coordinates: Vec<f64>) {
+        self.coordinates = coordinates;
+    }
+    pub fn num_dimensions(&self) -> usize {
+        self.num_dimensions
+    }
+    pub fn distance<Q: Into<DataPoint<Q>> + Clone + fmt::Debug>(&self, other: &DataPoint<Q>) -> f64 {
         let combined: f64 = zip(self.coordinates().iter(), other.coordinates().iter())
             .map(|(x, y)| (x - y) * (x - y))
             .sum();
@@ -29,39 +67,8 @@ pub trait DataPoint: Clone {
     }
 }
 
-#[derive(Clone)]
-pub struct SimpleDataPoint {
-    originals: Vec<f64>,
-    coordinates: Vec<f64>,
-    num_dimensions: usize,
-}
-
-impl SimpleDataPoint {
-    pub fn new(initials: Vec<f64>) -> Self {
-        SimpleDataPoint {
-            originals: initials.clone(),
-            num_dimensions: initials.len(),
-            coordinates: initials,
-        }
-    }
-}
-impl fmt::Debug for SimpleDataPoint {
+impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> fmt::Debug for DataPoint<P> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        write!(formatter, "{:?}", self.originals())
-    }
-}
-
-impl DataPoint for SimpleDataPoint {
-    fn originals(&self) -> Vec<f64> {
-        self.originals.clone()
-    }
-    fn coordinates(&self) -> Vec<f64> {
-        self.coordinates.clone()
-    }
-    fn set_coordinates(&mut self, coordinates: Vec<f64>) {
-        self.coordinates = coordinates;
-    }
-    fn num_dimensions(&self) -> usize {
-        self.num_dimensions
+        write!(formatter, "{:?}", self.original)
     }
 }
