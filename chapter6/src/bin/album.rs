@@ -43,11 +43,15 @@ impl Album {
 
 // Implemnting From<Album> for SimpleDataPoint automatically implements
 // trait Into<SimpleDataPoint> for Album
-// impl From<Album> for SimpleDataPoint<Album> {
-//     fn from(item: Album) -> Self {
-//         item.data_point
-//     }
-// }
+impl From<Album> for SimpleDataPoint<Album> {
+    fn from(item: Album) -> Self {
+        Self {
+            num_dimensions: item.data_point.num_dimensions(),
+            coordinates: item.data_point.coordinates(),
+            original: item,
+        }
+    }
+}
 
 impl DataPoint for Album {
     fn coordinates(&self) -> Vec<f64> {
