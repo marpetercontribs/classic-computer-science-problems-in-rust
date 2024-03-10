@@ -48,7 +48,7 @@ impl Governor {
 // trait Into<DataPoint> for Governor
 impl From<Governor> for DataPoint<Governor> {
     fn from(item: Governor) -> Self {
-        DataPoint::<Governor>::new(2, vec![item.longitude, item.age as f64], item )
+        DataPoint::<Governor>::new(2, vec![item.longitude, item.age as f64], item)
     }
 }
 

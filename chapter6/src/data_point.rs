@@ -22,7 +22,8 @@ use std::iter::zip;
 // to cluster into DataPoints
 // => Use a concrete implementation of DataPoint, not just a trait
 //    base Cluster and KMeans on things that implement Into<DataPoint>
-//    requires separating the "originals" from the "z_scored" coordinates
+//    requires letting DataPoint "remember" the thing it was created from
+//    alternative would be separating the "originals" from the "z_scored" coordinates in KMeans
 
 #[derive(Clone)]
 pub struct DataPoint<P: Into<DataPoint<P>> + Clone + fmt::Debug> {
@@ -46,7 +47,7 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> DataPoint<P> {
         Self {
             original,
             coordinates,
-            num_dimensions
+            num_dimensions,
         }
     }
     pub fn coordinates(&self) -> Vec<f64> {
