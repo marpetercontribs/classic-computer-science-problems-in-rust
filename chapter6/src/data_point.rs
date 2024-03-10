@@ -25,7 +25,6 @@ use std::iter::zip;
 //    requires separating the "originals" from the "z_scored" coordinates
 
 pub trait DataPoint: Clone {
-    fn originals(&self) -> Vec<f64>;
     fn coordinates(&self) -> Vec<f64>;
     fn set_coordinates(&mut self, coordinates: Vec<f64>);
     fn num_dimensions(&self) -> usize;
@@ -38,7 +37,7 @@ pub trait DataPoint: Clone {
 }
 
 #[derive(Clone)]
-pub struct SimpleDataPoint<P: Into<SimpleDataPoint<P>> + Clone>{
+pub struct SimpleDataPoint<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug>{
     originals: P,
     coordinates: Vec<f64>,
     num_dimensions: usize,
@@ -59,16 +58,20 @@ impl SimpleDataPoint<Vec<f64>> {
         }
     }
 }
-impl<P: Into<SimpleDataPoint<P>> + Clone> fmt::Debug for SimpleDataPoint<P> {
+
+impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> SimpleDataPoint<P> {
+    pub fn originals(&self) -> P {
+        self.originals.clone()
+    }
+}
+
+impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> fmt::Debug for SimpleDataPoint<P> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         write!(formatter, "{:?}", self.originals())
     }
 }
 
-impl<P: Into<SimpleDataPoint<P>> + Clone> DataPoint for SimpleDataPoint<P> {
-    fn originals(&self) -> Vec<f64> {
-        self.coordinates.clone() // TODO
-    }
+impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> DataPoint for SimpleDataPoint<P> {
     fn coordinates(&self) -> Vec<f64> {
         self.coordinates.clone()
     }

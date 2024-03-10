@@ -50,9 +50,6 @@ impl Album {
 // }
 
 impl DataPoint for Album {
-    fn originals(&self) -> Vec<f64> {
-        self.data_point.originals()
-    }
     fn coordinates(&self) -> Vec<f64> {
         self.data_point.coordinates()
     }
