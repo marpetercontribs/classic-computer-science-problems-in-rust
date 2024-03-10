@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use crate::data_point::{DataPoint, SimpleDataPoint};
+use crate::data_point::{SimpleDataPoint};
 use crate::statistics::Statistics;
 use std::fmt;
 use std::rc::Rc;
@@ -73,7 +73,7 @@ impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
             self.assign_clusters();
             let old_centroids = self.centroids();
             self.generate_centroids();
-            if Self::point_vecs_are_equal(&old_centroids, &self.centroids()) {
+            if Self::coordinates_are_equal(&old_centroids, &self.centroids()) {
                 println!("Converged after {iteration} iterations.");
                 return self.clusters.clone();
             }
@@ -138,7 +138,7 @@ impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
             }
         }
     }
-    fn point_vecs_are_equal(this: &[impl DataPoint], that: &[impl DataPoint]) -> bool {
+    fn coordinates_are_equal(this: &[SimpleDataPoint<Vec<f64>>], that: &[SimpleDataPoint<Vec<f64>>]) -> bool {
         if this.len() != that.len() {
             return false;
         } else {

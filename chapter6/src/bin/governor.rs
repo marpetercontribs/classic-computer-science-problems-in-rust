@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use chapter6::data_point::{DataPoint, SimpleDataPoint};
+use chapter6::data_point::{SimpleDataPoint};
 use chapter6::kmeans::KMeans;
 use std::fmt;
 

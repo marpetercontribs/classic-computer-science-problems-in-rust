@@ -24,18 +24,6 @@ use std::iter::zip;
 //    base Cluster and KMeans on things that implement Into<DataPoint>
 //    requires separating the "originals" from the "z_scored" coordinates
 
-pub trait DataPoint: Clone {
-    fn coordinates(&self) -> Vec<f64>;
-    fn set_coordinates(&mut self, coordinates: Vec<f64>);
-    fn num_dimensions(&self) -> usize;
-    fn distance<P: DataPoint>(&self, other: &P) -> f64 {
-        let combined: f64 = zip(self.coordinates().iter(), other.coordinates().iter())
-            .map(|(x, y)| (x - y) * (x - y))
-            .sum();
-        combined.sqrt()
-    }
-}
-
 #[derive(Clone)]
 pub struct SimpleDataPoint<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug>{
     pub original: P,
@@ -57,22 +45,25 @@ impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> SimpleDataPoint<P> {
     pub fn original(&self) -> P {
         self.original.clone()
     }
+    pub fn coordinates(&self) -> Vec<f64> {
+        self.coordinates.clone()
+    }
+    pub fn set_coordinates(&mut self, coordinates: Vec<f64>) {
+        self.coordinates = coordinates;
+    }
+    pub fn num_dimensions(&self) -> usize {
+        self.num_dimensions
+    }
+    pub fn distance(&self, other: &SimpleDataPoint<Vec<f64>>) -> f64 {
+        let combined: f64 = zip(self.coordinates().iter(), other.coordinates().iter())
+            .map(|(x, y)| (x - y) * (x - y))
+            .sum();
+        combined.sqrt()
+    }
 }
 
 impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> fmt::Debug for SimpleDataPoint<P> {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         write!(formatter, "{:?}", self.original)
-    }
-}
-
-impl<P: Into<SimpleDataPoint<P>> + Clone + fmt::Debug> DataPoint for SimpleDataPoint<P> {
-    fn coordinates(&self) -> Vec<f64> {
-        self.coordinates.clone()
-    }
-    fn set_coordinates(&mut self, coordinates: Vec<f64>) {
-        self.coordinates = coordinates;
-    }
-    fn num_dimensions(&self) -> usize {
-        self.num_dimensions
     }
 }
