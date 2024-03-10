@@ -21,7 +21,7 @@ use std::fmt;
 #[derive(Clone)]
 struct Governor {
     state: String,
-    data_point: SimpleDataPoint, // to hold [orgignal] longitude and [original] age
+    data_point: SimpleDataPoint<Vec<f64>>, // to hold [orgignal] longitude and [original] age
 }
 
 impl fmt::Debug for Governor {
@@ -39,18 +39,18 @@ impl Governor {
     fn new(longitude: f64, age: usize, state: &str) -> Self {
         Governor {
             state: state.to_string(),
-            data_point: SimpleDataPoint::new(vec![longitude, age as f64]),
+            data_point: SimpleDataPoint::<_>::from(vec![longitude, age as f64]),
         }
     }
 }
 
 // Implemnting From<Governor> for SimpleDataPoint automatically implements
 // trait Into<SimpleDataPoint> for Governor
-impl From<Governor> for SimpleDataPoint {
-    fn from(item: Governor) -> Self {
-        item.data_point
-    }
-}
+// impl From<Governor> for SimpleDataPoint<Governor> {
+//     fn from(item: Governor) -> Self {
+//         item.data_point
+//     }
+// }
 
 impl DataPoint for Governor {
     fn originals(&self) -> Vec<f64> {

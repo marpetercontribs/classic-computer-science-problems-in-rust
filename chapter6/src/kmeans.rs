@@ -31,10 +31,10 @@ use rand::{thread_rng, Rng};
 #[derive(Clone)]
 pub struct Cluster<P: DataPoint> {
     pub points: Vec<Rc<P>>, // to avoid copying the DataPoints for each cluster, use shareable references
-    centroid: SimpleDataPoint,
+    centroid: SimpleDataPoint<Vec<f64>>,
 }
 impl<P: DataPoint> Cluster<P> {
-    fn new(points: &[Rc<P>], centroid: SimpleDataPoint) -> Self {
+    fn new(points: &[Rc<P>], centroid: SimpleDataPoint<Vec<f64>>) -> Self {
         Cluster {
             points: points.to_vec(), // points.iter().map(|p| p.clone() ).collect(),
             centroid,
@@ -94,7 +94,7 @@ impl<P: DataPoint> KMeans<P> {
         }
         points
     }
-    fn centroids(&self) -> Vec<SimpleDataPoint> {
+    fn centroids(&self) -> Vec<SimpleDataPoint<Vec<f64>>> {
         self.clusters
             .iter()
             .map(|cluster| cluster.centroid.clone())
@@ -130,7 +130,7 @@ impl<P: DataPoint> KMeans<P> {
                         / (num_dimensions as f64);
                     means.push(dimension_mean);
                 }
-                cluster.centroid = SimpleDataPoint::new(means);
+                cluster.centroid = SimpleDataPoint::from(means);
             }
         }
     }
@@ -149,7 +149,7 @@ impl<P: DataPoint> KMeans<P> {
         }
         true
     }
-    fn random_point(points: &[P]) -> SimpleDataPoint {
+    fn random_point(points: &[P]) -> SimpleDataPoint<Vec<f64>> {
         let mut rng = thread_rng();
         let mut initials = Vec::<f64>::new();
         for dimension in 0..points[0].num_dimensions() {
@@ -158,7 +158,7 @@ impl<P: DataPoint> KMeans<P> {
             let random_value = rng.gen_range(stats.min..stats.max);
             initials.push(random_value);
         }
-        SimpleDataPoint::new(initials)
+        SimpleDataPoint::from(initials)
     }
     fn dimension_slice(points: &[P], dimension: usize) -> Vec<f64> {
         points
@@ -176,10 +176,10 @@ mod tests {
 
     #[test]
     fn main() {
-        let point_1: SimpleDataPoint = SimpleDataPoint::from(vec![2.0, 1.0, 1.0]);
-        let point_2: SimpleDataPoint = SimpleDataPoint::from(vec![2.0, 2.0, 5.0]);
-        let point_3: SimpleDataPoint = SimpleDataPoint::from(vec![3.0, 1.5, 2.5]);
-        let mut kmeans_test: KMeans<SimpleDataPoint> =
+        let point_1 = SimpleDataPoint::<_>::from(vec![2.0, 1.0, 1.0]);
+        let point_2 = SimpleDataPoint::<_>::from(vec![2.0, 2.0, 5.0]);
+        let point_3 = SimpleDataPoint::<_>::from(vec![3.0, 1.5, 2.5]);
+        let mut kmeans_test: KMeans<SimpleDataPoint<Vec<f64>>> =
             KMeans::new(2, vec![point_1, point_2, point_3]);
         let test_clusters = kmeans_test.run(100);
         for (cluster_no, cluster) in test_clusters.iter().enumerate() {
