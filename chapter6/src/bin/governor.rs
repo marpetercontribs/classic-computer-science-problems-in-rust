@@ -21,16 +21,17 @@ use std::fmt;
 #[derive(Clone)]
 struct Governor {
     state: String,
+    longitude: f64,
+    age: usize,
     data_point: SimpleDataPoint<Vec<f64>>, // to hold [orgignal] longitude and [original] age
 }
 
 impl fmt::Debug for Governor {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        let originals = self.data_point.original();
         write!(
             formatter,
             "{}: (longitude: {}, age: {})",
-            self.state, originals[0], originals[1],
+            self.state, self.longitude, self.age,
         )
     }
 }
@@ -39,6 +40,8 @@ impl Governor {
     fn new(longitude: f64, age: usize, state: &str) -> Self {
         Governor {
             state: state.to_string(),
+            longitude,
+            age,
             data_point: SimpleDataPoint::<_>::from(vec![longitude, age as f64]),
         }
     }
@@ -49,8 +52,8 @@ impl Governor {
 impl From<Governor> for SimpleDataPoint<Governor> {
     fn from(item: Governor) -> Self {
         Self {
-            num_dimensions: item.data_point.num_dimensions(),
-            coordinates: item.data_point.coordinates(),
+            num_dimensions: 2,
+            coordinates: vec![item.longitude, item.age as f64],
             original: item,                    
         }
     }

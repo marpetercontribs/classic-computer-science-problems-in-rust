@@ -22,7 +22,9 @@ use std::fmt;
 struct Album {
     name: String,
     year: usize,
-    data_point: SimpleDataPoint<Vec<f64>>, // to hold [orgignal] length and [original] tracks
+    length: f64,
+    tracks: usize,
+    data_point: SimpleDataPoint<Vec<f64>>,
 }
 
 impl fmt::Debug for Album {
@@ -36,6 +38,8 @@ impl Album {
         Album {
             name: name.to_string(),
             year,
+            length,
+            tracks,
             data_point: SimpleDataPoint::<_>::from(vec![length, tracks as f64]),
         }
     }
@@ -46,8 +50,8 @@ impl Album {
 impl From<Album> for SimpleDataPoint<Album> {
     fn from(item: Album) -> Self {
         Self {
-            num_dimensions: item.data_point.num_dimensions(),
-            coordinates: item.data_point.coordinates(),
+            num_dimensions: 2,
+            coordinates: vec![item.length, item.tracks as f64],
             original: item,
         }
     }
