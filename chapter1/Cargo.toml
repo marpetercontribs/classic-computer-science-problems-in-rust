@@ -7,5 +7,5 @@ default-run = "chapter1"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-memoize = "0.3.3"
-rand = "0.8.5"
+memoize = "0.5.1"
+rand = "0.9.2"

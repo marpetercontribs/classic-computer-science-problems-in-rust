@@ -34,19 +34,19 @@ impl CompressedGenome {
                 'A' => {
                     result.push(false);
                     result.push(false);
-                },
+                }
                 'C' => {
                     result.push(false);
                     result.push(true);
-                },
+                }
                 'G' => {
                     result.push(true);
                     result.push(false);
-                },
+                }
                 'T' => {
                     result.push(true);
                     result.push(true);
-                },
+                }
                 _ => panic!("Invalid nucleotide:{}", nucleotide),
             }
         }
