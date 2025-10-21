@@ -13,7 +13,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use rand::{thread_rng, Rng};
+use rand::Rng;
 
 #[derive(PartialEq)]
 enum Cell {
@@ -23,15 +23,20 @@ enum Cell {
     Goal,
     Path,
 }
-impl ToString for Cell {
-    fn to_string(&self) -> String {
-        match self {
-            Cell::Empty => ' '.to_string(),
-            Cell::Blocked => 'X'.to_string(),
-            Cell::Start => 'S'.to_string(),
-            Cell::Goal => 'G'.to_string(),
-            Cell::Path => '*'.to_string(),
-        }
+
+impl std::fmt::Display for Cell {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
+            "{}",
+            match self {
+                Cell::Empty => ' ',
+                Cell::Blocked => 'X',
+                Cell::Start => 'S',
+                Cell::Goal => 'G',
+                Cell::Path => '*',
+            }
+        )
     }
 }
 
@@ -41,9 +46,9 @@ struct MazeLocation {
     column: usize,
 }
 
-impl ToString for MazeLocation {
-    fn to_string(&self) -> String {
-        format!("({},{})", self.row, self.column)
+impl std::fmt::Display for MazeLocation {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "({},{})", self.row, self.column)
     }
 }
 
@@ -85,11 +90,11 @@ impl Maze {
 
     fn randomly_fill(rows: usize, columns: usize, sparseness: f32) -> Vec<Vec<Cell>> {
         let mut grid = Vec::new();
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         for _ in 0..rows {
             let mut row = Vec::<Cell>::new();
             for _ in 0..columns {
-                if rng.gen_range(0.0..1.0) < sparseness {
+                if rng.random_range(0.0..1.0) < sparseness {
                     row.push(Cell::Blocked);
                 } else {
                     row.push(Cell::Empty);
@@ -161,16 +166,15 @@ impl Maze {
         x_distance.abs() + y_distance.abs()
     }
 }
-impl ToString for Maze {
-    fn to_string(&self) -> String {
-        let mut result = String::new();
+impl std::fmt::Display for Maze {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in &self.grid {
             for cell in row {
-                result.push_str(&cell.to_string());
+                write!(formatter, "{cell}")?;
             }
-            result.push('\n');
+            writeln!(formatter)?;
         }
-        result
+        Ok(())
     }
 }
 

@@ -79,7 +79,7 @@ impl<T: PartialEq + Eq + Clone> Node<T> {
 
 impl<T: PartialEq + Eq + Clone> Ord for Node<T> {
     fn cmp(&self, other: &Self) -> Ordering {
-        let difference = (self.cost + self.heuristic) - (&other.cost + &other.heuristic);
+        let difference = (self.cost + self.heuristic) - (other.cost + other.heuristic);
         if difference < -0.000001_f64 {
             Ordering::Greater // Note the reversed order, because Rust's BinaryHeap pops highest priority element first!
         } else if difference > 0.000001_f64  {
@@ -90,9 +90,9 @@ impl<T: PartialEq + Eq + Clone> Ord for Node<T> {
     }
 }
 
-impl<'a, T: PartialEq + Eq + Clone> PartialOrd for Node<T> {
+impl<T: PartialEq + Eq + Clone> PartialOrd for Node<T> {
     fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(&other))
+        Some(self.cmp(other))
     }
 }
 
@@ -101,7 +101,7 @@ pub fn node_to_path<T: PartialOrd + Eq + Copy>(node: &Node<T>) -> Vec<T> {
     let mut current_node = node;
     path.push(current_node.state);
     while let Some(parent) = &current_node.parent {
-        current_node = &parent;
+        current_node = parent;
         path.push(current_node.state);
     }
     path.into_iter().rev().collect()
