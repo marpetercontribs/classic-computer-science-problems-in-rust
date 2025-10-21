@@ -14,7 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use rand::{thread_rng, Rng};
+use rand::Rng;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -23,11 +23,11 @@ type Grid = Vec<Vec<char>>;
 
 fn generate_grid(rows: usize, columns: usize) -> Grid {
     let mut grid = Vec::<Vec<char>>::new();
-    let mut rng = thread_rng();
+    let mut rng = rand::rng();
     for _ in 0..rows {
         let mut row_chars = Vec::<char>::new();
         for _ in 0..columns {
-            row_chars.push(rng.gen_range('A'..='Z'));
+            row_chars.push(rng.random_range('A'..='Z'));
         }
         grid.push(row_chars);
     }
@@ -118,7 +118,7 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
             HashSet::from_iter(all_locations.iter().cloned());
         all_locations.len() == deduplicated_locations.len()
     }
-    fn variables<'a>(&'a self) -> &'a Vec<String> {
+    fn variables(&self) -> &Vec<String> {
         &self.words
     }
 }
@@ -145,10 +145,10 @@ fn main() {
     match solution {
         None => println!("No solution found!"),
         Some(solution) => {
-            let mut rng = thread_rng();
+            let mut rng = rand::rng();
             for (word, grid_locations) in solution.iter() {
                 let mut locs = grid_locations.clone();
-                if rng.gen_bool(0.5) {
+                if rng.random_bool(0.5) {
                     locs.reverse();
                 }
                 for (index, letter) in word.chars().enumerate() {
