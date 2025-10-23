@@ -18,7 +18,7 @@ use crate::statistics::Statistics;
 use std::fmt;
 use std::rc::Rc;
 
-use rand::{thread_rng, Rng};
+use rand::Rng;
 
 // Rust does not support inheritance for structs, and traits cannot contain data.
 // Thus we cannot make the things to cluster inherit from a DataPoint struct
@@ -147,12 +147,12 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
         true
     }
     fn random_point(points: &[DataPoint<P>]) -> DataPoint<Vec<f64>> {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         let mut initials = Vec::<f64>::new();
         for dimension in 0..points[0].num_dimensions() {
             let dimension_values = Self::dimension_slice(points, dimension);
             let stats = Statistics::new(&dimension_values);
-            let random_value = rng.gen_range(stats.min..stats.max);
+            let random_value = rng.random_range(stats.min..stats.max);
             initials.push(random_value);
         }
         DataPoint::from(initials)
