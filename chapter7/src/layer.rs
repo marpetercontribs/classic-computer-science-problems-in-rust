@@ -36,15 +36,15 @@ impl Layer {
     ) -> Self {
         let mut neurons = Vec::<Neuron>::with_capacity(num_neurons);
         for _ in 0..num_neurons {
-            let randon_weights: Vec<f64> = previous_layer.as_ref().map_or_else(
-                Vec::<f64>::new,
-                |layer| {
-                    let mut rng = rand::thread_rng();
-                    (0..layer.borrow().neurons.len())
-                        .map(|_| rng.gen::<f64>())
-                        .collect()
-                },
-            );
+            let randon_weights: Vec<f64> =
+                previous_layer
+                    .as_ref()
+                    .map_or_else(Vec::<f64>::new, |layer| {
+                        let mut rng = rand::rng();
+                        (0..layer.borrow().neurons.len())
+                            .map(|_| rng.random::<f64>())
+                            .collect()
+                    });
             neurons.push(Neuron::new(
                 randon_weights,
                 learning_rate,
@@ -72,9 +72,9 @@ impl Layer {
     }
     // should only be called on output layer
     pub fn calculate_deltas_for_output_layer(&mut self, expected: &[f64]) {
-        for (n,neuron) in self.neurons.iter_mut().enumerate() {
+        for (n, neuron) in self.neurons.iter_mut().enumerate() {
             neuron.delta = (neuron.activation_function)(neuron.output_cache)
-             * (expected[n] - self.output_cache[n]);
+                * (expected[n] - self.output_cache[n]);
         }
     }
     // should not be called on output layer

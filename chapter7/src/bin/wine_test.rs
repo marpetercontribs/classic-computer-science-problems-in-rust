@@ -16,7 +16,6 @@
 use chapter7::network::Network;
 use chapter7::utils::*;
 use rand::prelude::SliceRandom;
-use rand::thread_rng;
 use std::rc::Rc;
 
 fn interpret_output(output: &[f64]) -> usize {
@@ -35,7 +34,7 @@ fn main() {
     let mut wine_species: Vec<usize> = Vec::new();
 
     let mut dataset: Vec<Vec<String>> = load_csv("src/wine.csv");
-    dataset.shuffle(&mut thread_rng());
+    dataset.shuffle(&mut rand::rng());
 
     for wine in dataset.iter() {
         let parameters: Vec<f64> = wine
