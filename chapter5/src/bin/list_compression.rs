@@ -28,7 +28,7 @@ use chapter5::genetic_algorithm::GeneticAlgorithm;
 use chapter5::genetic_algorithm::SelectionType;
 use libflate::gzip::Encoder;
 use rand::seq::SliceRandom;
-use rand::{thread_rng, Rng};
+use rand::Rng;
 use std::io::Write;
 
 #[derive(Clone)]
@@ -57,9 +57,9 @@ impl Chromosome for ListCompression {
     fn crossover(&self, that: &ListCompression) -> (Self, Self) {
         let mut child1 = self.clone();
         let mut child2 = that.clone();
-        let mut rng = rand::thread_rng();
-        let idx1 = rng.gen_range(0..child1.list.len());
-        let idx2 = rng.gen_range(0..child2.list.len());
+        let mut rng = rand::rng();
+        let idx1 = rng.random_range(0..child1.list.len());
+        let idx2 = rng.random_range(0..child2.list.len());
         let string1 = child1.list[idx1].clone();
         let string2 = child2.list[idx2].clone();
         let idx3 = child1.index_of(&string2);
@@ -71,9 +71,9 @@ impl Chromosome for ListCompression {
         (child1, child2)
     }
     fn mutate(&mut self) {
-        let mut rng = rand::thread_rng();
-        let idx1 = rng.gen_range(0..self.list.len());
-        let idx2 = rng.gen_range(0..self.list.len());
+        let mut rng = rand::rng();
+        let idx1 = rng.random_range(0..self.list.len());
+        let idx2 = rng.random_range(0..self.list.len());
         (self.list[idx1], self.list[idx2]) = (self.list[idx2].clone(), self.list[idx1].clone());
     }
     fn random_instance() -> Self {
@@ -84,13 +84,13 @@ impl Chromosome for ListCompression {
         .iter()
         .map(|str| str.to_string())
         .collect();
-        list.shuffle(&mut thread_rng());
+        list.shuffle(&mut rand::rng());
         ListCompression { list }
     }
 }
 
-impl ToString for ListCompression {
-    fn to_string(&self) -> String {
+impl std::fmt::Display for ListCompression {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let mut result = String::from("[");
         for s in self.list.iter() {
             result.push_str(&format!("{s}, "));
@@ -98,7 +98,7 @@ impl ToString for ListCompression {
         result.pop();
         result.pop();
         result.push(']');
-        format!("Order: {} Bytes: {}", result, self.bytes_compressed())
+        write!(formatter,"Order: {} Bytes: {}", result, self.bytes_compressed())
     }
 }
 
@@ -110,5 +110,5 @@ fn main() {
     let mut ga: GeneticAlgorithm<ListCompression> =
         GeneticAlgorithm::new(initial_population, 0.2, 0.7, SelectionType::Tournament);
     let result: ListCompression = ga.run(100, 1.0);
-    println!("{}", result.to_string());
+    println!("{result}");
 }
