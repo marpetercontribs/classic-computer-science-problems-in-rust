@@ -163,7 +163,7 @@ fn main() {
     city_graph.add_edge_by_vertices(&"New York", &"Philadelphia", 81.0);
     city_graph.add_edge_by_vertices(&"Philadelphia", &"Washington", 123.0);
 
-    println!("{}", city_graph.to_string());
+    println!("{city_graph}");
 
     println!();
     let (distances, path_map) = dijkstra(&city_graph, &"Los Angeles");

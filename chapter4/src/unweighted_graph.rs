@@ -65,17 +65,17 @@ impl<V: Clone + PartialEq> Graph for UnweightedGraph<V> {
     }
 }
 
-impl<V: Clone + PartialEq + ToString> ToString for UnweightedGraph<V> {
-    fn to_string(&self) -> String {
-        let mut result = String::new();
+impl<V: Clone + PartialEq + std::fmt::Display> std::fmt::Display for UnweightedGraph<V> {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for i in 0..self.get_vertex_count() {
-            result.push_str(&format!(
-                "{} -> {}\n",
-                self.vertex_at(i).to_string(),
+            writeln!(
+                formatter,
+                "{} -> {}",
+                self.vertex_at(i),
                 vec_to_string(&self.neighbors_of_index(i))
-            ));
+            )?;
         }
-        result
+        Ok(())
     }
 }
 
