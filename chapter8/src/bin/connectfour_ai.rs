@@ -37,7 +37,7 @@ fn main() {
     loop {
         let human_move: usize = get_player_move(&board);
         board = board.do_move(human_move);
-        println!("{}", board.to_string());
+        println!("{board}");
         if board.is_win() {
             println!("Human wins!");
             break;
@@ -48,7 +48,7 @@ fn main() {
         let computer_move: usize = find_best_move(&board, 6).expect("Cannot find best move!");
         println!("The computer move is {}.", computer_move);
         board = board.do_move(computer_move);
-        println!("{}", board.to_string());
+        println!("{board}");
         if board.is_win() {
             println!("Computer wins!");
             break;

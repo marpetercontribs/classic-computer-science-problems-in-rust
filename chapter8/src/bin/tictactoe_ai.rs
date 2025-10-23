@@ -46,9 +46,9 @@ fn main() {
             break;
         }
         let computer_move: usize = find_best_move(&board, 8).expect("Cannot find best move!");
-        println!("The computer move is {}.", computer_move);
+        println!("The computer move is {computer_move}.");
         board = board.do_move(computer_move);
-        println!("{}", board.to_string());
+        println!("{board}");
         if board.is_win() {
             println!("Computer wins!");
             break;
