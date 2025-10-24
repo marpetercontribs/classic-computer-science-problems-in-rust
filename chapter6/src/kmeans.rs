@@ -17,7 +17,7 @@ use crate::data_point::{DataPoint, SimpleDataPoint};
 use crate::statistics::Statistics;
 use std::rc::Rc;
 
-use rand::{thread_rng, Rng};
+use rand::Rng;
 
 #[derive(Clone)]
 pub struct Cluster<P: DataPoint> {
@@ -40,11 +40,7 @@ pub struct KMeans<P: DataPoint> {
 impl<P: DataPoint> KMeans<P> {
     pub fn new(k: usize, points: Vec<P>) -> Self {
         let z_scored_points = Self::z_score_normalize(&points);
-        let points: Vec<Rc<P>> = z_scored_points
-            .clone()
-            .into_iter()
-            .map(|p| Rc::new(p))
-            .collect();
+        let points: Vec<Rc<P>> = z_scored_points.clone().into_iter().map(Rc::new).collect();
         let mut clusters = Vec::<Cluster<P>>::with_capacity(k);
         (0..k).for_each(|_| {
             let cluster = Cluster::<P>::new(&points, Self::random_point(&z_scored_points));
@@ -141,12 +137,12 @@ impl<P: DataPoint> KMeans<P> {
         true
     }
     fn random_point(points: &[P]) -> SimpleDataPoint {
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         let mut initials = Vec::<f64>::new();
         for dimension in 0..points[0].num_dimensions() {
             let dimension_values = Self::dimension_slice(points, dimension);
             let stats = Statistics::new(&dimension_values);
-            let random_value = rng.gen_range(stats.min..stats.max);
+            let random_value = rng.random_range(stats.min..stats.max);
             initials.push(random_value);
         }
         SimpleDataPoint::new(initials)

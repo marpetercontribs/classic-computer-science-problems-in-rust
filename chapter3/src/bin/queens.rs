@@ -49,7 +49,7 @@ impl csp::Constraint<u8, u8> for QueensConstraint {
         }
         true
     }
-    fn variables<'a>(&'a self) -> &'a Vec<u8> {
+    fn variables(&self) -> &Vec<u8> {
         &self.columns
     }
 }

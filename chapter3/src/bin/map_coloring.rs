@@ -20,12 +20,16 @@ use std::rc::Rc;
 struct MapColoringConstraint {
     region1: &'static str,
     region2: &'static str,
-    variables: Vec<&'static str>
+    variables: Vec<&'static str>,
 }
 
 impl MapColoringConstraint {
     fn new(region1: &'static str, region2: &'static str) -> Self {
-        MapColoringConstraint {region1, region2, variables: vec![region1, region2]}
+        MapColoringConstraint {
+            region1,
+            region2,
+            variables: vec![region1, region2],
+        }
     }
 }
 
@@ -38,32 +42,48 @@ impl csp::Constraint<&str, &str> for MapColoringConstraint {
         }
         assignment.get(&self.region1).unwrap() != assignment.get(&self.region2).unwrap()
     }
-    fn variables<'a>(&'a self) -> &'a Vec<&'static str> {
+    fn variables(&self) -> &Vec<&'static str> {
         &self.variables
     }
 }
 
 fn main() {
-    let colors = vec!["red","green","blue"];
+    let colors = vec!["red", "green", "blue"];
     let mut domains = HashMap::<&str, Vec<&str>>::new();
-    for variable in &vec![
+    for variable in &[
         "WesternAustralia",
         "NorthernTerritory",
         "SouthAustralia",
         "Queensland",
         "NewSouthWales",
         "Victoria",
-        "Tasmania"] {
+        "Tasmania",
+    ] {
         domains.insert(variable, colors.clone());
     }
     let mut csp = csp::CSP::<&str, &str, MapColoringConstraint>::new(domains);
-    csp.add_constraint(MapColoringConstraint::new("WesternAustralia","NorthernTerritory"));
-    csp.add_constraint(MapColoringConstraint::new("WesternAustralia","SouthAustralia"));
-    csp.add_constraint(MapColoringConstraint::new("SouthAustralia","NorthernTerritory"));
-    csp.add_constraint(MapColoringConstraint::new("Queensland","NorthernTerritory"));
+    csp.add_constraint(MapColoringConstraint::new(
+        "WesternAustralia",
+        "NorthernTerritory",
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        "WesternAustralia",
+        "SouthAustralia",
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        "SouthAustralia",
+        "NorthernTerritory",
+    ));
+    csp.add_constraint(MapColoringConstraint::new(
+        "Queensland",
+        "NorthernTerritory",
+    ));
     csp.add_constraint(MapColoringConstraint::new("Queensland", "SouthAustralia"));
     csp.add_constraint(MapColoringConstraint::new("Queensland", "NewSouthWales"));
-    csp.add_constraint(MapColoringConstraint::new("NewSouthWales","SouthAustralia"));
+    csp.add_constraint(MapColoringConstraint::new(
+        "NewSouthWales",
+        "SouthAustralia",
+    ));
     csp.add_constraint(MapColoringConstraint::new("Victoria", "SouthAustralia"));
     csp.add_constraint(MapColoringConstraint::new("Victoria", "NewSouthWales"));
     csp.add_constraint(MapColoringConstraint::new("Victoria", "Tasmania"));

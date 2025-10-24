@@ -27,7 +27,7 @@ use chapter5::chromosome::Chromosome;
 use chapter5::genetic_algorithm::GeneticAlgorithm;
 use chapter5::genetic_algorithm::SelectionType;
 use rand::seq::SliceRandom;
-use rand::{thread_rng, Rng};
+use rand::Rng;
 
 #[derive(Clone)]
 struct SendMoreMoney {
@@ -73,9 +73,9 @@ impl Chromosome for SendMoreMoney {
     fn crossover(&self, that: &SendMoreMoney) -> (Self, Self) {
         let mut child1 = self.clone();
         let mut child2 = that.clone();
-        let mut rng = rand::thread_rng();
-        let idx1 = rng.gen_range(0..child1.letters.len());
-        let idx2 = rng.gen_range(0..child2.letters.len());
+        let mut rng = rand::rng();
+        let idx1 = rng.random_range(0..child1.letters.len());
+        let idx2 = rng.random_range(0..child2.letters.len());
         let letter1 = child1.letters[idx1];
         let letter2 = child2.letters[idx2];
         let idx3 = child1.index_of(letter2);
@@ -85,25 +85,25 @@ impl Chromosome for SendMoreMoney {
         (child1, child2)
     }
     fn mutate(&mut self) {
-        let mut rng = rand::thread_rng();
-        let idx1 = rng.gen_range(0..self.letters.len());
-        let idx2 = rng.gen_range(0..self.letters.len());
+        let mut rng = rand::rng();
+        let idx1 = rng.random_range(0..self.letters.len());
+        let idx2 = rng.random_range(0..self.letters.len());
         (self.letters[idx1], self.letters[idx2]) = (self.letters[idx2], self.letters[idx1]);
     }
     fn random_instance() -> Self {
         let mut letters = vec!['S', 'E', 'N', 'D', 'M', 'O', 'R', 'Y', ' ', ' '];
-        letters.shuffle(&mut thread_rng());
+        letters.shuffle(&mut rand::rng());
         SendMoreMoney { letters }
     }
 }
 
-impl ToString for SendMoreMoney {
-    fn to_string(&self) -> String {
+impl std::fmt::Display for SendMoreMoney {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let send: usize = self.send();
         let more: usize = self.more();
         let money: usize = self.money();
         let difference: isize = (money as isize - ((send + more) as isize)).abs();
-        format!("{send} + {more} = {money} Difference: {difference}")
+        write!(formatter,"{send} + {more} = {money} Difference: {difference}")
     }
 }
 
@@ -115,5 +115,5 @@ fn main() {
     let mut ga: GeneticAlgorithm<SendMoreMoney> =
         GeneticAlgorithm::new(initial_population, 0.2, 0.7, SelectionType::Roulette);
     let result: SendMoreMoney = ga.run(1000, 1.0);
-    println!("{}", result.to_string());
+    println!("{result}");
 }

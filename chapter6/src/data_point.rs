@@ -14,8 +14,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 use std::fmt;
-use std::iter::zip;
 use std::fs::File;
+use std::iter::zip;
 
 pub trait DataPoint: Clone {
     fn originals(&self) -> Vec<f64>;

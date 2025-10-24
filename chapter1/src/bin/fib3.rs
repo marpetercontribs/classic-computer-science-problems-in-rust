@@ -37,8 +37,14 @@ impl Fib3 {
     }
 }
 
+impl Default for Fib3 {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 fn main() {
-    let mut fib = Fib3::new();
+    let mut fib: Fib3  = Default::default(); // Fib3::new();
     // Note the need for `mut` here, because the get method changes the state of Fib3.
     // To avoid this, the HashMap could be wrapped inside a std::rc::RefCell.
     println!("{}", fib.get(5));

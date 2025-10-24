@@ -22,13 +22,17 @@ pub enum TTTPiece {
     E,
 }
 
-impl ToString for TTTPiece {
-    fn to_string(&self) -> String {
-        match self {
-            TTTPiece::X => "X".to_string(),
-            TTTPiece::O => "O".to_string(),
-            TTTPiece::E => " ".to_string(),
-        }
+impl std::fmt::Display for TTTPiece {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
+            "{}",
+            match self {
+                TTTPiece::X => "X",
+                TTTPiece::O => "O",
+                TTTPiece::E => " ",
+            }
+        )
     }
 }
 impl Piece for TTTPiece {
@@ -60,6 +64,12 @@ impl TTTBoard {
         self.positions[p0] == self.positions[p1]
             && self.positions[p1] == self.positions[p2]
             && self.positions[p0] != TTTPiece::E
+    }
+}
+
+impl Default for TTTBoard {
+    fn default() -> Self {
+        Self::new()
     }
 }
 
@@ -103,19 +113,20 @@ impl Board<TTTPiece, usize> for TTTBoard {
     }
 }
 
-impl ToString for TTTBoard {
-    fn to_string(&self) -> String {
-        format!(
+impl std::fmt::Display for TTTBoard {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
             "{}|{}|{}\n-----\n{}|{}|{}\n-----\n{}|{}|{}",
-            self.positions[0].to_string(),
-            self.positions[1].to_string(),
-            self.positions[2].to_string(),
-            self.positions[3].to_string(),
-            self.positions[4].to_string(),
-            self.positions[5].to_string(),
-            self.positions[6].to_string(),
-            self.positions[7].to_string(),
-            self.positions[8].to_string()
+            self.positions[0],
+            self.positions[1],
+            self.positions[2],
+            self.positions[3],
+            self.positions[4],
+            self.positions[5],
+            self.positions[6],
+            self.positions[7],
+            self.positions[8]
         )
     }
 }

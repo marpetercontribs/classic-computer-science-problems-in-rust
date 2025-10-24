@@ -13,7 +13,6 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use csp;
 use std::collections::{HashMap, HashSet};
 use std::rc::Rc;
 
@@ -51,7 +50,7 @@ impl csp::Constraint<char, u16> for SendMoreMoneyConstraint {
         true // no conflict
     }
 
-    fn variables<'a>(&'a self) -> &'a Vec<char> {
+    fn variables(&self) -> &Vec<char> {
         &self.letters
     }
 }

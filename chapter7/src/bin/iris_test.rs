@@ -16,7 +16,6 @@
 use chapter7::network::Network;
 use chapter7::utils::*;
 use rand::prelude::SliceRandom;
-use rand::thread_rng;
 use std::rc::Rc;
 
 fn interpret_output(output: &[f64]) -> String {
@@ -35,7 +34,7 @@ fn main() {
     let mut iris_species: Vec<String> = Vec::new();
 
     let mut dataset: Vec<Vec<String>> = load_csv("src/iris.csv");
-    dataset.shuffle(&mut thread_rng());
+    dataset.shuffle(&mut rand::rng());
 
     for iris in dataset.iter() {
         let parameters: Vec<f64> = iris

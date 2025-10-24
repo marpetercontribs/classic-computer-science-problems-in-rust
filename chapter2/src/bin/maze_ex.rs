@@ -14,7 +14,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use rand::{thread_rng, Rng};
+use rand::Rng;
 
 #[derive(PartialEq)]
 enum Cell {
@@ -68,11 +68,11 @@ impl Maze {
 
     fn randomly_fill(rows: usize, columns: usize, sparseness: f32) -> Vec<Vec<Cell>> {
         let mut grid = Vec::new();
-        let mut rng = thread_rng();
+        let mut rng = rand::rng();
         for _ in 0..rows {
             let mut row = Vec::<Cell>::new();
             for _ in 0..columns {
-                if rng.gen_range(0.0..1.0) < sparseness {
+                if rng.random_range(0.0..1.0) < sparseness {
                     row.push(Cell::Blocked);
                 } else {
                     row.push(Cell::Empty);

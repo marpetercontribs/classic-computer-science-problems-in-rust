@@ -19,7 +19,7 @@ use std::str;
 
 fn random_key(length: usize) -> Vec<u8> {
     let mut dummy = vec![0; length];
-    rand::thread_rng().fill_bytes(&mut dummy);
+    rand::rng().fill_bytes(&mut dummy);
     dummy
 }
 
@@ -33,7 +33,7 @@ fn encrypt(original: &str) -> (Vec<u8>, Vec<u8>) {
     (encrypted, key)
 }
 
-fn decrypt(key1: &Vec<u8>, key2: &[u8]) -> String {
+fn decrypt(key1: &[u8], key2: &[u8]) -> String {
     let mut decrypted = Vec::<u8>::with_capacity(key1.len());
     for index in 0..key1.len() {
         decrypted.push(key1[index] ^ key2[index]);

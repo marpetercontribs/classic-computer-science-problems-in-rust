@@ -60,17 +60,17 @@ impl Chromosome for SimpleEquation {
         }
     }
     fn random_instance() -> Self {
-        let mut rng = rand::thread_rng();
+        let mut rng = rand::rng();
         SimpleEquation {
-            x: rng.gen_range(0..100),
-            y: rng.gen_range(0..100),
+            x: rng.random_range(0..100),
+            y: rng.random_range(0..100),
         }
     }
 }
 
-impl ToString for SimpleEquation {
-    fn to_string(&self) -> String {
-        format!("X: {} Y: {} Fitness: {}", self.x, self.y, self.fitness())
+impl std::fmt::Display for SimpleEquation {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter,"X: {} Y: {} Fitness: {}", self.x, self.y, self.fitness())
     }
 }
 
@@ -82,5 +82,5 @@ fn main() {
     let mut ga: GeneticAlgorithm<SimpleEquation> =
         GeneticAlgorithm::new(initial_population, 0.1, 0.7, SelectionType::ImprovedTournament);
     let result: SimpleEquation = ga.run(100, 13.0);
-    println!("{}", result.to_string());
+    println!("{result}");
 }

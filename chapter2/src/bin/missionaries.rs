@@ -126,34 +126,36 @@ impl MCState {
     }
 }
 
-impl ToString for MCState {
-    fn to_string(&self) -> String {
-        let mut result = format!(
-            "On the west bank there are {} missionaries and {} cannibals.\n",
+impl std::fmt::Display for MCState {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            formatter,
+            "On the west bank there are {} missionaries and {} cannibals.",
             self.west_missionaries, self.west_cannibals
-        );
-        result.push_str(&format!(
-            "On the east bank there are {} missionaries and {} cannibals.\n",
+        )?;
+        writeln!(
+            formatter,
+            "On the east bank there are {} missionaries and {} cannibals.",
             self.east_missionaries, self.east_cannibals
-        ));
-        result.push_str(&format!(
-            "The boat is on the {} bank.\n",
+        )?;
+        writeln!(
+            formatter,
+            "The boat is on the {} bank.",
             if self.boat_on_west_bank {
                 "west"
             } else {
                 "east"
             }
-        ));
-        result
+        )
     }
 }
 
-fn display_solution(path: &Vec<MCState>) {
+fn display_solution(path: &[MCState]) {
     if path.is_empty() {
         return;
     }
     let mut old_state = &path[0];
-    println!("{}", old_state.to_string());
+    println!("{old_state}");
     for current_state in &path[1..] {
         if current_state.boat_on_west_bank {
             println!(
@@ -168,7 +170,7 @@ fn display_solution(path: &Vec<MCState>) {
                 old_state.west_cannibals - current_state.west_cannibals
             );
         }
-        println!("{}", current_state.to_string());
+        println!("{current_state}");
         old_state = current_state;
     }
 }

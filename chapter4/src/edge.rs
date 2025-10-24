@@ -50,9 +50,9 @@ impl Edge for SimpleEdge {
     }
 }
 
-impl ToString for SimpleEdge {
-    fn to_string(&self) -> String {
-        format!("{} -> {}", self.u, self.v)
+impl std::fmt::Display for SimpleEdge {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(formatter, "{} -> {}", self.u, self.v)
     }
 }
 
@@ -92,9 +92,10 @@ impl Edge for WeightedEdge {
     }
 }
 
-impl ToString for WeightedEdge {
-    fn to_string(&self) -> String {
-        format!(
+impl std::fmt::Display for WeightedEdge {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
             "{} {} -> {}",
             self.simple_edge.u, self.weight, self.simple_edge.v
         )

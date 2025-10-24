@@ -25,6 +25,5 @@
 // limitations under the License.
 
 fn main() {
-    println!("Use 'cargo test <program name> -- --nocapture' to run [un]weighted_graph belonging to this chapter.");
     println!("Use 'cargo run --bin <program name>' to run one of the other programs belonging to this chapter.");
 }

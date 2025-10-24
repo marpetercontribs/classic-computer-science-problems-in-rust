@@ -14,7 +14,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-use rand::{thread_rng, Rng};
+use rand::Rng;
 use std::collections::HashMap;
 use std::collections::HashSet;
 use std::rc::Rc;
@@ -23,11 +23,11 @@ type Grid = Vec<Vec<char>>;
 
 fn generate_grid(rows: usize, columns: usize) -> Grid {
     let mut grid = Vec::<Vec<char>>::new();
-    let mut rng = thread_rng();
+    let mut rng = rand::rng();
     for _ in 0..rows {
         let mut row_chars = Vec::<char>::new();
         for _ in 0..columns {
-            row_chars.push(rng.gen_range('.'..='.'));
+            row_chars.push(rng.random_range('.'..='.'));
         }
         grid.push(row_chars);
     }
@@ -179,7 +179,7 @@ impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
         }
         true
     }
-    fn variables<'a>(&'a self) -> &'a Vec<String> {
+    fn variables(&self) -> &Vec<String> {
         &self.words
     }
 }
@@ -203,8 +203,7 @@ fn main() {
         locations.insert(word.clone(), generate_domain(word, &grid));
     }
 
-    let mut csp =
-        csp::CSP::<String, Vec<GridLocation>, WordSearchConstraint>::new(locations);
+    let mut csp = csp::CSP::<String, Vec<GridLocation>, WordSearchConstraint>::new(locations);
     csp.add_constraint(WordSearchConstraint::new(words));
     let solution = csp.backtracking_search();
     match solution {
@@ -223,21 +222,23 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
+    use std::clone;
+
     use super::*;
     use csp::Constraint;
 
     #[test]
     fn test_cross_on_first_letters() {
         let words: Vec<String> = ["MATTHEW".to_string(), "MARY".to_string()].to_vec();
-        let mut assignment_1 = HashMap::<String, Vec<GridLocation>>::new();
+        let mut assignment_1 = HashMap::<Rc<String>, Vec<GridLocation>>::new();
         assignment_1.insert(
-            words[0].clone(),
+            Rc::new(words[0].clone()),
             (0..words[0].len())
                 .map(|column| GridLocation { row: 0, column })
                 .collect::<Vec<GridLocation>>(),
         );
         assignment_1.insert(
-            words[1].clone(),
+            Rc::new(words[1].clone()),
             (0..words[1].len())
                 .map(|row| GridLocation { row, column: 0 })
                 .collect::<Vec<GridLocation>>(),
@@ -249,15 +250,15 @@ mod tests {
     #[test]
     fn test_cross_on_first_with_second_letter() {
         let words: Vec<String> = ["MATTHEW".to_string(), "MARY".to_string()].to_vec();
-        let mut assignment_1 = HashMap::<String, Vec<GridLocation>>::new();
+        let mut assignment_1 = HashMap::<Rc<String>, Vec<GridLocation>>::new();
         assignment_1.insert(
-            words[0].clone(),
+            Rc::new(words[0].clone()),
             (0..words[0].len())
                 .map(|column| GridLocation { row: 0, column })
                 .collect::<Vec<GridLocation>>(),
         );
         assignment_1.insert(
-            words[1].clone(),
+            Rc::new(words[1].clone()),
             (0..words[1].len())
                 .map(|row| GridLocation { row, column: 1 })
                 .collect::<Vec<GridLocation>>(),

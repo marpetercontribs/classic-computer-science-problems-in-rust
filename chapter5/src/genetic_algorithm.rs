@@ -26,7 +26,7 @@
 
 use crate::chromosome::Chromosome;
 use rand::seq::SliceRandom;
-use rand::{random, thread_rng};
+use rand::random;
 
 pub enum SelectionType {
     Roulette,
@@ -97,7 +97,7 @@ impl<C: Chromosome> GeneticAlgorithm<C> {
 
     fn pick_random_subset(&self, num_players: usize) -> Vec<C> {
         let mut picks: Vec<C> = self.population.clone();
-        picks.shuffle(&mut thread_rng());
+        picks.shuffle(&mut rand::rng());
         picks.truncate(num_players);
         picks
     }

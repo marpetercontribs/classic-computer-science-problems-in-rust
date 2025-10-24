@@ -33,13 +33,17 @@ impl Piece for C4Piece {
     }
 }
 
-impl ToString for C4Piece {
-    fn to_string(&self) -> String {
-        match self {
-            C4Piece::B => "B".to_string(),
-            C4Piece::R => "R".to_string(),
-            C4Piece::E => " ".to_string(),
-        }
+impl std::fmt::Display for C4Piece {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(
+            formatter,
+            "{}",
+            match self {
+                C4Piece::B => "B",
+                C4Piece::R => "R",
+                C4Piece::E => " ",
+            }
+        )
     }
 }
 
@@ -172,6 +176,12 @@ impl C4Board {
     }
 }
 
+impl Default for C4Board {
+    fn default() -> Self {
+        Self::new()
+    }
+}
+
 impl Board<C4Piece, usize> for C4Board {
     fn turn(&self) -> C4Piece {
         self.turn.clone()
@@ -210,18 +220,16 @@ impl Board<C4Piece, usize> for C4Board {
     }
 }
 
-impl ToString for C4Board {
-    fn to_string(&self) -> String {
-        let mut result: String = String::new();
+impl std::fmt::Display for C4Board {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for row in 1..=NUM_ROWS {
-            result.push('|');
+            write!(formatter, "|")?;
             for col in 0..NUM_COLUMNS {
-                result.push_str(&self.positions[col][NUM_ROWS - row].to_string());
-                result.push('|');
+                write!(formatter, "{}|", self.positions[col][NUM_ROWS - row])?;
             }
-            result.push('\n');
+            writeln!(formatter)?;
         }
-        result
+        Ok(())
     }
 }
 

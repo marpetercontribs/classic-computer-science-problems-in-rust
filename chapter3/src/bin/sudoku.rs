@@ -15,7 +15,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use csp;
 use std::collections::HashMap;
 use std::fs::File;
 use std::io::{self, BufRead};
@@ -66,7 +65,7 @@ impl Puzzle {
             for value in row {
                 print!("{value}");
             }
-            println!("");
+            println!();
         }
     }
     fn update(&mut self, assignment: &HashMap<Rc<CellLocation>, u8>) {
@@ -77,11 +76,11 @@ impl Puzzle {
 }
 
 struct SudokuConstraint {
-    locations: Vec<CellLocation>
+    locations: Vec<CellLocation>,
 }
 
 impl SudokuConstraint {
-    fn new(locations: Vec<CellLocation> ) -> Self {
+    fn new(locations: Vec<CellLocation>) -> Self {
         SudokuConstraint { locations }
     }
 }
@@ -113,7 +112,7 @@ impl csp::Constraint<CellLocation, u8> for SudokuConstraint {
         }
         true
     }
-    fn variables<'a> (&'a self) -> &'a Vec<CellLocation> {
+    fn variables(&self) -> &Vec<CellLocation> {
         &self.locations
     }
 }
@@ -122,8 +121,8 @@ fn main() {
     let mut puzzle = Puzzle::from_file(&String::from("easy_puzzle.txt"));
     // let mut puzzle = Puzzle::from_file(&String::from("medium_puzzle.txt"));
     // let mut puzzle = Puzzle::from_file(&String::from("difficult_puzzle.txt")); // This one takes a while!
-    let mut locations = Vec::<CellLocation>::with_capacity(9*9);
-    let mut domains = HashMap::<CellLocation, Vec<u8>>::with_capacity(9*9);
+    let mut locations = Vec::<CellLocation>::with_capacity(9 * 9);
+    let mut domains = HashMap::<CellLocation, Vec<u8>>::with_capacity(9 * 9);
     for (row_index, row) in puzzle.grid.iter().enumerate() {
         for (column_index, value) in row.iter().enumerate() {
             let cell_location = CellLocation {
@@ -139,8 +138,7 @@ fn main() {
         }
     }
 
-    let mut csp =
-        csp::CSP::<CellLocation, u8, SudokuConstraint>::new(domains);
+    let mut csp = csp::CSP::<CellLocation, u8, SudokuConstraint>::new(domains);
     csp.add_constraint(SudokuConstraint::new(locations));
 
     let solution = csp.backtracking_search();
