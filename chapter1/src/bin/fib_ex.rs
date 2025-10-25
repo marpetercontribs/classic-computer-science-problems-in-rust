@@ -16,13 +16,8 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
+use chapter1::{fib2, fib3, fib4, fib5, fib6};
 use std::time::Instant;
-
-mod fib2;
-mod fib3;
-mod fib4;
-mod fib5;
-mod fib6;
 
 struct FibEx {
     memo: Vec<usize>,

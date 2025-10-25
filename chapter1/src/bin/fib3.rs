@@ -14,39 +14,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use std::collections::HashMap;
-
-pub struct Fib3 {
-    memo: HashMap<usize, usize>,
-}
-
-impl Fib3 {
-    pub fn new() -> Self {
-        let mut memo = HashMap::<usize, usize>::new();
-        memo.insert(0, 0); // Part 1 of the recursion's stop condition
-        memo.insert(1, 1); // Part 2 of the recursion's stop condition
-        Fib3 { memo }
-    }
-    pub fn get(&mut self, n: usize) -> usize {
-        if !self.memo.contains_key(&n) {
-            let prev_prev = self.get(n - 2);
-            let prev = self.get(n - 1);
-            self.memo.insert(n, prev + prev_prev);
-        }
-        *self.memo.get(&n).unwrap()
-    }
-}
-
-impl Default for Fib3 {
-    fn default() -> Self {
-        Self::new()
-    }
-}
+use chapter1::fib3::Fib3;
 
 fn main() {
-    let mut fib: Fib3  = Default::default(); // Fib3::new();
-    // Note the need for `mut` here, because the get method changes the state of Fib3.
-    // To avoid this, the HashMap could be wrapped inside a std::rc::RefCell.
+    let mut fib: Fib3 = Default::default(); // Fib3::new();
+                                            // Note the need for `mut` here, because the get method changes the state of Fib3.
+                                            // To avoid this, the HashMap could be wrapped inside a std::rc::RefCell.
     println!("{}", fib.get(5));
     println!("{}", fib.get(50));
 }

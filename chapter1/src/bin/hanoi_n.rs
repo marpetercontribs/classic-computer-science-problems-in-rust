@@ -95,7 +95,7 @@ fn main() {
         towers[0].push(i)
     }
 
-    for (i,item) in towers.iter().enumerate() {
+    for (i, item) in towers.iter().enumerate() {
         println!("Tower {}: {}", i + 1, item);
     }
 
@@ -106,7 +106,7 @@ fn main() {
 
     solve_hanoi(tower_a, tower_c, tower_b, towers_remaining);
 
-    for (i,item) in towers.iter().enumerate() {
+    for (i, item) in towers.iter().enumerate() {
         println!("Tower {}: {}", i + 1, item);
     }
 }

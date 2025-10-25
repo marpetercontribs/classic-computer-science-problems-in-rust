@@ -15,41 +15,7 @@
 // WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 // See the License for the specific language governing permissions and
 // limitations under the License.
-pub struct FibonacciGenerator {
-    last: usize,
-    next: usize,
-    max: usize,
-    done: usize,
-}
-
-impl FibonacciGenerator {
-    fn new(n: usize) -> Self {
-        FibonacciGenerator {
-            last: 0,
-            next: 1,
-            max: n,
-            done: 0,
-        }
-    }
-}
-
-impl Iterator for FibonacciGenerator {
-    type Item = usize;
-    fn next(&mut self) -> Option<Self::Item> {
-        if self.done < self.max {
-            self.done += 1;
-            let result = Some(self.last);
-            (self.last, self.next) = (self.next, self.last + self.next);
-            result
-        } else {
-            None
-        }
-    }
-}
-
-pub fn fib6(n: usize) -> FibonacciGenerator {
-    FibonacciGenerator::new(n)
-}
+use chapter1::fib6::fib6;
 
 fn main() {
     for i in fib6(51) {

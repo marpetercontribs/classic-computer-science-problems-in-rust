@@ -15,18 +15,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use memoize::memoize;
-
-// The following line required dependency memoize in Cargo.toml
-#[memoize]
-
-pub fn fib4(n: usize) -> usize {
-    if n < 2 {
-        n
-    } else {
-        fib4(n - 1) + fib4(n - 2)
-    }
-}
+use chapter1::fib4::fib4;
 
 fn main() {
     println!("{}", fib4(5));
