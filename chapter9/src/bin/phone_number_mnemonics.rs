@@ -30,40 +30,42 @@ fn cartesian_product(first: &[String], second: &[char]) -> Vec<String> {
     product
 }
 
+const fn digit_mapping_1() -> [(char, &'static [char]); 10] {
+    [
+        ('1', &['1']),
+        ('2', &['A', 'B', 'C']),
+        ('3', &['D', 'E', 'F']),
+        ('4', &['G', 'H', 'I']),
+        ('5', &['J', 'K', 'L']),
+        ('6', &['M', 'N', 'P']),
+        ('7', &['P', 'Q', 'R', 'S']),
+        ('8', &['T', 'U', 'V']),
+        ('9', &['W', 'X', 'Y', 'Z']),
+        ('0', &['0']),
+    ]
+}
+// Using LazyLock here to be able to declare DIGIT_MAPPING_1 as const
+// and avoid the overhead of reconstructing the HashMap on every function call.
+const DIGIT_MAPPING_1: std::sync::LazyLock<HashMap<char, &'static [char]>> =
+    std::sync::LazyLock::new(|| HashMap::from(digit_mapping_1()));
+
 pub fn possible_mnemonics(phone_number: &str) -> Vec<String> {
-    // Using LazyLock here to be able to declare DIGIT_MAPPING as static (quasi-constant)
-    // and avoid the overhead of reconstructing the HashMap on every function call.
-    static DIGIT_MAPPING: std::sync::LazyLock<HashMap<char, Vec<char>>> =
-        std::sync::LazyLock::new(|| {
-            HashMap::from([
-                ('1', vec!['1']),
-                ('2', vec!['A', 'B', 'C']),
-                ('3', vec!['D', 'E', 'F']),
-                ('4', vec!['G', 'H', 'I']),
-                ('5', vec!['J', 'K', 'L']),
-                ('6', vec!['M', 'N', 'P']),
-                ('7', vec!['P', 'Q', 'R', 'S']),
-                ('8', vec!['T', 'U', 'V']),
-                ('9', vec!['W', 'X', 'Y', 'Z']),
-                ('0', vec!['0']),
-            ])
-        });
     let mut mnemonics: Vec<String> = vec!["".to_string()];
     for digit in phone_number.chars() {
-        if let Some(combo) = DIGIT_MAPPING.get(&digit) {
+        if let Some(combo) = DIGIT_MAPPING_1.get(&digit) {
             mnemonics = cartesian_product(&mnemonics, combo);
         }
     }
     mnemonics
 }
 
-// Option 2 - Treat the letters as Strings as is done in Kopec's book,
-//            leads to a symmetric cartesian_product function
-fn cartesian_product2(first: &[String], second: &[String]) -> Vec<String> {
+// Option 2 - Treat the letters as String slices similar to what is done in Kopec's book,
+//            leads to a more symmetric cartesian_product function
+fn cartesian_product2(first: &[String], second: &[&str]) -> Vec<String> {
     let mut product: Vec<String> = Vec::new();
     for in_first in first {
         for in_second in second {
-            let mut combination = in_first.clone();
+            let mut combination = in_first.to_string();
             combination.push_str(in_second);
             product.push(combination);
         }
@@ -71,28 +73,30 @@ fn cartesian_product2(first: &[String], second: &[String]) -> Vec<String> {
     product
 }
 
+const fn digit_mapping_2() -> [(char, &'static [&'static str]); 10] {
+    [
+        ('1', &["1"]),
+        ('2', &["A", "B", "C"]),
+        ('3', &["D", "E", "F"]),
+        ('4', &["G", "H", "I"]),
+        ('5', &["J", "K", "L"]),
+        ('6', &["M", "N", "P"]),
+        ('7', &["P", "Q", "R", "S"]),
+        ('8', &["T", "U", "V"]),
+        ('9', &["W", "X", "Y", "Z"]),
+        ('0', &["0"]),
+    ]
+}
+// Using LazyLock here to be able to declare DIGIT_MAPPING_2 as const
+// and avoid the overhead of reconstructing the HashMap on every function call.
+const DIGIT_MAPPING_2: std::sync::LazyLock<HashMap<char, &[&str]>> =
+    std::sync::LazyLock::new(|| HashMap::from(digit_mapping_2()));
+
 pub fn possible_mnemonics2(phone_number: &str) -> Vec<String> {
-    // Using LazyLock here to be able to declare DIGIT_MAPPING as static (quasi-constant)
-    // and avoid the overhead of reconstructing the HashMap on every function call.
-    static DIGIT_MAPPING: std::sync::LazyLock<HashMap<char, Vec<String>>> =
-        std::sync::LazyLock::new(|| {
-            HashMap::from([
-                ('1', vec!["1".to_string()]),
-                ('2', ["A", "B", "C"].iter().map(|s| s.to_string()).collect()),
-                ('3', ["D", "E", "F"].iter().map(|s| s.to_string()).collect()),
-                ('4', ["G", "H", "I"].iter().map(|s| s.to_string()).collect()),
-                ('5', ["J", "K", "L"].iter().map(|s| s.to_string()).collect()),
-                ('6', ["M", "N", "P"].iter().map(|s| s.to_string()).collect()),
-                ('7', ["P", "Q", "R", "S"].iter().map(|s| s.to_string()).collect()),
-                ('8', ["T", "U", "V"].iter().map(|s| s.to_string()).collect()),
-                ('9', ["W", "X", "Y", "Z"].iter().map(|s| s.to_string()).collect()),
-                ('0', vec!["0".to_string()]),
-            ])
-        });
     let mut mnemonics: Vec<String> = vec!["".to_string()];
     for digit in phone_number.chars() {
-        if let Some(combo) = DIGIT_MAPPING.get(&digit) {
-            mnemonics = cartesian_product2(&mnemonics, combo);
+        if let Some(combo) = DIGIT_MAPPING_2.get(&digit) {
+            mnemonics = cartesian_product2(&mnemonics, *combo);
         }
     }
     mnemonics
@@ -106,7 +110,7 @@ fn main() {
         .read_line(&mut phone_number)
         .expect("Error reading your input.");
 
-    let mnemonics = possible_mnemonics2(&phone_number);
+    let mnemonics = possible_mnemonics(&phone_number);
 
     println!("Here are the potential mnemonics:");
     println!("{:#?}", mnemonics);
