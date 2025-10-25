@@ -29,6 +29,7 @@ impl<V: Clone + PartialEq> UnweightedGraph<V> {
     //     self.add_edge(SimpleEdge::new(u, v));
     // }
     // Add an edge by looking up vertex indices (convenience method)
+    #[allow(dead_code)]
     fn add_edge_by_vertices(
         &mut self,
         first: &<UnweightedGraph<V> as Graph>::Vertex,

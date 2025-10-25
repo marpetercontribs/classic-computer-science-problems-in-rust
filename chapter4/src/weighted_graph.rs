@@ -52,7 +52,7 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
             .iter()
             .fold(0_f64, |sum, current| sum + current.weight)
     }
-
+    #[allow(dead_code)]
     fn visit(&self, index: usize, visited: &mut [bool], pq: &mut BinaryHeap<WeightedEdge>) {
         visited[index] = true;
         for edge in self.edges_of_index(index) {
@@ -61,7 +61,7 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
             }
         }
     }
-
+    #[allow(dead_code)]
     fn mst(&self, start: usize) -> Vec<WeightedEdge> {
         let mut result = Vec::<WeightedEdge>::new();
         if start > self.get_vertex_count() - 1 {

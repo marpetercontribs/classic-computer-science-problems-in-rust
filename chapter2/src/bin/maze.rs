@@ -153,7 +153,7 @@ impl Maze {
         self.grid[self.start.row][self.start.column] = Cell::Start;
         self.grid[self.goal.row][self.goal.column] = Cell::Goal;
     }
-
+    #[allow(dead_code)]
     fn euclidean_distance(&self, ml: &MazeLocation) -> f64 {
         let x_distance = (ml.column - self.goal.column) as f64;
         let y_distance = (ml.row - self.goal.row) as f64;
