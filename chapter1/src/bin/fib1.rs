@@ -14,6 +14,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#[allow(unconditional_recursion)]
 fn fib1(n: usize) -> usize {
     fib1(n - 1) + fib1(n - 2)
 }

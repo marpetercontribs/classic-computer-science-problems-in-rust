@@ -222,8 +222,6 @@ fn main() {
 
 #[cfg(test)]
 mod tests {
-    use std::clone;
-
     use super::*;
     use csp::Constraint;
 

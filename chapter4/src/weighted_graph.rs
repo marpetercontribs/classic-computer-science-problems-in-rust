@@ -52,7 +52,7 @@ impl<V: Clone + PartialEq + ToString> WeightedDiGraph<V> {
             .iter()
             .fold(0_f64, |sum, current| sum + current.weight)
     }
-
+    #[allow(dead_code)]
     fn visit(&self, index: usize, visited: &mut [bool], pq: &mut BinaryHeap<WeightedEdge>) {
         visited[index] = true;
         for edge in self.edges_of_index(index) {
@@ -61,7 +61,7 @@ impl<V: Clone + PartialEq + ToString> WeightedDiGraph<V> {
             }
         }
     }
-
+    #[allow(dead_code)]
     fn mst(&self, start: usize) -> Vec<WeightedEdge> {
         let mut result = Vec::<WeightedEdge>::new();
         if start > self.get_vertex_count() - 1 {
@@ -191,18 +191,19 @@ impl<V: Clone + PartialEq + ToString> WeightedGraph<V> {
         ));
     }
     // Find the vertices that a vertex at some index is connected to
+    #[allow(dead_code)]    
     fn neighbors_of_index_with_weight(&self, index: usize) -> Vec<(V, f64)> {
         self.graph.neighbors_of_index_with_weight(index)
     }
-
+    #[allow(dead_code)]
     fn total_weight(&self, edges: &[WeightedEdge]) -> f64 {
         self.graph.total_weight(edges)
     }
-
+    #[allow(dead_code)]
     fn visit(&self, index: usize, visited: &mut [bool], pq: &mut BinaryHeap<WeightedEdge>) {
         self.graph.visit(index, visited, pq);
     }
-
+    #[allow(dead_code)]
     fn mst(&self, start: usize) -> Vec<WeightedEdge> {
         self.graph.mst(start)
     }

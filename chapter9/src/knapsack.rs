@@ -52,6 +52,16 @@ pub fn knapsack(items: &[Item], max_capacity: usize) -> Vec<Item> {
     solution
 }
 
+// Implement Display for Item to get rid of clippy's "field `name` is never read" warning
+impl std::fmt::Display for Item {
+    fn fmt(&self, formatter: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        writeln!(
+            formatter,
+            "Item {} (weight: {}, value: {})",
+            self.name, self.weight, self.value
+        )
+    }
+}
 // to see the output when testing, use
 // cargo test -- --nocapture
 #[cfg(test)]
@@ -117,6 +127,6 @@ mod tests {
                 value: 1000_f64,
             },
         ];
-        println!("{:?}", knapsack(&items, 75));
+        println!("{:#?}", knapsack(&items, 75));
     }
 }
