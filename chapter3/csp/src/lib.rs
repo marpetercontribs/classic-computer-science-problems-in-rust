@@ -20,7 +20,7 @@ use std::rc::Rc;
 
 // Rust doesn't have abstract classes or method overloading like usual OO languages
 // But structures and traits, where traits cannot hold any data
-// --> Holding a constraint's data must be in in struct and the "abstract" methods
+// --> Holding a constraint's data must be in a struct and the "abstract" methods
 // defined as a trait
 // Logically, "Contraint" seems to be the trait because that's what we want to "subclass"
 // Issue: as soon as type parameters are introduced in the trait's method(s),
@@ -52,9 +52,9 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V, D> + Sized> CSP<V, D, C> {
         let mut constraints = HashMap::<Rc<V>, Vec<Rc<C>>>::new();
         let mut domains = HashMap::<Rc<V>, Vec<D>>::new();
         for (variable, domain) in domains_in {
-            let rc_variable = Rc::new(variable);
-            domains.insert(Rc::clone(&rc_variable), domain);
-            constraints.insert(Rc::clone(&rc_variable), Vec::<Rc<C>>::new());
+            let variable = Rc::new(variable);
+            domains.insert(Rc::clone(&variable), domain);
+            constraints.insert(Rc::clone(&variable), Vec::<Rc<C>>::new());
         }
         CSP {
             domains,
@@ -63,16 +63,15 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V, D> + Sized> CSP<V, D, C> {
     }
 
     pub fn add_constraint(&mut self, constraint: C) {
-        let rc_constraint = Rc::new(constraint);
-        for variable in rc_constraint.variables() {
+        let constraint = Rc::new(constraint);
+        for variable in constraint.variables() {
             if !self.domains.contains_key(variable) {
                 panic!("Variable in constraint not in CSP");
             } else {
-                let constraints_for_var = self
-                    .constraints
+                self.constraints
                     .get_mut(variable)
-                    .expect("Variable in constraint not in CSP");
-                constraints_for_var.push(Rc::clone(&rc_constraint));
+                    .expect("Variable in constraint not in CSP")
+                    .push(Rc::clone(&constraint));
             }
         }
     }
@@ -80,8 +79,8 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V, D> + Sized> CSP<V, D, C> {
     // Check if the value assignment is consistent by checking all constraints
     // for the given variable against it
     pub fn is_consistent(&self, variable: &V, assignment: &HashMap<Rc<V>, D>) -> bool {
-        if let Some(constraint_vec) = self.constraints.get(variable) {
-            for constraint in constraint_vec {
+        if let Some(constraints_for_variable) = self.constraints.get(variable) {
+            for constraint in constraints_for_variable {
                 if !constraint.satisfied(assignment) {
                     return false;
                 }
@@ -97,31 +96,29 @@ impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V, D> + Sized> CSP<V, D, C> {
         &self,
         assignment: HashMap<Rc<V>, D>,
     ) -> Option<HashMap<Rc<V>, D>> {
-        // assignment is complete if every variable is assigned (our base case)
-        if assignment.len() == self.domains.len() {
-            return Some(assignment);
-        }
-        // get all variables in the CSP but not in the assignment
-        let unassigned_vars: Vec<&Rc<V>> = self
-            .domains
-            .keys()
-            .filter(|var| !assignment.contains_key(*var))
-            .collect();
         // get every possible domain value of the first unassigned variable
-        let first = unassigned_vars[0];
-        if let Some(values) = self.domains.get(first) {
-            for value in values {
-                let mut local_assignment = assignment.clone();
-                local_assignment.insert(Rc::clone(first), (*value).clone());
-                // if we're still consistent, we recurse (continue)
-                if self.is_consistent(first, &local_assignment) {
-                    let result = self.internal_backtracking_search(local_assignment);
-                    if result.is_some() {
-                        return result;
+        if let Some(first_unassigned) = self
+            .domains
+            .keys() // get all variables
+            .find(|var| !assignment.contains_key(*var))
+        {
+            if let Some(values) = self.domains.get(first_unassigned) {
+                for value in values {
+                    let mut local_assignment = assignment.clone();
+                    local_assignment.insert(Rc::clone(first_unassigned), (*value).clone());
+                    // if we're still consistent, we recurse (continue)
+                    if self.is_consistent(first_unassigned, &local_assignment) {
+                        let result = self.internal_backtracking_search(local_assignment);
+                        if result.is_some() {
+                            return result;
+                        }
                     }
                 }
             }
+            None
+        } else {
+            // assignment is complete if every variable is assigned (our base case)
+            Some(assignment)
         }
-        None
     }
 }
