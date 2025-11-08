@@ -23,20 +23,19 @@ use std::rc::Rc;
 // --> Holding a constraint's data must be in a struct and the "abstract" methods
 // defined as a trait
 // Logically, "Contraint" seems to be the trait because that's what we want to "subclass"
-// Issue: as soon as type parameters are introduced in the trait's method(s),
-//   CSP cannot hold a HashMap of Contraints any longer: the compiler fails with
-//   "this trait cannot be made into an object..."
-//   "...because method `satisfied` has generic type parameters"
-//
 // At least for the examples in the book, it seems to be sufficient if all
 // Constraints held by the CSP are of the same "subtype" --> parameterize the trait
 
-pub trait Constraint<V, D> {
-    fn satisfied(&self, assignment: &HashMap<Rc<V>, D>) -> bool;
-    fn variables(&self) -> &Vec<V>;
+pub trait Constraint {
+    type VariableType;
+    type DomainType;
+    // R[eference]c[ounted] because the same variable may appear in multiple constraints
+    //   and the same constraint may appear in multiple variables' constraint lists
+    fn satisfied(&self, assignment: &HashMap<Rc<Self::VariableType>, Self::DomainType>) -> bool;
+    fn variables(&self) -> &Vec<Self::VariableType>;
 }
 
-pub struct CSP<V: Eq + Hash, D: Clone, C: Constraint<V, D> + Sized> {
+pub struct CSP<V: Eq + Hash, D: Clone, C: Constraint<VariableType = V, DomainType = D> + Sized> {
     // Because each variable must have a domain, we can use the keys of the domains HashMap as "variables"
     //   to avoid having to copy each variable into an explicit vector of variables
     // variables: Vec<V>,
@@ -47,7 +46,7 @@ pub struct CSP<V: Eq + Hash, D: Clone, C: Constraint<V, D> + Sized> {
     constraints: HashMap<Rc<V>, Vec<Rc<C>>>,
 }
 
-impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<V, D> + Sized> CSP<V, D, C> {
+impl<V: Eq + Hash + Clone, D: Clone, C: Constraint<VariableType = V, DomainType = D> + Sized> CSP<V, D, C> {
     pub fn new(domains_in: HashMap<V, Vec<D>>) -> Self {
         let mut constraints = HashMap::<Rc<V>, Vec<Rc<C>>>::new();
         let mut domains = HashMap::<Rc<V>, Vec<D>>::new();

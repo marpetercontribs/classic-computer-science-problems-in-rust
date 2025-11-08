@@ -17,14 +17,14 @@
 use std::collections::HashMap;
 use std::rc::Rc;
 
-struct MapColoringConstraint {
-    region1: &'static str,
-    region2: &'static str,
-    variables: Vec<&'static str>,
+struct MapColoringConstraint<'a> {
+    region1: &'a str,
+    region2: &'a str,
+    variables: Vec<&'a str>,
 }
 
-impl MapColoringConstraint {
-    fn new(region1: &'static str, region2: &'static str) -> Self {
+impl<'a> MapColoringConstraint<'a> {
+    fn new(region1: &'a str, region2: &'a str) -> Self {
         MapColoringConstraint {
             region1,
             region2,
@@ -33,7 +33,9 @@ impl MapColoringConstraint {
     }
 }
 
-impl csp::Constraint<&str, &str> for MapColoringConstraint {
+impl<'a> csp::Constraint for MapColoringConstraint<'a> {
+    type VariableType = &'a str;
+    type DomainType = &'a str;
     fn satisfied(&self, assignment: &HashMap<Rc<&str>, &str>) -> bool {
         // If either region is not in the assignment then it is not
         // yet possible for their colors to be conflicting
@@ -42,7 +44,7 @@ impl csp::Constraint<&str, &str> for MapColoringConstraint {
         }
         assignment.get(&self.region1).unwrap() != assignment.get(&self.region2).unwrap()
     }
-    fn variables(&self) -> &Vec<&'static str> {
+    fn variables(&self) -> &Vec<&'a str> {
         &self.variables
     }
 }
@@ -50,7 +52,7 @@ impl csp::Constraint<&str, &str> for MapColoringConstraint {
 fn main() {
     let colors = vec!["red", "green", "blue"];
     let mut domains = HashMap::<&str, Vec<&str>>::new();
-    for variable in &[
+    for variable in [
         "WesternAustralia",
         "NorthernTerritory",
         "SouthAustralia",

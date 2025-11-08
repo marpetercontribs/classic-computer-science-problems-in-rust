@@ -27,7 +27,9 @@ impl QueensConstraint {
     }
 }
 
-impl csp::Constraint<u8, u8> for QueensConstraint {
+impl csp::Constraint for QueensConstraint {
+    type VariableType = u8;
+    type DomainType = u8;
     fn satisfied(&self, assignment: &HashMap<Rc<u8>, u8>) -> bool {
         for (queen1_column, queen1_row) in assignment.iter() {
             for queen2_column in

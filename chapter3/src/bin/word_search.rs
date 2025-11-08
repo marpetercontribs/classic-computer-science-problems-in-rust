@@ -111,7 +111,9 @@ impl WordSearchConstraint {
     }
 }
 
-impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
+impl csp::Constraint for WordSearchConstraint {
+    type VariableType = String;
+    type DomainType = Vec<GridLocation>;
     fn satisfied(&self, assignment: &HashMap<Rc<String>, Vec<GridLocation>>) -> bool {
         let all_locations: Vec<&GridLocation> = assignment.values().flatten().collect();
         let deduplicated_locations: HashSet<&GridLocation> =
