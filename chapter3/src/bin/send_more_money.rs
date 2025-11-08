@@ -26,7 +26,9 @@ impl SendMoreMoneyConstraint {
     }
 }
 
-impl csp::Constraint<char, u16> for SendMoreMoneyConstraint {
+impl csp::Constraint for SendMoreMoneyConstraint {
+    type VariableType = char;
+    type DomainType = u16;
     fn satisfied(&self, assignment: &HashMap<Rc<char>, u16>) -> bool {
         let assignment_values: HashSet<&u16> = HashSet::from_iter(assignment.values());
         if assignment_values.len() < assignment.len() {
