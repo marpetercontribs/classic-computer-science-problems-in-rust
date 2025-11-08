@@ -146,7 +146,9 @@ fn difference(first: usize, last: usize) -> i32 {
     (first as i32) - (last as i32)
 }
 
-impl csp::Constraint<String, Vec<GridLocation>> for WordSearchConstraint {
+impl csp::Constraint for WordSearchConstraint {
+    type VariableType = String;
+    type DomainType = Vec<GridLocation>;
     fn satisfied(&self, assignment: &HashMap<Rc<String>, Vec<GridLocation>>) -> bool {
         // instead of considering "overlapping" words invalid,
         // we have to check if the overlapping letters are the same

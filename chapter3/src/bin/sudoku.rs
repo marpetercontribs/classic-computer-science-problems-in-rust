@@ -85,7 +85,9 @@ impl SudokuConstraint {
     }
 }
 
-impl csp::Constraint<CellLocation, u8> for SudokuConstraint {
+impl csp::Constraint for SudokuConstraint {
+    type VariableType = CellLocation;
+    type DomainType = u8;
     fn satisfied(&self, assignment: &HashMap<Rc<CellLocation>, u8>) -> bool {
         for cell_location in assignment.keys() {
             let value = assignment.get(cell_location);
