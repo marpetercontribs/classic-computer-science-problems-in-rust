@@ -124,7 +124,7 @@ impl<P: Into<DataPoint<P>> + Clone + fmt::Debug> KMeans<P> {
                         .iter()
                         .map(|point| point.coordinates()[dimension])
                         .sum::<f64>()
-                        / (num_dimensions as f64);
+                        / (cluster.points.len() as f64);
                     means.push(dimension_mean);
                 }
                 cluster.centroid = DataPoint::from(means);
